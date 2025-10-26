@@ -25,21 +25,68 @@ import { getUserInitials } from "@/lib/nameInitial";
 import { toast } from "sonner";
 import { preferenceColors } from "@/lib/constant";
 import { formatDate } from "@/lib/utils";
+import { db } from "@/lib/firebase";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const ProfileCard = ({ modal, setModal }) => {
-  const { profile, logout, updateProfilePicture, updatePreferences } = useAuth();
+  const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileRef = useRef(null);
   const [editPrefs, setEditPrefs] = useState(false);
   const [prefs, setPrefs] = useState([]);
   const [savingPrefs, setSavingPrefs] = useState(false);
+  
+  // Stats state
+  const [stats, setStats] = useState({
+    trips: 0,
+    blogPosts: 0,
+    loading: true
+  });
 
   useEffect(() => {
     if (profile?.preferences) {
       setPrefs(profile.preferences);
     }
   }, [profile?.preferences]);
+
+  // Fetch stats when modal opens
+  useEffect(() => {
+    const fetchStats = async () => {
+      if (!user?.uid || !modal) return;
+
+      setStats(prev => ({ ...prev, loading: true }));
+
+      try {
+        // Fetch trips count
+        const tripsRef = collection(db, "trips");
+        const tripsQuery = query(tripsRef, where("userId", "==", user.uid));
+        const tripsSnapshot = await getDocs(tripsQuery);
+        const tripsCount = tripsSnapshot.size;
+
+        // Fetch blog posts count
+        const blogPostsRef = collection(db, "blog_posts");
+        const blogPostsQuery = query(blogPostsRef, where("authorUid", "==", user.uid));
+        const blogPostsSnapshot = await getDocs(blogPostsQuery);
+        const blogPostsCount = blogPostsSnapshot.size;
+
+        setStats({
+          trips: tripsCount,
+          blogPosts: blogPostsCount,
+          loading: false
+        });
+      } catch (error) {
+        console.error("Error fetching stats:", error);
+        setStats({
+          trips: 0,
+          blogPosts: 0,
+          loading: false
+        });
+      }
+    };
+
+    fetchStats();
+  }, [user?.uid, modal]);
 
   const handleFileUpload = () => {
     fileRef.current.click();
@@ -361,8 +408,8 @@ const ProfileCard = ({ modal, setModal }) => {
           {/* Stats Card */}
           <div className="grid grid-cols-2 gap-3 p-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl">
             {[
-              { label: "Trips", value: "5", icon: "✈️" },
-              { label: "Saved", value: "12", icon: "💾" },
+              { label: "Trips", value: stats.trips, icon: "✈️", loading: stats.loading },
+              { label: "Blog Posts", value: stats.blogPosts, icon: "📝", loading: stats.loading },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -370,7 +417,11 @@ const ProfileCard = ({ modal, setModal }) => {
               >
                 <div className="text-2xl mb-1">{stat.icon}</div>
                 <div className="text-lg font-bold text-gray-900 dark:text-white">
-                  {stat.value}
+                  {stat.loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin mx-auto" />
+                  ) : (
+                    stat.value
+                  )}
                 </div>
                 <div className="text-xs text-gray-600 dark:text-gray-400">
                   {stat.label}
