@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -27,6 +27,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/context/useAuth";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -44,6 +45,15 @@ export default function Auth() {
   const [error, setError] = useState("");
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
+  const {user} = useAuth()
+
+  useEffect(()=>{
+    if(user)
+    {
+      router.push(continueTo || "/");
+    }
+  },[]) 
+
 
   const updateForm = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
