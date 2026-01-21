@@ -25,11 +25,11 @@ import {
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { arrayUnion, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { useAuth } from "@/context/useAuth";
+import { db } from "@/lib/config/firebase";
+import { useAuth } from "@/providers/useAuth";
 import { ViewTripLoading } from "@/components/custom/Loading";
-import Hotels from "./Hotels";
-import ItineraryDay from "./ItineraryDay";
+import Hotels from "../../../../components/features/trips/Hotels";
+import ItineraryDay from "../../../../components/features/trips/ItineraryDay";
 
 const printStyles = `
 @media print {

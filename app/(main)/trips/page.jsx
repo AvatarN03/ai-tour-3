@@ -4,9 +4,9 @@ import { useEffect, useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/config/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useAuth } from "@/context/useAuth";
+import { useAuth } from "@/providers/useAuth";
 import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
 
 export default function SavedTripsPage() {

@@ -8,7 +8,7 @@ import {
   Heart,
   Shield,
 } from "lucide-react";
-import { emergencyContacts } from "@/lib/constant";
+import { emergencyContacts } from "@/lib/utils/constant";
 
 const getTypeIcon = (type) => {
   switch (type) {

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import { useWeather } from "@/context/useWeather";
+import { useWeather } from "@/providers/useWeather";
 
 const LocationAccess = () => {
   const {

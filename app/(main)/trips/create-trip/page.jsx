@@ -3,11 +3,11 @@
 import { GenPlanLoading } from "@/components/custom/Loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/context/useAuth";
-import { generateTravelPlan } from "@/lib/AI_Model";
-import { categories, initialForm, interests } from "@/lib/constant";
-import { db } from "@/lib/firebase";
-import { validateForm } from "@/lib/validation";
+import { useAuth } from "@/providers/useAuth";
+import { generateTravelPlan } from "@/lib/api/AI_Model";
+import { categories, initialForm, interests } from "@/lib/utils/constant";
+import { db } from "@/lib/config/firebase";
+import { validateForm } from "@/lib/utils/validation";
 import { formatDate } from "date-fns";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";

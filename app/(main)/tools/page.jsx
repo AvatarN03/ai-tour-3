@@ -14,11 +14,11 @@ import {
   Utensils,
   Send,
 } from "lucide-react";
-import CurrencyConverter from "@/app/(main)/tools/CurrencyConvertor";
-import { TABS } from "@/lib/constant";
-import Emergency from "@/app/(main)/tools/Emergency";
-import ExpenseTracker from "./ExpenseTracker";
-import AITravelAssistant from "./AiTravel";
+import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
+import { TABS } from "@/lib/utils/constant";
+import Emergency from "@/components/features/tools/Emergency";
+import ExpenseTracker from "../../../components/features/tools/ExpenseTracker";
+import AITravelAssistant from "../../../components/features/tools/AiTravel";
 
 // API Keys (replace with your own)
 const OPENWEATHER_API_KEY = "YOUR_OPENWEATHER_API_KEY";

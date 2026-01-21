@@ -1,8 +1,8 @@
 "use client";
 import Header from "@/components/custom/Header";
 import Sidebar from "@/components/custom/Sidebar";
-import { useAuth } from "@/context/useAuth";
-import { WeatherProvider } from "@/context/useWeather";
+import { useAuth } from "@/providers/useAuth";
+import { WeatherProvider } from "@/providers/useWeather";
 import { Loader2 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import React, { Suspense, useState, useEffect } from "react";

@@ -2,15 +2,15 @@
 
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { landingPageMenus } from '@/lib/constant'
-import ThemeToggle from './ThemeToggle'
-import { Button } from '../ui/button'
-import { useAuth } from '@/context/useAuth'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
-import ProfileCard from './ProfileCard'
-import { getUserInitials } from '@/lib/nameInitial'
-import { cn } from '@/lib/utils'
-import Logo from './Logo'
+import { landingPageMenus } from '@/lib/utils/constant'
+import { useAuth } from '@/providers/useAuth'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { getUserInitials } from '@/lib/utils/nameInitial'
+import { cn } from '@/lib/utils/utils'
+import Logo from '../Logo'
+import ThemeToggle from '../ThemeToggle'
+import ProfileCard from '../ProfileCard'
+import { Button } from '@/components/ui/button'
 
 const Navbar = () => {
     const { user, profile } = useAuth()

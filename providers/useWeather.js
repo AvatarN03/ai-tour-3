@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
-import { getWeatherByCity, getWeatherByCoords } from "@/lib/weather";
+import { getWeatherByCity, getWeatherByCoords } from "@/lib/api/weather";
 
 const WeatherContext = createContext();
 

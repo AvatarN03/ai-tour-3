@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "@/lib/firebase";
+import { auth, db } from "@/lib/config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import Loading from "@/components/custom/Loading";
 import { toast } from "sonner";

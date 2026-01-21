@@ -1,6 +1,6 @@
 "use client";
 
-import { GetPlaceDetails, PHOTO_REF_URL } from "@/lib/PlaceImage";
+import { GetPlaceDetails, PHOTO_REF_URL } from "@/lib/services/PlaceImage";
 import React, { useState, useEffect } from "react";
 
 const PlaceImage = ({ object }) => {

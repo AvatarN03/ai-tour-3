@@ -19,19 +19,21 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { auth, db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
-import ThemeToggle from "@/components/custom/ThemeToggle";
-import { availablePreferences } from "@/lib/constant";
 import { toast } from "sonner";
 import Link from "next/link";
+import { doc, setDoc } from "firebase/firestore";
+
+import { useAuth } from "@/providers/useAuth";
+
+import ThemeToggle from "@/components/custom/ThemeToggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth } from "@/context/useAuth";
+
+import { availablePreferences } from "@/lib/utils/constant";
+import { auth, db } from "@/lib/config/firebase";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
-  const [isUploading, setIsUploading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",

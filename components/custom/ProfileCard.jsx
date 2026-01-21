@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useAuth } from "@/context/useAuth";
+import { useAuth } from "@/providers/useAuth";
 import {
   LogOut,
   User,
@@ -21,11 +21,11 @@ import {
   Loader2,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { getUserInitials } from "@/lib/nameInitial";
+import { getUserInitials } from "@/lib/utils/nameInitial";
 import { toast } from "sonner";
-import { preferenceColors } from "@/lib/constant";
-import { formatDate } from "@/lib/utils";
-import { db } from "@/lib/firebase";
+import { preferenceColors } from "@/lib/utils/constant";
+import { formatDate } from "@/lib/utils/utils";
+import { db } from "@/lib/config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 const ProfileCard = ({ modal, setModal }) => {

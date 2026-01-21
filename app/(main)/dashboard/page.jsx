@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import LocationAccess from "@/lib/LocationAccess";
+import LocationAccess from "@/hooks/LocationAccess";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -16,7 +16,7 @@ import {
   Clock,
   Sparkles,
 } from "lucide-react";
-import { dashboardQuickstarts, recommendedTrips } from "@/lib/constant";
+import { dashboardQuickstarts, recommendedTrips } from "@/lib/utils/constant";
 
 export default function DashboardPage() {
   return (

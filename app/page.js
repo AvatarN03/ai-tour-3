@@ -1,20 +1,18 @@
 "use client";
-import React from "react";
-import { motion } from "framer-motion";
+
+import Link from "next/link";
 import {
   Sparkles,
   Map,
-  Clock,
-  TrendingUp,
-  Globe,
-  Compass,
-  Calendar,
-  DollarSign,
-} from "lucide-react";
-import Navbar from "@/components/custom/Navbar";
-import { planSteps, services } from "@/lib/constant";
-import AboutSection from "@/components/custom/AboutSection";
-import Link from "next/link";
+  Globe
+} from "lucide-react";  
+import { motion } from "framer-motion";
+
+
+import AboutSection from "@/components/custom/Marketing/AboutSection";
+
+import { planSteps, services } from "@/lib/utils/constant";
+import Navbar from "@/components/custom/Marketing/Navbar";
 
 const LandingPage = () => {
   const fadeInUp = {
@@ -48,6 +46,8 @@ const LandingPage = () => {
           transition={{ duration: 1 }}
           className="absolute z-0 inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.3),transparent_40%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.2),transparent_40%)]"
         />
+        <div className="absolute bg-purple-600 blur-[125px] top-10 left-10 w-96 h-96 z-0" />
+        <div className="absolute bg-purple-600 blur-[125px] top-10 right-10 w-86 h-86 z-0" />
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -105,7 +105,7 @@ const LandingPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-4xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 "
+              className="text-4xl md:text-7xl xl:text-8xl font-bold text-gray-900 dark:text-white mb-12 "
             >
               Plan Your Dream Trip
               <br />
@@ -310,6 +310,10 @@ const LandingPage = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      <section id="pricing">
+        Pricing
       </section>
 
       {/* CTA Section */}

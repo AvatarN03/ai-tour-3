@@ -5,8 +5,8 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Search, X, Trash2, Edit2, MessageCircle, Image, Bold, Italic, Link, ArrowLeft } from 'lucide-react'
-import { categories } from '@/lib/constant'
-import { db } from '@/lib/firebase'
+import { categories } from '@/lib/utils/constant'
+import { db } from '@/lib/config/firebase'
 import {
   collection,
   getDocs,
@@ -18,7 +18,7 @@ import {
   arrayUnion,
   Timestamp
 } from 'firebase/firestore'
-import { useAuth } from '@/context/useAuth'
+import { useAuth } from '@/providers/useAuth'
 
 // ============= UTILITY FUNCTIONS =============
 const renderContent = (content) => {

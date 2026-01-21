@@ -4,11 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PanelLeftCloseIcon, ChevronRight } from "lucide-react";
-import { sidebarMenus } from "@/lib/constant";
+import { sidebarMenus } from "@/lib/utils/constant";
 import ProfileCard from "./ProfileCard";
-import { useAuth } from "@/context/useAuth";
+import { useAuth } from "@/providers/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { getUserInitials } from "@/lib/nameInitial";
+import { getUserInitials } from "@/lib/utils/nameInitial";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "./Logo";
 

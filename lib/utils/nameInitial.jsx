@@ -1,4 +1,4 @@
-import { useAuth } from "@/context/useAuth";
+import { useAuth } from "@/providers/useAuth";
 
 // Get user initials for fallback
 export const getUserInitials = () => {
