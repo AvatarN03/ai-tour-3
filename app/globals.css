@@ -243,6 +243,17 @@ html {
       overflow: hidden;
     }
   }
+
+  .custom-clip {
+  clip-path: polygon(
+    0% 0%,
+    0% 100%,
+    100% 99%,
+    31% 71%,
+    14% 34%
+  );
+}
+
 }
 
   

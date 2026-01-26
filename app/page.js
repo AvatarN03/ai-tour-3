@@ -1,18 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import {
-  Sparkles,
-  Map,
-  Globe
-} from "lucide-react";  
+import { Sparkles, Map, Globe } from "lucide-react";
 import { motion } from "framer-motion";
-
 
 import AboutSection from "@/components/custom/Marketing/AboutSection";
 
 import { planSteps, services } from "@/lib/utils/constant";
 import Navbar from "@/components/custom/Marketing/Navbar";
+import Image from "next/image";
+import Pricing from "@/components/custom/Marketing/Pricing";
 
 const LandingPage = () => {
   const fadeInUp = {
@@ -39,15 +36,15 @@ const LandingPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-300 via-indigo-200 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar />
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-6 py-10  md:py-32 bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-400 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20">
+      <section className="relative overflow-x-hidden px-6 py-10  md:py-32 bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-400 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.3 }}
           transition={{ duration: 1 }}
           className="absolute z-0 inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.3),transparent_40%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.2),transparent_40%)]"
         />
-        <div className="absolute bg-purple-600 blur-[125px] top-10 left-10 w-96 h-96 z-0" />
-        <div className="absolute bg-purple-600 blur-[125px] top-10 right-10 w-86 h-86 z-0" />
+        <div className="hidden md:block absolute bg-purple-600 blur-[125px] -top-30 left-10 w-120 h-96 z-0" />
+        <div className="hidden md:block absolute bg-purple-600 blur-[265px] top-1/3 -translate-y-1/2 -right-10 w-150 h-150 z-0" />
 
         <motion.div
           initial={{ opacity: 0 }}
@@ -56,7 +53,7 @@ const LandingPage = () => {
           className="absolute z-0 inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.2),transparent_40%)] dark:bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.15),transparent_40%)]"
         />
 
-        <div className="max-w-7xl mx-auto relative">
+        <div className="max-w-7xl mx-auto relative z-20">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -199,20 +196,24 @@ const LandingPage = () => {
             </video>
           </div>
         </div>
+        <div className="absolute bg-purple-600 blur-[125px] bottom-0 right-0 w-3xl h-86 z-0" />
       </section>
 
       {/* Features Section */}
       <section
-        className="py-20 px-6  bg-slate-300 dark:bg-gray-900"
+        className="py-20 px-6     bg-indigo-200 dark:bg-gray-900 relative"
         id="services"
       >
-        <div className="max-w-7xl mx-auto">
+        <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-24 min-h-screen pb-20">
+       
+          <div className="hidden md:block absolute bg-indigo-600 blur-[265px] bottom-0  -right-10 w-150 h-150 z-0" />
+
           <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="text-center mb-16"
+            className="text-center mb-16 z-20 relative"
           >
             <motion.h2
               variants={fadeInUp}
@@ -233,14 +234,16 @@ const LandingPage = () => {
             whileInView="animate"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8"
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8  z-20 relative"
           >
             {services.map((feature, index) => (
               <motion.div
                 key={index}
                 variants={scaleIn}
+                initial={{ opacity: 0, scale: 0.8 , y: index * 30}}
                 whileHover={{ y: -10, transition: { duration: 0.2 } }}
-                className="bg-gradient-to-br from-gray-200 to-gray-400 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow"
+                className="bg-gradient-to-br from-indigo-400 to-indigo-600 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow"
+                
               >
                 <div
                   className={`w-16 h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-xl flex items-center justify-center mb-6`}
@@ -252,7 +255,7 @@ const LandingPage = () => {
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-300 dark:text-gray-400">
                   {feature.description}
                 </p>
               </motion.div>
@@ -262,8 +265,8 @@ const LandingPage = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20 px-6" id="htw">
-        <div className="max-w-7xl mx-auto">
+      <section className="py-20 px-6 relative overflow-hidden " id="htw">
+        <div className="max-w-7xl mx-auto px-4 min-h-screen flex flex-col gap-24">
           <motion.div
             initial="initial"
             whileInView="animate"
@@ -279,7 +282,7 @@ const LandingPage = () => {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-12 ">
+          <div className="grid md:grid-cols-3 gap-12 z-20 relative">
             {planSteps.map((item, index) => (
               <motion.div
                 key={index}
@@ -292,7 +295,8 @@ const LandingPage = () => {
                 <div className="text-7xl font-bold text-blue-400 dark:text-gray-700 mb-4">
                   {item.step}
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg h-[70%] transition duration-300 ease-in-out group-hover:-translate-y-3">
+                <div className="bg-slate-200 group-hover:bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg h-[70%] transition duration-300 ease-in-out group-hover:-translate-y-3 relative overflow-hidden">
+                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[100px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-14 z-0" />
                   <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center mb-6">
                     <item.icon className="w-7 h-7 text-white" />
                   </div>
@@ -310,20 +314,53 @@ const LandingPage = () => {
             ))}
           </div>
         </div>
+        <div className="absolute bg-purple-600 blur-[130px] bottom-0 right-0 w-52 h-52 z-0" />
+        <div className="absolute bg-purple-600 blur-[130px] top-0 left-0 w-52 h-52 z-0" />
       </section>
 
-      <section id="pricing">
-        Pricing
+      {/* pricing section  */}
+      <section className="pricing 9-6 min-h-screen md:h-screen w-full bg-sidebar-accent/50 py-14 px-4 overflow-hidden ">
+        <div
+          className="flex flex-col items-center justify-center h-full  p-2 md:p-6 text-center max-w-7xl mx-auto relative"
+          id="pricing"
+        >
+          <div className="hidden md:block absolute bg-blue-800 blur-[125px] -top-20 -left-10 w-120 h-96 z-0" />
+          <div className="hidden md:block absolute bg-indigo-700 blur-[265px] top-1/3 -translate-y-1/2 right-10 w-150 h-150 z-0 " />
+
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 z-20">
+            💸 Pricing Plans
+          </h2>
+          <p className="text-base tracking-widest text-gray-700 dark:text-gray-300 z-20">
+            Simple pricing for smarter trips — free to start, powerful when you
+            upgrade.
+          </p>
+
+          <div className="flex gap-12 justify-center items-center flex-1 mt-6 w-full z-20 relative">
+            <div className="hidden lg:block w-1/3">
+              <Image
+                src="/pricing.png"
+                alt="pricing plans"
+                width={800}
+                height={800}
+                className="xl:w-full h-full "
+              />
+            </div>
+            <div className="flex gap-12 w-full lg:w-2/3 justify-center items-center ">
+              <Pricing />
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-10 md:py-20 px-6 bg-slate-300 dark:bg-gray-900">
+      <section className="py-10 md:py-20 px-6 bg-indigo-500 dark:bg-gray-900 relative overflow-hidden h-[70vh] flex justify-center items-center">
+        <div className="custom-clip blur-3xl bg-blue-300 w-screen h-full absolute top-0 left-0 z-0" />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="max-w-4xl mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-4 md:p-12 text-center text-white shadow-2xl"
+          className="max-w-4xl mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-4 md:p-12 text-center text-white shadow-2xl backdrop:blur-xl relative z-10"
         >
           <h2 className="text-2xl md:text-5xl font-bold mb-6">
             Ready to Start Your Adventure?
@@ -333,7 +370,7 @@ const LandingPage = () => {
             vacation
           </p>
           <Link
-            href={"/auth?continueTo=/saved/create-trip"}
+            href={"/auth?continueTo=/trips/create-trip"}
             className="px-4 whitespace-nowrap md:px-10 py-4 bg-gray-300 text-blue-600 rounded-xl font-bold text-lg hover:bg-gray-50 transition-all transform hover:scale-102 inline-block shadow-lg cursor-pointer"
           >
             Start Planning Now →
@@ -341,8 +378,16 @@ const LandingPage = () => {
         </motion.div>
       </section>
 
-      <section id="about" className="px-10 py-4 w-full">
-        <AboutSection />
+      {/* about section  */}
+      <section
+        id="about"
+        className="px-4 md:px-10 py-4 w-full relative overflow-hidden"
+      >
+        <div className="bg-slate-600 w-3xl h-14 rounded-full rotate-45 absolute top-1/2 -left-24 md:left-12 z-0" />
+        <div className="bg-slate-600 w-3xl h-14 rounded-full rotate-45 absolute top-1/2 translate-y-36 -left-24 md:left-12 z-0" />
+        <div className="relative z-20">
+          <AboutSection />
+        </div>
       </section>
 
       <footer className="w-full text-xl text-center bg-gray-900 px-10 pt-6 pb-3 flex items-center justify-center ">

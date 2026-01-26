@@ -116,7 +116,7 @@ const AboutSection = () => {
                 <motion.div
                   key={index}
                   variants={circleVariants}
-                  className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-indigo-950 w-full max-w-3xl  justify-between even:flex-row-reverse  rounded-lg p-4  shadow-lg relative z-30 group"
+                  className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-indigo-950 w-full max-w-3xl  justify-between even:flex-row-reverse gap-2 rounded-lg p-4  shadow-lg relative z-30 group"
                 >
 
                   <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[100px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-14 z-0"/>
@@ -137,7 +137,7 @@ const AboutSection = () => {
                     variants={nameVariants}
                     className="flex-col gap-2 flex"
                   >
-                    <h3 className="text-xl md:text-2xl xl:text-4xl font-bold xl:font-light text-gray-900 dark:text-white">
+                    <h3 className="text-base md:text-2xl xl:text-4xl font-bold xl:font-light text-gray-900 dark:text-white">
                       {member.name}
                     </h3>
 

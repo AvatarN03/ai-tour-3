@@ -31,6 +31,7 @@ import { Label } from "@/components/ui/label";
 
 import { availablePreferences } from "@/lib/utils/constant";
 import { auth, db } from "@/lib/config/firebase";
+import Image from "next/image";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -47,15 +48,13 @@ export default function Auth() {
   const [error, setError] = useState("");
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
-  const {user} = useAuth()
+  const { user } = useAuth();
 
-  useEffect(()=>{
-    if(user)
-    {
+  useEffect(() => {
+    if (user) {
       router.push(continueTo || "/");
     }
-  },[]) 
-
+  }, []);
 
   const updateForm = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -65,9 +64,8 @@ export default function Auth() {
       "preferences",
       formData.preferences.includes(pref)
         ? formData.preferences.filter((p) => p !== pref)
-        : [...formData.preferences, pref]
+        : [...formData.preferences, pref],
     );
-
 
   const handleGoogleLogin = async () => {
     try {
@@ -84,7 +82,7 @@ export default function Auth() {
           preferences: [],
           createdAt: new Date(),
         },
-        { merge: true }
+        { merge: true },
       );
       toast.success("Signed in successfully!");
       router.push(continueTo || "/");
@@ -121,12 +119,12 @@ export default function Auth() {
         ? await signInWithEmailAndPassword(
             auth,
             formData.email,
-            formData.password
+            formData.password,
           )
         : await createUserWithEmailAndPassword(
             auth,
             formData.email,
-            formData.password
+            formData.password,
           );
 
       if (!isLogin) {
@@ -266,7 +264,7 @@ export default function Auth() {
       </div>
 
       {/* Desktop */}
-      <div className="hidden lg:flex max-w-7xl w-full h-[90vh] bg-slate-50 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
+      <div className="hidden lg:flex max-w-4xl w-full max-h-[80vh] bg-slate-50 dark:bg-gray-900/80 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
         <div className="flex-1 bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 flex flex-col justify-center items-center text-white relative overflow-hidden">
           <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
           <div className="relative z-10 text-center max-w-md">
@@ -386,7 +384,6 @@ export default function Auth() {
                   </div>
                 </div>
 
-              
                 <PreferencesSection isMobile={false} />
               </>
             )}
@@ -424,7 +421,7 @@ export default function Auth() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-semibold hover:bg-gray-50 dark:hover:bg-gray-700 transition-all flex items-center justify-center shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
           >
             <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
               <path
@@ -472,19 +469,26 @@ export default function Auth() {
         <div className="bg-white/95 dark:bg-gray-900/80 backdrop-blur-xl rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700">
           <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 px-4 py-8 text-center relative overflow-hidden">
             <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
-            <div className="relative z-10">
+            <div className="relative z-10 flex justify-between items-center gap-2 w-full">
               <Link
                 href="/"
                 className="w-20 h-20 bg-white/20 rounded-2xl mx-auto mb-4 flex items-center justify-center backdrop-blur-md shadow-lg rotate-3 hover:rotate-6 transition-transform"
               >
-                <Sparkles className="w-10 h-10 text-white" />
+                <Image
+                  src="/logo.png"
+                  alt="Logo"
+                  width={40}
+                  height={40}
+                />
               </Link>
-              <h1 className="text-2xl font-bold text-white mb-2">
-                {isLogin ? "Welcome Back!" : "Join Our Community"}
-              </h1>
-              <p className="text-purple-100 text-lg">
-                {isLogin ? "We've missed you" : "Let's get you started"}
-              </p>
+              <div className="">
+                <h1 className="text-xl font-bold text-white mb-2">
+                  {isLogin ? "Welcome Back!" : "Join Our Community"}
+                </h1>
+                <p className="text-purple-100 text-md">
+                  {isLogin ? "We've missed you" : "Let's get you started"}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -569,7 +573,6 @@ export default function Auth() {
                       />
                     </div>
                   </div>
-
 
                   <PreferencesSection isMobile={true} />
                 </>

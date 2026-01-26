@@ -37,7 +37,7 @@ const Navbar = () => {
                         <Logo/>
                     </div>
                     <nav className='hidden md:block'>
-                        <ul className='flex  gap-4 justify-center items-center text-slate-500 dark:text-slate-300 '>
+                        <ul className='flex  gap-4 justify-center items-center text-slate-600 dark:text-slate-300 '>
                             {
                                 landingPageMenus.map((menu, index) => (
                                     <Link href={menu.href} key={index}>
