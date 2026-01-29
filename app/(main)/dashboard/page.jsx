@@ -1,8 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import LocationAccess from "@/hooks/LocationAccess";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -16,6 +13,12 @@ import {
   Clock,
   Sparkles,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+
+import LocationAccess from "@/hooks/LocationAccess";
+
 import { dashboardQuickstarts, recommendedTrips } from "@/lib/utils/constant";
 
 export default function DashboardPage() {
@@ -23,8 +26,8 @@ export default function DashboardPage() {
     <div className="space-y-8 pb-8">
       {/* Page Header with Enhanced Design */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-5 md:p-12">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-black/10"/>
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"/>
 
         <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
           <div className="flex-1">

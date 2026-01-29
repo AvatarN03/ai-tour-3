@@ -31,10 +31,7 @@ const notoArabic = Noto_Naskh_Arabic({
 });
 
 export const metadata = {
-  title: {
-    title: "Ai tour - Explore the world with AI-powered travel planning",
-    template: "%s | AI Tour",
-  },
+  title: "Ai tour - Explore the world with AI-powered travel planning",
   description: "version - 2 ",
   icons: {
     icon: "/logo.png",
