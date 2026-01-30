@@ -1,6 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { toast } from "sonner";
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  User,
+  Sparkles,
+  ChevronDown,
+} from "lucide-react";
+
 import {
   GoogleAuthProvider,
   signInWithPopup,
@@ -8,30 +23,16 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import {
-  Mail,
-  Lock,
-  Eye,
-  EyeOff,
-  User,
-  Upload,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
 import { doc, setDoc } from "firebase/firestore";
 
 import { useAuth } from "@/providers/useAuth";
 
-import ThemeToggle from "@/components/custom/ThemeToggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ThemeToggle from "@/components/custom/ThemeToggle";
 
 import { availablePreferences } from "@/lib/utils/constant";
 import { auth, db } from "@/lib/config/firebase";
-import Image from "next/image";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -85,7 +86,7 @@ export default function Auth() {
         { merge: true },
       );
       toast.success("Signed in successfully!");
-      router.push(continueTo || "/");
+      router.push(`/preferences?continueTo=${continueTo}`);
     } catch (error) {
       setError(error.message);
       toast.error("Error logging in with Google");

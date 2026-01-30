@@ -1,5 +1,6 @@
 "use client";
 import Header from "@/components/custom/Header";
+import ProfileCard from "@/components/custom/ProfileCard";
 import Sidebar from "@/components/custom/Sidebar";
 import { useAuth } from "@/providers/useAuth";
 import { WeatherProvider } from "@/providers/useWeather";
@@ -11,7 +12,7 @@ const layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -27,6 +28,13 @@ const layout = ({ children }) => {
       router.push(`/auth?continueTo=${encodeURIComponent(pathname)}`);
     }
   }, [user, router, pathname]);
+
+  useEffect(() => {
+    if (profile && profile?.preferences.length === 0) {
+      router.push(`/preferences?dashboard`);
+    }
+    console.log(profile?.preferences)
+  }, [profile, router, pathname]);
 
   if (user) {
     return (
