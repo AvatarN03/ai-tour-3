@@ -1,7 +1,7 @@
 "use client";
 import { Star } from "lucide-react";
 import React, { useState } from "react";
-import PlaceImage from "../../../app/(main)/trips/[tripId]/PlaceImage";
+import PlaceImage from "./PlaceImage";
 
 // 2. Accept 'destination' as a prop
 const Hotels = ({ hotel_options, destination }) => {
