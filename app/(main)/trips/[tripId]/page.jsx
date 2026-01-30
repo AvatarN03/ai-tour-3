@@ -27,9 +27,9 @@ import { useParams, useRouter } from "next/navigation";
 import { arrayUnion, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/config/firebase";
 import { useAuth } from "@/providers/useAuth";
-import { ViewTripLoading } from "@/components/custom/Loading";
 import Hotels from "../../../../components/features/trips/Hotels";
 import ItineraryDay from "../../../../components/features/trips/ItineraryDay";
+import { ViewTripLoading } from "@/components/custom/Loading";
 
 const printStyles = `
 @media print {

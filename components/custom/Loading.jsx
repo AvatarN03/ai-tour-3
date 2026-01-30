@@ -28,4 +28,39 @@ const Loading = () => {
   );
 };
 
+
+
 export default Loading;
+
+export const ViewTripLoading = () => {
+  return (
+    <div className="min-h-[90vh] flex items-center justify-center ">
+      <div className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <div className="absolute inset-0 blur-xl bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full animate-pulse"></div>
+          <Loader2
+            className="relative animate-spin text-indigo-600 dark:text-indigo-400"
+            size={48}
+            strokeWidth={2.5}
+          />
+        </div>
+        <span className="text-xl font-semibold dark:text-white text-gray-800">
+          Loading Trip Details...
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export const  GenPlanLoading = () => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen ">
+      <div className="flex items-center space-x-4">
+        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-lg font-semibold text-gray-700">
+          Generating your perfect trip...
+        </p>
+      </div>
+    </div>
+  );
+};
