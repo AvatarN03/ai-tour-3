@@ -31,7 +31,7 @@ export default function SavedTripsPage() {
       // Trips saved by me
       const qSaved = query(
         tripsRef,
-        where("savedBy", "array-contains", profile.email)
+        where("savedBy", "array-contains", profile.uid)
       );
       const savedSnapshot = await getDocs(qSaved);
       const savedTrips = savedSnapshot.docs.map((doc) => ({
@@ -119,7 +119,7 @@ export default function SavedTripsPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-accent w-full rounded-md p-2 sm:p-6 my-6">
+      <div className="bg-accent w-full rounded-md p-2  my-6">
         <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
           <div className="flex-1 w-full">
             <input

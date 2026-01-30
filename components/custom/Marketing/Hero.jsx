@@ -86,7 +86,7 @@ const Hero = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.5 }}
-                        className="text-base md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-3xl mx-auto my-4"
+                        className="text-base md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto my-4"
                     >
                         Discover amazing destinations, create personalized itineraries,
                         and get AI-powered recommendations for your next adventure. Smart

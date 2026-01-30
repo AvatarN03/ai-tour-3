@@ -10,7 +10,7 @@ const Loading = () => {
         src={"/loading-banner.png"}
         alt="loading banner"
         fill
-        className="object-cover opacity-20"
+        className="object-cover opacity-20 select-none"
       />
       </div>
       <div className="flex-col gap-4 z-50 flex items-center justify-center relative">

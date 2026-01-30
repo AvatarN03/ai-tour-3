@@ -6,9 +6,6 @@ import {
   Plane,
   Save,
   Bot,
-  MapPin,
-  Calendar,
-  DollarSign,
   TrendingUp,
   Clock,
   Sparkles,
@@ -16,16 +13,17 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import TripRecommendations from "@/components/features/dashboard/Recommendation";
 
 import LocationAccess from "@/hooks/LocationAccess";
 
-import { dashboardQuickstarts, recommendedTrips } from "@/lib/utils/constant";
+import { dashboardQuickstarts } from "@/lib/utils/constant";
 
 export default function DashboardPage() {
   return (
     <div className="space-y-8 pb-8">
       {/* Page Header with Enhanced Design */}
-      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-5 md:p-12">
+      <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-5 md:p-10">
         <div className="absolute inset-0 bg-black/10"/>
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"/>
 
@@ -42,7 +40,7 @@ export default function DashboardPage() {
               Ready to plan your next adventure? Let's make it unforgettable.
             </p>
           </div>
-          <Link href="/saved/create-trip">
+          <Link href="/trips/create-trip">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="bg-white whitespace-nowrap text-purple-600 hover:bg-gray-100 font-semibold px-4 md:px-8 py-6 text-base md:text-lg shadow-xl">
                 <Plane className="w-5 h-5 mr-2" />
@@ -93,9 +91,9 @@ export default function DashboardPage() {
                 {action.description}
               </p>
 
-              <Link href={action.link} className="relative z-10">
+              <Link href={action.link} className="relative z-10 group-hover:-translate-y-2.5 duration-200 ease-out">
                 <Button
-                  className={`w-full bg-gradient-to-r ${action.gradient} text-white font-semibold hover:brightness-110 transition-all`}
+                  className={`w-full bg-gradient-to-r ${action.gradient} text-white font-semibold hover:brightness-110 transition-all hover:text-base`}
                 >
                   Get Started
                 </Button>
@@ -107,7 +105,8 @@ export default function DashboardPage() {
 
       {/* Recommended Trips */}
       <div>
-        <div className="flex items-center justify-between mb-6">
+        <TripRecommendations />
+        {/* <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
             <Sparkles className="w-6 h-6 text-purple-600 dark:text-purple-400" />
             Recommended for You
@@ -125,7 +124,7 @@ export default function DashboardPage() {
               transition={{ duration: 0.2 }}
             >
               <Card className="group overflow-hidden hover:shadow-2xl transition-all duration-300 bg-white dark:bg-gray-800">
-                {/* Image Header with Gradient */}
+               
                 <div
                   className={`relative h-40 bg-gradient-to-br ${trip.gradient} flex items-center justify-center`}
                 >
@@ -142,7 +141,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Content */}
+               
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {trip.title}
@@ -170,7 +169,7 @@ export default function DashboardPage() {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </div> */}
       </div>
 
       {/* Recent Activity */}
