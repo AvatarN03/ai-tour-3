@@ -8,12 +8,11 @@ import { generateTravelPlan } from "@/lib/api/AI_Model";
 import { categories, initialForm, interests } from "@/lib/utils/constant";
 import { db } from "@/lib/config/firebase";
 import { validateForm } from "@/lib/utils/validation";
-import { formatDate } from "date-fns";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import AutoCompletion from "./AutoCompletion";
+// import AutoCompletion from "./AutoCompletion";
 
 const currencyOptions = [
   { value: "USD", label: "USD - $" },
@@ -69,8 +68,7 @@ const CreateTripForm = () => {
       GeneratedPlan: aiGeneratedPlan,
       createdAt: new Date(),
       updatedAt: new Date(),
-      savedBy: [], // users who saved this trip
-      // New field: currency stored at top-level for easy filtering/formatting
+      savedBy: [],
       currency: tripData.currency || "INR",
     });
     return docId;
@@ -105,7 +103,7 @@ const CreateTripForm = () => {
       toast.success("Trip created successfully! 🎉");
       // Reset form (keep currency default)
       setFormData({ ...initialForm, currency: tripData.currency || "USD" });
-      router.push("/saved/" + docId);
+      router.push("/trips/" + docId);
     } catch (error) {
       console.error("Error creating trip:", error);
       toast.error("Failed to create trip. Please try again.");
@@ -243,13 +241,25 @@ const CreateTripForm = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Destination <span className="text-red-500">*</span>
                 </label>
-                <AutoCompletion
+                {/* <AutoCompletion
                   onPlaceSelect={(place) =>
                     setFormData((prev) => ({
                       ...prev,
                       destination: place.formattedAddress,
                     }))
                   }
+                /> */}
+                <input
+                  type="text"
+                  name="destination"
+                  value={formData.destination}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${
+                    errors.destination
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700"
+                  }`}
+                  placeholder="e.g., Paris, France"
                 />
                 {errors.destination && (
                   <p className="text-red-500 text-sm mt-1 flex items-center">
@@ -263,13 +273,17 @@ const CreateTripForm = () => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Starting From <span className="text-red-500">*</span>
                 </label>
-                <AutoCompletion
-                  onPlaceSelect={(place) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      source: place.formattedAddress,
-                    }))
-                  }
+                <input
+                  type="text"
+                  name="source"
+                  value={formData.source}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${
+                    errors.source
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700"
+                  }`}
+                  placeholder="e.g., New York, USA"
                 />
                 {errors.source && (
                   <p className="text-red-500 text-sm mt-1 flex items-center">
