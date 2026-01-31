@@ -29,7 +29,7 @@ export default function ExpenseTracker() {
   // ✅ Fetch exchange rates from API route
   useEffect(() => {
    const fetchRates = async () => {
-  const res = await fetch("/api/rates");
+  const res = await fetch("/api/tools");
   const data = await res.json();
   console.log(data)
   setExchangeRates(data); 

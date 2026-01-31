@@ -1,28 +1,11 @@
 "use client";
 import React, { useState } from "react";
-import {
-  DollarSign,
-  Repeat,
-  Phone,
-  Trash2,
-  Edit2,
-  Plus,
-  Brain,
-  MapPin,
-  Calendar,
-  Cloud,
-  Utensils,
-  Send,
-} from "lucide-react";
+
 import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
 import { TABS } from "@/lib/utils/constant";
 import Emergency from "@/components/features/tools/Emergency";
 import ExpenseTracker from "../../../components/features/tools/ExpenseTracker";
 import AITravelAssistant from "../../../components/features/tools/AiTravel";
-
-// API Keys (replace with your own)
-const OPENWEATHER_API_KEY = "YOUR_OPENWEATHER_API_KEY";
-const OPENTRIP_API_KEY = "YOUR_OPENTRIP_API_KEY";
 
 export default function TravelTools() {
   const [activeTab, setActiveTab] = useState("expense");
@@ -279,12 +262,12 @@ export default function TravelTools() {
         </p>
 
         {/* Tool Tabs */}
-        <div className="flex gap-4 mb-8 flex-wrap border-b-2 border-slate-700 pb-4">
+        <div className="flex gap-2 md:gap-4 mb-8 flex-wrap border-b-2 border-slate-700 pb-4">
           {TABS.map(({ id, label, icon: Icon, activeColor }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`flex cursor-pointer items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+              className={`flex cursor-pointer items-center gap-1 md:gap-2 p-2 md:p-3 rounded-lg font-medium transition-all ${
                 activeTab === id
                   ? `bg-${activeColor}-600 text-white shadow-lg shadow-${activeColor}-500/50`
                   : "bg-slate-800 text-slate-300 hover:bg-slate-700"
@@ -311,10 +294,10 @@ export default function TravelTools() {
           <Emergency/>
         )}
 
-        {/* AI Assistant */}
+        {/* AI Assistant
         {activeTab === "ai" && (
           <AITravelAssistant/>
-        )}
+        )} */}
       </div>
     </div>
   );

@@ -126,7 +126,7 @@ function CreatePost({ onBack, onPostCreated }) {
         const formData = new FormData()
         formData.append("file", post.imageUrl)
         
-        const res = await fetch("/api/upload", {
+        const res = await fetch("/api/media/upload", {
           method: "POST",
           body: formData,
         })

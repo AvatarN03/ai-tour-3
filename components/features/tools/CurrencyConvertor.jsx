@@ -12,7 +12,7 @@ function CurrencyConverter() {
   useEffect(() => {
     async function fetchRates() {
     try {
-      const res = await fetch("/api/rates", { cache: "force-cache" });
+      const res = await fetch("/api/tools", { cache: "force-cache" });
       const data = await res.json();
       setRates(data);
     } catch (error) {

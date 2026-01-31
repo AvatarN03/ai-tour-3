@@ -125,7 +125,7 @@ const ProfileCard = ({ modal, setModal }) => {
 
       try {
         setIsUploadingImage(true);
-        const res = await fetch("/api/upload", {
+        const res = await fetch("/api/media/upload", {
           method: "POST",
           body: formData,
         });
