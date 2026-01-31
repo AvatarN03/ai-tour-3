@@ -230,7 +230,7 @@ const TripViewCard = () => {
               <DollarSign size={18} className="flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-xs opacity-80">Total Budget ({currency})</p>
-                <p className="font-semibold text-sm md:text-base truncate">
+                <p className="font-light md:font-semibold text-xs md:text-base max-w-xs">
                   {plan?.total_estimated_cost}
                 </p>
               </div>
@@ -310,12 +310,12 @@ const TripViewCard = () => {
                 ([key, value]) => (
                   <div
                     key={key}
-                    className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-700 gap-4"
+                    className="flex justify-center items-start flex-col  pb-2 border-b border-gray-200 dark:border-gray-700 gap-4"
                   >
                     <span className="capitalize font-medium text-gray-700 dark:text-gray-300 break-words">
                       {key}
                     </span>
-                    <span className="font-bold text-gray-900 dark:text-white whitespace-nowrap">
+                    <span className="font-bold text-gray-900 dark:text-white whitespace-wrap">
                       {value}
                     </span>
                   </div>

@@ -2243,6 +2243,7 @@ export default function AIAssistantPage() {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
       if (SpeechRecognition) {
+        console.log("hi")
         const recognition = new SpeechRecognition()
         recognition.continuous = false
         recognition.lang = 'en-US'
