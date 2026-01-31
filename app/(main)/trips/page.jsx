@@ -223,7 +223,7 @@ export default function SavedTripsPage() {
                     </div>
 
                     <Link
-                      href={`/saved/${trip.id}`}
+                      href={`/trips/${trip.id}`}
                       className=" px-6 py-3 w-full  text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                     >
                       View Details
