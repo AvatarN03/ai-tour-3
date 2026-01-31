@@ -111,7 +111,7 @@ export default function SavedTripsPage() {
             Manage and explore travel plans
           </p>
         </div>
-        <Link href="/saved/create-trip">
+        <Link href="/trips/create-trip">
           <Button className="w-full sm:w-auto cursor-pointer">
             + Create New Trip
           </Button>

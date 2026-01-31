@@ -171,7 +171,7 @@ const TripViewCard = () => {
     try {
       await deleteDoc(doc(db, "trips", tripId));
       toast.success("Trip deleted successfully!");
-      router.push("/saved");
+      router.push("/trips");
     } catch (error) {
       toast.error("Error deleting trip: " + error.message);
     }
