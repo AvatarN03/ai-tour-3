@@ -92,17 +92,17 @@ const AboutSection = () => {
           </motion.p>
 
           <motion.div
-          initial={{
-            opacity:0,
-            y:100
-          }}
-          transition={{
-            delay:2
-          }}
-            
+            initial={{
+              opacity: 0,
+              y: 100
+            }}
+            transition={{
+              delay: 2
+            }}
+
             whileInView={{
-              y:0,
-              opacity:1
+              y: 0,
+              opacity: 1
             }}
             className="flex-1 relative"
           >
@@ -114,7 +114,7 @@ const AboutSection = () => {
                   className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-indigo-950 w-full max-w-3xl  justify-between even:flex-row-reverse gap-2 rounded-lg p-4  shadow-lg relative z-30 group"
                 >
 
-                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[100px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-14 z-0"/>
+                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[100px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-14 z-0" />
                   {/* Circle Image */}
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
@@ -140,6 +140,7 @@ const AboutSection = () => {
                     <motion.div variants={linkVariants} className="flex gap-3 group-odd:justify-end">
                       <motion.a
                         href={member.linkedin}
+                        target={"_blank"}
                         whileHover={{ scale: 1.2, rotate: 5 }}
                         className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition-colors shadow-md"
                       >
@@ -147,17 +148,21 @@ const AboutSection = () => {
                       </motion.a>
                       <motion.a
                         href={member.github}
+                        target={"_blank"}
+
                         whileHover={{ scale: 1.2, rotate: -5 }}
                         className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-900 flex items-center justify-center text-white transition-colors shadow-md"
                       >
-                        <Github  />
+                        <Github />
                       </motion.a>
                       <motion.a
                         href={`mailto:${member.email}`}
+                        target={"_blank"}
+
                         whileHover={{ scale: 1.2, rotate: 5 }}
                         className="w-8 h-8 rounded-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center text-white transition-colors shadow-md"
                       >
-                        <Mail  />
+                        <Mail />
                       </motion.a>
                     </motion.div>
                   </motion.div>

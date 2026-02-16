@@ -12,7 +12,7 @@ export const WeatherProvider = ({ children }) => {
   const [isSearching, setIsSearching] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
-  // 🌍 Load weather from localStorage on mount
+  // 🌍 Load weather from sessionStorage on mount
   useEffect(() => {
     const savedWeather = localStorage.getItem("weather");
     if (savedWeather) {
@@ -27,10 +27,10 @@ export const WeatherProvider = ({ children }) => {
     // Also fetch current location weather as fallback or initial load
   }, []);
 
-  // 🌍 Save weather to localStorage whenever it changes
+  // 🌍 Save weather to sessionStorage whenever it changes
   useEffect(() => {
     if (weather) {
-      localStorage.setItem("weather", JSON.stringify(weather));
+      sessionStorage.setItem("weather", JSON.stringify(weather));
     }
   }, [weather]);
 
@@ -56,7 +56,7 @@ export const WeatherProvider = ({ children }) => {
         try {
           const res = await getWeatherByCoords(lat, lon);
           setWeather(res);
-          localStorage.setItem("weather", JSON.stringify(res)); // Update localStorage
+          sessionStorage.setItem("weather", JSON.stringify(res)); // Update sessionStorage
           toast.success("Location updated successfully!");
         } catch (err) {
           toast.error("Failed to fetch weather data");
@@ -83,7 +83,7 @@ export const WeatherProvider = ({ children }) => {
     try {
       const res = await getWeatherByCity(city);
       setWeather(res);
-      localStorage.setItem("ai-weather", JSON.stringify(res)); // Update localStorage
+      sessionStorage.setItem("weather", JSON.stringify(res)); // Update sessionStorage
       toast.success(`Weather data loaded for ${city}`);
     } catch (err) {
       toast.error("City not found. Please try another city.");
