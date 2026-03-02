@@ -179,7 +179,7 @@ export default function DashboardPage() {
 
       {/* Recent Activity */}
       <div>
-        <Card className="p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-200 dark:border-gray-700">
+        <div className="p-4 md:p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-white" />
@@ -196,7 +196,7 @@ export default function DashboardPage() {
           </div>
 
           <RecentActivity userId={profile?.uid || user.userId} />
-        </Card>
+        </div>
       </div>
     </div>
   );

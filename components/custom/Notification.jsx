@@ -39,7 +39,7 @@ export const Notification = ({ children }) => {
             </PopoverTrigger>
 
             <PopoverContent
-                className="w-64 h-104 overflow-y-auto p-2 rounded-md bg-slate-50 dark:bg-card scrollbar-gradient"
+                className="w-auto md:w-64 h-104 overflow-y-auto p-2 rounded-md bg-slate-50 dark:bg-card scrollbar-gradient"
             >
                 {loading ? (
                     <div className="flex justify-center items-center">

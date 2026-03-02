@@ -27,7 +27,7 @@ export default function RecentActivity({ userId }) {
     }, [userId]);
 
     return (
-        <div className="w-full max-w-3xl mx-auto p-6">
+        <div className="w-full p-2">
            
 
             {/* Loading State */}
@@ -69,25 +69,25 @@ export default function RecentActivity({ userId }) {
                         return (
                             <div
                                 key={activity.id || index}
-                                className="group bg-card rounded-xl border border-gray-200 p-4 hover:shadow-lg hover:border-gray-300 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
+                                className="group bg-card w-full rounded-md  p-4  hover:shadow-lg hover:border-gray-300 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
-                                <div className="flex items-start gap-4">
-                                    {/* Icon */}
+                                <div className="flex items-start gap-4 relative">
+                                   
                                     <div
-                                        className={`flex-shrink-0 w-12 h-12 rounded-xl border flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
+                                        className={`flex-shrink-0 w-8 h-8 rounded-xl border flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
                                     >
                                         <Icon className="w-5 h-5" />
                                     </div>
 
-                                    {/* Content */}
+                                   
                                     <div className="flex-1 min-w-0">
-                                        {/* Activity Description */}
+                                       
                                         <p className="text-base font-medium dark:text-gray-200 text-gray-900 mb-1">
                                             {formatActivity(activity)}
                                         </p>
 
-                                        {/* Metadata */}
+                                        
                                         <div className="flex items-center gap-4 text-sm text-gray-500">
                                             <div className="flex items-center gap-1">
                                                 <Clock className="w-3.5 h-3.5" />
@@ -108,7 +108,7 @@ export default function RecentActivity({ userId }) {
                                             </span>
                                         </div>
 
-                                        {/* Full timestamp on hover */}
+                                        
                                         <p className="text-xs text-gray-400 mt-2  transition-opacity">
                                             {timestamp.toLocaleString("en-US", {
                                                 dateStyle: "medium",
@@ -117,8 +117,8 @@ export default function RecentActivity({ userId }) {
                                         </p>
                                     </div>
 
-                                    {/* Action Badge */}
-                                    <div className="flex-shrink-0">
+                                  
+                                    <div className="absolute bottom-0 right-0">
                                         <span
                                             className={`text-xs font-semibold px-3 py-1 rounded-full ${colorClass}`}
                                         >
