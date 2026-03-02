@@ -18,14 +18,19 @@ import TripRecommendations from "@/components/features/dashboard/Recommendation"
 import LocationAccess from "@/hooks/LocationAccess";
 
 import { dashboardQuickstarts } from "@/lib/utils/constant";
+import RecentActivity from "@/components/features/dashboard/RecentActivity";
+import { useAuth } from "@/providers/useAuth";
 
 export default function DashboardPage() {
+
+  const { profile, user } = useAuth();
+
   return (
     <div className="space-y-8 pb-8">
       {/* Page Header with Enhanced Design */}
       <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 p-5 md:p-10">
-        <div className="absolute inset-0 bg-black/10"/>
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl"/>
+        <div className="absolute inset-0 bg-black/10" />
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
 
         <div className="relative flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
           <div className="flex-1">
@@ -179,56 +184,18 @@ export default function DashboardPage() {
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-white" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Recent Activity
-            </h3>
+            <div className="flex flex-col gap-1">
+
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Recent Activity
+              </h3>
+              <p className="text-sm text-gray-500 mt-1">
+                Your latest actions and updates
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-4">
-            {[
-              {
-                text: 'Created new trip "Weekend in Paris"',
-                time: "2 hours ago",
-                icon: Plane,
-                bgColor: "bg-blue-50 dark:bg-blue-900/30",
-                iconColor: "text-blue-600 dark:text-blue-400",
-              },
-              {
-                text: 'Saved destination "Eiffel Tower" to favorites',
-                time: "1 day ago",
-                icon: Save,
-                bgColor: "bg-green-50 dark:bg-green-900/30",
-                iconColor: "text-green-600 dark:text-green-400",
-              },
-              {
-                text: 'Received AI recommendation for "Beach Getaway"',
-                time: "3 days ago",
-                icon: Bot,
-                bgColor: "bg-purple-50 dark:bg-purple-900/30",
-                iconColor: "text-purple-600 dark:text-purple-400",
-              },
-            ].map((activity, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-4 group hover:bg-white dark:hover:bg-gray-700 p-4 rounded-xl transition-all"
-              >
-                <div
-                  className={`w-10 h-10 ${activity.bgColor} rounded-lg flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}
-                >
-                  <activity.icon className={`w-5 h-5 ${activity.iconColor}`} />
-                </div>
-                <div className="flex-1">
-                  <p className="text-gray-900 dark:text-white font-medium">
-                    {activity.text}
-                  </p>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-1">
-                    <Clock className="w-3 h-3" />
-                    {activity.time}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <RecentActivity userId={profile?.uid || user.userId} />
         </Card>
       </div>
     </div>

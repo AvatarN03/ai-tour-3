@@ -19,6 +19,7 @@ import {
   Timestamp
 } from 'firebase/firestore'
 import { useAuth } from '@/providers/useAuth'
+import { logActivity } from '@/lib/services/logActivity'
 
 // ============= UTILITY FUNCTIONS =============
 const renderContent = (content) => {
@@ -34,9 +35,9 @@ const renderContent = (content) => {
 const formatDate = (dateObj) => {
   if (!dateObj) return 'Unknown date'
   const date = dateObj instanceof Date ? dateObj : new Date(dateObj)
-  return date.toLocaleDateString('en-US', { 
-    year: 'numeric', 
-    month: 'short', 
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit'
@@ -45,10 +46,10 @@ const formatDate = (dateObj) => {
 
 // ============= CREATE POST COMPONENT =============
 function CreatePost({ onBack, onPostCreated }) {
-  const [post, setPost] = useState({ 
-    title: '', 
-    content: '', 
-    category: '', 
+  const [post, setPost] = useState({
+    title: '',
+    content: '',
+    category: '',
     imageUrl: '',
     imagePreview: null
   })
@@ -67,18 +68,18 @@ function CreatePost({ onBack, onPostCreated }) {
   const formatText = (tag) => {
     const textarea = document.getElementById('post-content')
     if (!textarea) return
-    
+
     const start = textarea.selectionStart
     const end = textarea.selectionEnd
     const selectedText = textarea.value.substring(start, end)
-    
+
     if (!selectedText) {
       alert('Please select some text first')
       return
     }
 
     let formattedText = ''
-    switch(tag) {
+    switch (tag) {
       case 'bold':
         formattedText = `**${selectedText}**`
         break
@@ -96,7 +97,7 @@ function CreatePost({ onBack, onPostCreated }) {
 
     const newContent = post.content.substring(0, start) + formattedText + post.content.substring(end)
     setPost({ ...post, content: newContent })
-    
+
     setTimeout(() => {
       textarea.focus()
       textarea.setSelectionRange(start, start + formattedText.length)
@@ -105,7 +106,7 @@ function CreatePost({ onBack, onPostCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!post.title.trim() || !post.content.trim() || !post.category) {
       alert('Please fill all required fields')
       return
@@ -120,12 +121,12 @@ function CreatePost({ onBack, onPostCreated }) {
 
     try {
       let uploadedImageUrl = ''
-      
+
       // Upload image if exists
       if (post.imageUrl && post.imageUrl instanceof File) {
         const formData = new FormData()
         formData.append("file", post.imageUrl)
-        
+
         const res = await fetch("/api/media/upload", {
           method: "POST",
           body: formData,
@@ -140,7 +141,7 @@ function CreatePost({ onBack, onPostCreated }) {
       }
 
       const postId = `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
+
       const postData = {
         title: post.title.trim(),
         content: post.content.trim(),
@@ -154,7 +155,14 @@ function CreatePost({ onBack, onPostCreated }) {
 
       // Add post to Firestore
       await setDoc(doc(db, 'blog_posts', postId), postData)
-      
+      await logActivity({
+        userId: profile?.uid,
+        action: "CREATE",
+        entity: "BLOG",
+        entityId: postId,
+        metadata: { tripName: postData.title.trim() },
+      });
+
       // Initialize empty comments document
       await setDoc(doc(db, 'blog_comments', postId), { comments: [] })
 
@@ -171,8 +179,8 @@ function CreatePost({ onBack, onPostCreated }) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={onBack}
         className="flex items-center gap-2"
       >
@@ -184,7 +192,7 @@ function CreatePost({ onBack, onPostCreated }) {
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Create New Post
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -198,7 +206,7 @@ function CreatePost({ onBack, onPostCreated }) {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
               Category *
@@ -249,7 +257,7 @@ function CreatePost({ onBack, onPostCreated }) {
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
               Content *
             </label>
-            
+
             {/* Text Formatting Toolbar */}
             <div className="flex gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-t-md border border-b-0">
               <button
@@ -293,16 +301,16 @@ function CreatePost({ onBack, onPostCreated }) {
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="bg-green-600 hover:bg-green-700 flex-1"
             >
               {isSubmitting ? 'Publishing...' : 'Publish Post'}
             </Button>
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
+              variant="outline"
               onClick={onBack}
               disabled={isSubmitting}
             >
@@ -317,20 +325,21 @@ function CreatePost({ onBack, onPostCreated }) {
 
 // ============= EDIT POST COMPONENT =============
 function EditPost({ post, onBack, onPostUpdated }) {
-  const [editedPost, setEditedPost] = useState({ 
+  const [editedPost, setEditedPost] = useState({
     ...post,
     imagePreview: post.imageUrl || null,
     newImageFile: null
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const { profile } = useAuth()
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]
     if (file && file.type.startsWith('image/')) {
-      setEditedPost({ 
-        ...editedPost, 
-        newImageFile: file, 
-        imagePreview: URL.createObjectURL(file) 
+      setEditedPost({
+        ...editedPost,
+        newImageFile: file,
+        imagePreview: URL.createObjectURL(file)
       })
     } else {
       alert('Please select a valid image file')
@@ -340,18 +349,18 @@ function EditPost({ post, onBack, onPostUpdated }) {
   const formatText = (tag) => {
     const textarea = document.getElementById('edit-content')
     if (!textarea) return
-    
+
     const start = textarea.selectionStart
     const end = textarea.selectionEnd
     const selectedText = textarea.value.substring(start, end)
-    
+
     if (!selectedText) {
       alert('Please select some text first')
       return
     }
 
     let formattedText = ''
-    switch(tag) {
+    switch (tag) {
       case 'bold':
         formattedText = `**${selectedText}**`
         break
@@ -369,7 +378,7 @@ function EditPost({ post, onBack, onPostUpdated }) {
 
     const newContent = editedPost.content.substring(0, start) + formattedText + editedPost.content.substring(end)
     setEditedPost({ ...editedPost, content: newContent })
-    
+
     setTimeout(() => {
       textarea.focus()
       textarea.setSelectionRange(start, start + formattedText.length)
@@ -378,7 +387,7 @@ function EditPost({ post, onBack, onPostUpdated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!editedPost.title.trim() || !editedPost.content.trim() || !editedPost.category) {
       alert('Please fill all required fields')
       return
@@ -388,12 +397,12 @@ function EditPost({ post, onBack, onPostUpdated }) {
 
     try {
       let finalImageUrl = editedPost.imageUrl || ''
-      
+
       // Upload new image if changed
       if (editedPost.newImageFile) {
         const formData = new FormData()
         formData.append("file", editedPost.newImageFile)
-        
+
         const res = await fetch("/api/upload", {
           method: "POST",
           body: formData,
@@ -416,6 +425,13 @@ function EditPost({ post, onBack, onPostUpdated }) {
       }
 
       await updateDoc(doc(db, 'blog_posts', post.id), updates)
+      await logActivity({
+        userId: profile?.uid,
+        action: "UPDATE",
+        entity: "BLOG",
+        entityId: post.id,
+        metadata: { postId: post.id },
+      });
 
       alert('Post updated successfully!')
       onPostUpdated()
@@ -430,8 +446,8 @@ function EditPost({ post, onBack, onPostUpdated }) {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={onBack}
         className="flex items-center gap-2"
       >
@@ -443,7 +459,7 @@ function EditPost({ post, onBack, onPostUpdated }) {
         <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
           Edit Post
         </h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
@@ -457,7 +473,7 @@ function EditPost({ post, onBack, onPostUpdated }) {
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
               Category *
@@ -508,7 +524,7 @@ function EditPost({ post, onBack, onPostUpdated }) {
             <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
               Content *
             </label>
-            
+
             {/* Text Formatting Toolbar */}
             <div className="flex gap-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-t-md border border-b-0">
               <button
@@ -549,16 +565,16 @@ function EditPost({ post, onBack, onPostUpdated }) {
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isSubmitting}
               className="bg-blue-600 hover:bg-blue-700 flex-1"
             >
               {isSubmitting ? 'Updating...' : 'Update Post'}
             </Button>
-            <Button 
+            <Button
               type="button"
-              variant="outline" 
+              variant="outline"
               onClick={onBack}
               disabled={isSubmitting}
             >
@@ -582,7 +598,7 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
 
   const handleAddComment = async (e) => {
     e.preventDefault()
-    
+
     if (!newComment.trim()) {
       alert('Comment cannot be empty')
       return
@@ -611,10 +627,24 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
         await updateDoc(commentRef, {
           comments: arrayUnion(comment)
         })
+        await logActivity({
+          userId: profile?.uid,
+          action: "UPDATE",
+          entity: "COMMENT",
+          entityId: post.id,
+          metadata: { postId: post.id, commentId: comment.id },
+        });
       } else {
         await setDoc(commentRef, {
           comments: [comment]
         })
+        await logActivity({
+          userId: profile?.uid,
+          action: "CREATE",
+          entity: "COMMENT",
+          entityId: post.id,
+          metadata: { postId: post.id, commentId: comment.id },
+        });
       }
 
       setNewComment('')
@@ -639,13 +669,20 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
     try {
       const commentRef = doc(db, 'blog_comments', post.id)
       const commentDoc = await getDoc(commentRef)
-      
+
       if (!commentDoc.exists()) return
 
       const existingComments = commentDoc.data().comments || []
       const updatedComments = existingComments.filter(c => c.id !== commentId)
-      
+
       await setDoc(commentRef, { comments: updatedComments })
+       await logActivity({
+        userId: profile?.uid,
+        action: "DELETE",
+        entity: "COMMENT",
+        entityId: post.id,
+        metadata: { postId: post.id, commentId: comment.id },
+      });
       onCommentDeleted(post.id, commentId)
     } catch (error) {
       console.error('Error deleting comment:', error)
@@ -658,8 +695,8 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={onBack}
         className="flex items-center gap-2"
       >
@@ -675,14 +712,14 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
             className="w-full h-96 object-cover"
           />
         )}
-        
+
         <div className="p-8 space-y-6">
           {/* Post Header */}
           <div>
             <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               {post.title}
             </h1>
-            
+
             <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400 mb-4">
               <span>✍️ {post.author}</span>
               <span>•</span>
@@ -725,7 +762,7 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
           {/* Post Content */}
           <div className="text-gray-700 dark:text-gray-300 prose dark:prose-invert max-w-none text-lg leading-relaxed">
             <div
-              dangerouslySetInnerHTML={{ 
+              dangerouslySetInnerHTML={{
                 __html: isExpanded || !shouldTruncate
                   ? renderContent(post.content)
                   : renderContent((post.content || '').substring(0, 300)) + '...'
@@ -758,7 +795,7 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
                 className="resize-none"
                 disabled={isSubmittingComment}
               />
-              <Button 
+              <Button
                 type="submit"
                 disabled={isSubmittingComment || !newComment.trim()}
                 className="bg-indigo-600 hover:bg-indigo-700"
@@ -773,7 +810,7 @@ function ViewPost({ post, comments, onBack, onEdit, onDelete, onCommentAdded, on
                 {postComments.map(comment => {
                   const isCommentOwner = comment.authorUid === currentUserUid
                   const canDeleteComment = isCommentOwner || isPostOwner
-                  
+
                   return (
                     <Card key={comment.id} className="p-4">
                       <p className="text-gray-700 dark:text-gray-300 mb-3">
@@ -830,7 +867,7 @@ export default function BlogPage() {
       setFilteredPosts(posts)
     } else {
       const query = searchQuery.toLowerCase()
-      const filtered = posts.filter(post => 
+      const filtered = posts.filter(post =>
         (post.title || '').toLowerCase().includes(query) ||
         (post.content || '').toLowerCase().includes(query) ||
         (post.category || '').toLowerCase().includes(query) ||
@@ -853,7 +890,7 @@ export default function BlogPage() {
           updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt ? new Date(data.updatedAt) : null)
         }
       })
-      
+
       postsData.sort((a, b) => b.createdAt - a.createdAt)
       setPosts(postsData)
       setFilteredPosts(postsData)
@@ -883,23 +920,30 @@ export default function BlogPage() {
     }
 
     if (!confirm('Are you sure you want to delete this post?')) return
-    
+
     try {
       await deleteDoc(doc(db, 'blog_posts', id))
       await deleteDoc(doc(db, 'blog_comments', id))
+       await logActivity({
+        userId: profile?.uid,
+        action: "DELETE",
+        entity: "BLOG",
+        entityId: id,
+        metadata: { postId: id },
+      });
 
       const newPosts = posts.filter(post => post.id !== id)
       const newComments = { ...comments }
       delete newComments[id]
-      
+
       setPosts(newPosts)
       setFilteredPosts(newPosts)
       setComments(newComments)
-      
+
       if (currentView === 'view') {
         setCurrentView('list')
       }
-      
+
       alert('Post deleted successfully!')
     } catch (error) {
       console.error('Error deleting post:', error)
@@ -934,7 +978,7 @@ export default function BlogPage() {
   if (currentView === 'create') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
-        <CreatePost 
+        <CreatePost
           onBack={() => setCurrentView('list')}
           onPostCreated={loadData}
         />
@@ -945,7 +989,7 @@ export default function BlogPage() {
   if (currentView === 'edit' && selectedPost) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
-        <EditPost 
+        <EditPost
           post={selectedPost}
           onBack={() => {
             setCurrentView('list')
@@ -960,7 +1004,7 @@ export default function BlogPage() {
   if (currentView === 'view' && selectedPost) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
-        <ViewPost 
+        <ViewPost
           post={selectedPost}
           comments={comments}
           currentUserUid={profile?.uid}
@@ -1022,7 +1066,7 @@ export default function BlogPage() {
 
         {/* New Post Button */}
         <div className="flex justify-end">
-          <Button 
+          <Button
             onClick={() => setCurrentView('create')}
             className="bg-indigo-600 hover:bg-indigo-700"
           >
@@ -1040,8 +1084,8 @@ export default function BlogPage() {
             </Card>
           ) : (
             filteredPosts.map((post) => (
-              <Card 
-                key={post.id} 
+              <Card
+                key={post.id}
                 className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
                 onClick={() => {
                   setSelectedPost(post)
@@ -1058,7 +1102,7 @@ export default function BlogPage() {
                       />
                     </div>
                   )}
-                  
+
                   <div className={`p-6 ${post.imageUrl ? 'md:w-2/3' : 'w-full'}`}>
                     <div className="space-y-3">
                       {/* Post Header */}
@@ -1079,7 +1123,7 @@ export default function BlogPage() {
                       {/* Post Preview */}
                       <div className="text-gray-700 dark:text-gray-300">
                         <div
-                          dangerouslySetInnerHTML={{ 
+                          dangerouslySetInnerHTML={{
                             __html: renderContent((post.content || '').substring(0, 150)) + ((post.content || '').length > 150 ? '...' : '')
                           }}
                         />
@@ -1091,7 +1135,7 @@ export default function BlogPage() {
                           <MessageCircle className="w-4 h-4" />
                           <span>{(comments[post.id] || []).length} comments</span>
                         </div>
-                        
+
                         {/* Only show edit/delete buttons if user is post owner */}
                         {post.authorUid === profile?.uid && (
                           <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>

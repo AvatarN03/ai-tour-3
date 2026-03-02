@@ -27,6 +27,7 @@ import { preferenceColors } from "@/lib/utils/constant";
 import { formatDate } from "@/lib/utils/utils";
 import { db } from "@/lib/config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import { logActivity } from "@/lib/services/logActivity";
 
 const ProfileCard = ({ modal, setModal }) => {
   const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();
@@ -36,7 +37,7 @@ const ProfileCard = ({ modal, setModal }) => {
   const [editPrefs, setEditPrefs] = useState(false);
   const [prefs, setPrefs] = useState([]);
   const [savingPrefs, setSavingPrefs] = useState(false);
-  
+
   // Stats state
   const [stats, setStats] = useState({
     trips: 0,
@@ -138,6 +139,15 @@ const ProfileCard = ({ modal, setModal }) => {
 
         // Use context function to update profile picture
         await updateProfilePicture(data.url);
+        await logActivity({
+          userId: profile?.uid,
+          action: "UPDATE",
+          entity: "FILE",
+          entityId: profile?.uid,
+          metadata: {
+            imageUrl: downloadURL,
+          },
+        });
 
         toast.success("Profile picture updated!");
       } catch (err) {
@@ -274,10 +284,9 @@ const ProfileCard = ({ modal, setModal }) => {
                         {prefs.map((pref) => (
                           <div
                             key={pref}
-                            className={`px-3 py-1.5 rounded-full bg-gradient-to-r ${
-                              preferenceColors[pref] ||
+                            className={`px-3 py-1.5 rounded-full bg-gradient-to-r ${preferenceColors[pref] ||
                               "from-gray-500 to-gray-600"
-                            } text-white text-sm font-medium shadow-sm flex items-center gap-1.5`}
+                              } text-white text-sm font-medium shadow-sm flex items-center gap-1.5`}
                           >
                             {pref}
                             <button
@@ -347,9 +356,8 @@ const ProfileCard = ({ modal, setModal }) => {
                   {profile?.preferences?.map((pref) => (
                     <div
                       key={pref}
-                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${
-                        preferenceColors[pref] || "from-gray-500 to-gray-600"
-                      } text-white text-sm font-medium shadow-md`}
+                      className={`px-4 py-2 rounded-full bg-gradient-to-r ${preferenceColors[pref] || "from-gray-500 to-gray-600"
+                        } text-white text-sm font-medium shadow-md`}
                     >
                       {pref}
                     </div>

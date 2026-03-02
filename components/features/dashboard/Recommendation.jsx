@@ -11,6 +11,7 @@ import { useAuth } from "@/providers/useAuth";
 import { db } from "@/lib/config/firebase";
 import { useRouter } from "next/navigation";
 import { getTripCategoryEmoji, getTripCategoryIcon } from "@/lib/utils/utils";
+import { logActivity } from "@/lib/services/logActivity";
 
 export default function TripRecommendations() {
   const { user, profile } = useAuth();
@@ -54,6 +55,13 @@ export default function TripRecommendations() {
       });
       toast.success("Trip saved successfully!");
       fetchRecommendations();
+      await logActivity({
+        userId: profile?.uid,
+        action: "CREATE",
+        entity: "TRIP",
+        entityId: tripId,
+        metadata: { tripId },
+      });
       router.push(`/trips/${tripId}`);
     } catch (error) {
       toast.error("Failed to save trip");
@@ -91,16 +99,16 @@ export default function TripRecommendations() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {recommendations.map((trip) => ( 
-              <div
-                key={trip.id}
-                className="group relative bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-purple-500/30"
-              >
-                <div className="relative h-28 overflow-hidden bg-gradient-to-br dark:from-purple-600 from-purple-200 to-purple-100 flex-col">
-                  <div className="w-full h-full flex items-center justify-center text-6xl flex-col gap-1">
-                    {getTripCategoryEmoji(trip.category)}
-                    <p className="text-sm font-bold p-1 rounded-md bg-purple-600 text-white">{trip.category}</p>
-                  </div>
+          {recommendations.map((trip) => (
+            <div
+              key={trip.id}
+              className="group relative bg-white dark:bg-card rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 hover:shadow-purple-500/30"
+            >
+              <div className="relative h-28 overflow-hidden bg-gradient-to-br dark:from-purple-600 from-purple-200 to-purple-100 flex-col">
+                <div className="w-full h-full flex items-center justify-center text-6xl flex-col gap-1">
+                  {getTripCategoryEmoji(trip.category)}
+                  <p className="text-sm font-bold p-1 rounded-md bg-purple-600 text-white">{trip.category}</p>
+                </div>
 
                 <div className="absolute top-4 right-4 dark:bg-slate-700 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
                   {trip.duration}
@@ -178,9 +186,9 @@ export default function TripRecommendations() {
                 </div>
               )}
             </div>
-            
+
           ))}
-      </div>
+        </div>
       )}
     </div>
   );

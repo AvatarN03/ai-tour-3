@@ -23,7 +23,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 import { useAuth } from "@/providers/useAuth";
 
@@ -53,7 +53,7 @@ export default function Auth() {
 
   useEffect(() => {
     if (user) {
-      router.push(continueTo || "/");
+      router.push(continueTo || "/dashboard");
     }
   }, []);
 
@@ -73,20 +73,29 @@ export default function Auth() {
       setLoading(true);
       setError("");
       const result = await signInWithPopup(auth, new GoogleAuthProvider());
-      await setDoc(
-        doc(db, "users", result.user.uid),
-        {
-          uid: result.user.uid,
-          email: result.user.email,
-          name: result.user.displayName || "NA",
-          avatarUrl: result.user.photoURL || "",
+      const user = result.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+
+      if (userSnap.exists()) {
+        // ✅ User already exists
+        toast.success("Welcome back!");
+        router.push(continueTo);
+      } else {
+        // 🆕 New user → create document
+        await setDoc(userRef, {
+          uid: user.uid,
+          email: user.email,
+          name: user.displayName || "NA",
+          avatarUrl: user.photoURL || "",
           preferences: [],
           createdAt: new Date(),
-        },
-        { merge: true },
-      );
-      toast.success("Signed in successfully!");
-      router.push(`/preferences?continueTo=${continueTo}`);
+        });
+
+        toast.success("Account created successfully!");
+        router.push(`/preferences?continueTo=${continueTo}`);
+      }
     } catch (error) {
       setError(error.message);
       toast.error("Error logging in with Google");
@@ -118,15 +127,15 @@ export default function Auth() {
       setError("");
       const result = isLogin
         ? await signInWithEmailAndPassword(
-            auth,
-            formData.email,
-            formData.password,
-          )
+          auth,
+          formData.email,
+          formData.password,
+        )
         : await createUserWithEmailAndPassword(
-            auth,
-            formData.email,
-            formData.password,
-          );
+          auth,
+          formData.email,
+          formData.password,
+        );
 
       if (!isLogin) {
         await setDoc(doc(db, "users", result.user.uid), {
@@ -179,15 +188,13 @@ export default function Auth() {
           >
             <span className="text-gray-700 dark:text-gray-300">
               {formData.preferences.length > 0
-                ? `${formData.preferences.length} interest${
-                    formData.preferences.length !== 1 ? "s" : ""
-                  } selected`
+                ? `${formData.preferences.length} interest${formData.preferences.length !== 1 ? "s" : ""
+                } selected`
                 : "Select your interests"}
             </span>
             <ChevronDown
-              className={`h-5 w-5 text-gray-400 transition-transform ${
-                showDropdown ? "rotate-180" : ""
-              }`}
+              className={`h-5 w-5 text-gray-400 transition-transform ${showDropdown ? "rotate-180" : ""
+                }`}
             />
           </button>
           {showDropdown && (
@@ -197,11 +204,10 @@ export default function Auth() {
                   key={pref}
                   type="button"
                   onClick={() => togglePreference(pref)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all ${
-                    formData.preferences.includes(pref)
+                  className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all ${formData.preferences.includes(pref)
                       ? "bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white"
                       : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center justify-between">
                     <span>{pref}</span>
@@ -238,11 +244,10 @@ export default function Auth() {
               key={pref}
               type="button"
               onClick={() => togglePreference(pref)}
-              className={`py-2.5 px-3 rounded-xl text-sm font-medium transition-all transform hover:scale-105 ${
-                formData.preferences.includes(pref)
+              className={`py-2.5 px-3 rounded-xl text-sm font-medium transition-all transform hover:scale-105 ${formData.preferences.includes(pref)
                   ? "bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white shadow-lg"
                   : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-400"
-              }`}
+                }`}
             >
               {pref}
             </button>

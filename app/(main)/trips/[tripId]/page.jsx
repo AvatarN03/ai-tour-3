@@ -30,6 +30,7 @@ import { useAuth } from "@/providers/useAuth";
 import Hotels from "../../../../components/features/trips/Hotels";
 import ItineraryDay from "../../../../components/features/trips/ItineraryDay";
 import { ViewTripLoading } from "@/components/custom/Loading";
+import { logActivity } from "@/lib/services/logActivity";
 
 const printStyles = `
 @media print {
@@ -170,6 +171,13 @@ const TripViewCard = () => {
 
     try {
       await deleteDoc(doc(db, "trips", tripId));
+      await logActivity({
+        userId: profile?.uid,
+        action: "DELETE",
+        entity: "TRIP",
+        entityId: tripId,
+        metadata: { tripName: tripData.title },
+      });
       toast.success("Trip deleted successfully!");
       router.push("/trips");
     } catch (error) {

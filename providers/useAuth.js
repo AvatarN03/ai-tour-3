@@ -5,13 +5,12 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import Loading from "@/components/custom/Loading";
-import { toast } from "sonner";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);      // Firebase Auth user
-  const [profile, setProfile] = useState(null); // Firestore user profile
+  const [user, setUser] = useState(null);     
+  const [profile, setProfile] = useState(null); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,7 +19,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
 
       if (authUser) {
-        // Fetch Firestore user profile
+       
         try {
           const docRef = doc(db, "users", authUser.uid);
           const docSnap = await getDoc(docRef);
@@ -91,28 +90,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Generic update profile function (optional - for other fields)
-  // const updateProfile = async (updates) => {
-  //   if (!user) {
-  //     throw new Error("No user logged in");
-  //   }
-
-  //   try {
-  //     const userDocRef = doc(db, "users", user.uid);
-  //     await updateDoc(userDocRef, updates);
-      
-  //     // Update local profile state
-  //     setProfile((prev) => ({
-  //       ...prev,
-  //       ...updates,
-  //     }));
-
-  //     return { success: true };
-  //   } catch (error) {
-  //     console.error("Error updating profile:", error);
-  //     throw error;
-  //   }
-  // };
 
   if (loading) {
     return <Loading />;

@@ -14,6 +14,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import LanguageSelector from "./LanguageSelector";
 import PageSearch from "./PageSearch";
+import { Notification } from "./Notification";
 
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const pathname = usePathname();
@@ -24,7 +25,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
     const paths = pathname.split("/").filter(Boolean);
     const breadcrumbs = [];
     let currentPath = "";
-    
+
     paths.forEach((path, index) => {
       currentPath += `/${path}`;
       const label = path
@@ -130,14 +131,14 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             </motion.button>
 
             {/* Notifications */}
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="relative p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300"
-            >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-900"></span>
-            </motion.button>
+            <Notification>
+              <button
+                className="relative p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300 cursor-pointer"
+              >
+                <Bell className="w-5 h-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-900"></span>
+              </button>
+            </Notification>
 
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -149,9 +150,9 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
       </motion.div>
 
       {/* Page Search Component (Ctrl+F style) */}
-      <PageSearch 
-        isOpen={showPageSearch} 
-        onClose={() => setShowPageSearch(false)} 
+      <PageSearch
+        isOpen={showPageSearch}
+        onClose={() => setShowPageSearch(false)}
       />
     </>
   );

@@ -33,7 +33,6 @@ const layout = ({ children }) => {
     if (profile && profile?.preferences.length === 0) {
       router.push(`/preferences?dashboard`);
     }
-    console.log(profile?.preferences)
   }, [profile, router, pathname]);
 
   if (user) {

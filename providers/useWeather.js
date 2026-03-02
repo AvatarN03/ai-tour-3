@@ -14,7 +14,7 @@ export const WeatherProvider = ({ children }) => {
 
   // 🌍 Load weather from sessionStorage on mount
   useEffect(() => {
-    const savedWeather = localStorage.getItem("weather");
+    const savedWeather = sessionStorage.getItem("weather");
     if (savedWeather) {
       try {
         setWeather(JSON.parse(savedWeather));
