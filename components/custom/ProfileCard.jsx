@@ -19,6 +19,8 @@ import {
   Edit2,
   X,
   Loader2,
+  CreditCard,
+  Crown,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getUserInitials } from "@/lib/utils/nameInitial";
@@ -240,12 +242,27 @@ const ProfileCard = ({ modal, setModal }) => {
           {/* User Info */}
           <div className="mt-4">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {profile?.name}
+              @{profile?.username}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5 mt-1">
               <Mail className="w-4 h-4" />
               {profile?.email}
             </p>
+          </div>
+
+          <div className="absolute top-1/2 translate-y-1/2 right-4  bg-gray-800 rounded-full px-3 py-2 shadow-md">
+            {profile?.subscription === "pro" ? (
+              <div className="flex items-center gap-1">
+                <Crown className="w-5 h-5 text-yellow-600" />
+                <span className="ml-1 text-sm font-medium text-yellow-600">Pro</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-1">
+                <CreditCard className="w-5 h-5 text-yellow-600" />
+
+                <span className="ml-1 text-sm font-medium text-gray-300 dark:text-gray-300">Free</span>
+              </div>
+            )}
           </div>
         </div>
 

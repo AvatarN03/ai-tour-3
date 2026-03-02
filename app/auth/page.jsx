@@ -14,6 +14,7 @@ import {
   User,
   Sparkles,
   ChevronDown,
+  AtSign,
 } from "lucide-react";
 
 import {
@@ -23,7 +24,7 @@ import {
   createUserWithEmailAndPassword,
   updateProfile,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
 
 import { useAuth } from "@/providers/useAuth";
 
@@ -112,8 +113,8 @@ export default function Auth() {
       return;
     }
 
-    if (!isLogin && !formData.name) {
-      toast.error("Please enter your full name");
+    if (!isLogin && !formData.name && !formData.username) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -138,13 +139,33 @@ export default function Auth() {
         );
 
       if (!isLogin) {
-        await setDoc(doc(db, "users", result.user.uid), {
-          uid: result.user.uid,
-          email: result.user.email,
-          name: formData.name,
-          avatarUrl: formData.avatarUrl,
-          preferences: formData.preferences,
-          createdAt: new Date(),
+        const username = formData.username.toLowerCase().trim();
+
+        await runTransaction(db, async (transaction) => {
+          const userRef = doc(db, "users", result.user.uid);
+          const usernameRef = doc(db, "usernames", username);
+
+          const usernameSnap = await transaction.get(usernameRef);
+
+          if (usernameSnap.exists()) {
+            throw new Error("Username already taken");
+          }
+
+          transaction.set(usernameRef, {
+            uid: result.user.uid,
+          });
+
+          transaction.set(userRef, {
+            uid: result.user.uid,
+            email: result.user.email,
+            name: formData.name,
+            username,
+            subscription: "free",
+            avatarUrl: formData.avatarUrl,
+            preferences: formData.preferences,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
         });
         toast.success("Account created successfully!");
       } else {
@@ -205,8 +226,8 @@ export default function Auth() {
                   type="button"
                   onClick={() => togglePreference(pref)}
                   className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all ${formData.preferences.includes(pref)
-                      ? "bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white"
-                      : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    ? "bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
                 >
                   <div className="flex items-center justify-between">
@@ -245,8 +266,8 @@ export default function Auth() {
               type="button"
               onClick={() => togglePreference(pref)}
               className={`py-2.5 px-3 rounded-xl text-sm font-medium transition-all transform hover:scale-105 ${formData.preferences.includes(pref)
-                  ? "bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white shadow-lg"
-                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-400"
+                ? "bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white shadow-lg"
+                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-400"
                 }`}
             >
               {pref}
@@ -262,6 +283,27 @@ export default function Auth() {
       )}
     </div>
   );
+
+  const checkUsername = async () => {
+    const username = formData.username.toLowerCase().trim();
+
+
+    try {
+      const usernameRef = doc(db, "usernames", username);
+      const snapshot = await getDoc(usernameRef);
+
+      if (snapshot.exists()) {
+        toast.error("username is already taken")
+        formData.username = "";
+        return;
+      }
+      toast.success("Valid username")
+
+    } catch (error) {
+      console.error("Error checking username:", error);
+      return false;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-400 to-purple-500 dark:from-gray-900 dark:via-purple-900/20 dark:to-violet-900/20 flex items-center justify-center p-4">
@@ -384,6 +426,27 @@ export default function Auth() {
                       value={formData.name}
                       onChange={(e) => updateForm("name", e.target.value)}
                       placeholder="Enter your full name"
+                      required
+                      className="pl-10 h-12"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="username-mobile"
+                    className="text-sm font-semibold"
+                  >
+                    Username <span className="text-red-500">*</span>
+                  </Label>
+                  <div className="relative">
+                    <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
+                      onBlur={checkUsername}
+                      id="username-mobile"
+                      type="text"
+                      value={formData.username}
+                      onChange={(e) => updateForm("username", e.target.value)}
+                      placeholder="Enter unique username"
                       required
                       className="pl-10 h-12"
                     />
@@ -574,6 +637,27 @@ export default function Auth() {
                         value={formData.name}
                         onChange={(e) => updateForm("name", e.target.value)}
                         placeholder="Enter your full name"
+                        required
+                        className="pl-10 h-12"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      htmlFor="username-mobile"
+                      className="text-sm font-semibold"
+                    >
+                      Username <span className="text-red-500">*</span>
+                    </Label>
+                    <div className="relative">
+                      <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                      <Input
+                        onBlur={checkUsername}
+                        id="username-mobile"
+                        type="text"
+                        value={formData.username}
+                        onChange={(e) => updateForm("username", e.target.value)}
+                        placeholder="Enter unique username"
                         required
                         className="pl-10 h-12"
                       />
