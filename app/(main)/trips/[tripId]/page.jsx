@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
-import { arrayUnion, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayUnion, deleteDoc, doc, getDoc, increment, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/config/firebase";
 import { useAuth } from "@/providers/useAuth";
 import Hotels from "../../../../components/features/trips/Hotels";
@@ -47,7 +47,7 @@ const TripViewCard = () => {
   const { tripId } = useParams();
   const [plan, setPlanData] = useState(null);
   const [createdUser, setCreatedUser] = useState(null);
-  const { user } = useAuth();
+  const { profile, user, setProfile } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const TripViewCard = () => {
 
       if (!docSnap.exists()) {
         toast.error("❌ No such document!");
-        router.replace("/saved");
+        router.replace("/trips");
         return;
       }
       setPlanData(docSnap.data().GeneratedPlan);
@@ -80,7 +80,7 @@ const TripViewCard = () => {
 
       if (!user) {
         router.replace(
-          `/auth?redirect=${encodeURIComponent("/saved/" + tripId)}`
+          `/auth?redirect=${encodeURIComponent("/trips/" + tripId)}`
         );
       }
       const tripRef = doc(db, "trips", tripId);
@@ -88,7 +88,7 @@ const TripViewCard = () => {
         savedBy: arrayUnion(user.email),
       });
       toast.success("Trip saved to your list!");
-      router.push("/saved");
+      router.push("/trips");
     } catch (error) {
       toast.error("Error saving trip:", error.message);
     }
@@ -155,6 +155,8 @@ const TripViewCard = () => {
   if (!plan) {
     return <ViewTripLoading />;
   }
+
+
   const deleteTrip = async () => {
     if (!user) {
       toast.error("You must be logged in to delete a trip!");
@@ -170,13 +172,24 @@ const TripViewCard = () => {
     }
 
     try {
+      const plan = profile?.subscription;
+
+
+      await updateDoc(doc(db, "users", profile.uid), {
+        tripCount: increment(-1),
+      });
+      setProfile((prev) => ({
+        ...prev,
+        tripCount: prev.tripCount - 1,
+      }));
+
       await deleteDoc(doc(db, "trips", tripId));
       await logActivity({
         userId: profile?.uid,
         action: "DELETE",
         entity: "TRIP",
         entityId: tripId,
-        metadata: { tripName: tripData.title },
+        metadata: { tripName: plan?.tripData?.title },
       });
       toast.success("Trip deleted successfully!");
       router.push("/trips");

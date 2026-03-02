@@ -160,6 +160,7 @@ export default function Auth() {
             email: result.user.email,
             name: formData.name,
             username,
+            tripCount:0,
             subscription: "free",
             avatarUrl: formData.avatarUrl,
             preferences: formData.preferences,

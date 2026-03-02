@@ -8,7 +8,7 @@ import { generateTravelPlan } from "@/lib/api/AI_Model";
 import { categories, initialForm, interests } from "@/lib/utils/constant";
 import { db } from "@/lib/config/firebase";
 import { validateForm } from "@/lib/utils/validation";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -75,11 +75,21 @@ const CreateTripForm = () => {
     return docId;
   };
 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm({ setErrors, formData })) {
       toast.error("Please fix the errors in the form");
+      return;
+    }
+
+    // 🔥 FREE PLAN LIMIT CHECK
+    const plan = profile?.subscription;
+    const tripCount = profile?.tripCount || 0;
+
+    if (plan === "free" && tripCount >= 7) {
+      toast.error("Free plan allows only 7 trips. Upgrade to Pro 🚀");
       return;
     }
 
@@ -91,28 +101,35 @@ const CreateTripForm = () => {
         budget: parseFloat(formData.budget || 0),
         days: parseInt(formData.days || 0, 10),
         persons: parseInt(formData.persons || 1, 10),
-        currency: formData.currency || "INR", // ensure currency included
+        currency: formData.currency || "INR",
       };
-      toast.success("The Travel Plan is generating ...  hold on");
+
+      toast.success("The Travel Plan is generating ... hold on");
       setIsGenerating(true);
+
       const aiGeneratedPlan = await generateTravelPlan(tripData);
 
       const docId = await saveTrip(tripData, aiGeneratedPlan);
-      setIsSubmitting(false);
-      setIsGenerating(false);
+
+      // 🔥 Increment trip count AFTER successful save
+      await updateDoc(doc(db, "users", profile.uid), {
+        tripCount: increment(1),
+      });
 
       toast.success("Trip created successfully! 🎉");
+
       await logActivity({
-        userId:profile?.uid ,
+        userId: profile?.uid,
         action: "CREATE",
         entity: "TRIP",
         entityId: docId,
         metadata: { tripName: tripData.title },
       });
 
-      // Reset form (keep currency default)
       setFormData({ ...initialForm, currency: tripData.currency || "INR" });
+
       router.push("/trips/" + docId);
+
     } catch (error) {
       console.error("Error creating trip:", error);
       toast.error("Failed to create trip. Please try again.");
@@ -170,8 +187,8 @@ const CreateTripForm = () => {
                   value={formData.title}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.title
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="e.g., Amazing Weekend in Paris"
                 />
@@ -192,8 +209,8 @@ const CreateTripForm = () => {
                   value={formData.category}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.category
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                 >
                   <option value="">Select Category</option>
@@ -262,8 +279,8 @@ const CreateTripForm = () => {
                   value={formData.destination}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.destination
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="e.g., Paris, France"
                 />
@@ -285,8 +302,8 @@ const CreateTripForm = () => {
                   value={formData.source}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.source
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="e.g., New York, USA"
                 />
@@ -341,8 +358,8 @@ const CreateTripForm = () => {
                     min="0"
                     step="0.01"
                     className={`w-full pl-8 pr-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.budget
-                        ? "border-red-500"
-                        : "border-gray-200 dark:border-gray-700"
+                      ? "border-red-500"
+                      : "border-gray-200 dark:border-gray-700"
                       }`}
                     placeholder="50000"
                   />
@@ -386,8 +403,8 @@ const CreateTripForm = () => {
                   min={1}
                   max={7}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.days
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="3"
                 />
@@ -411,8 +428,8 @@ const CreateTripForm = () => {
                   min="1"
                   max={10}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.persons
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="2"
                 />
@@ -434,8 +451,8 @@ const CreateTripForm = () => {
                   value={formData.startDate}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.startDate
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
                     }`}
                 />
                 {errors.startDate && (
@@ -469,8 +486,8 @@ const CreateTripForm = () => {
                 <label
                   key={interest}
                   className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${formData.interests.includes(interest)
-                      ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
-                      : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                    ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
+                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                     }`}
                 >
                   <input

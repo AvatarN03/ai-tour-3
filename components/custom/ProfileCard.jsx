@@ -57,6 +57,7 @@ const ProfileCard = ({ modal, setModal }) => {
   useEffect(() => {
     const fetchStats = async () => {
       if (!user?.uid || !modal) return;
+      console.log(profile)
 
       setStats(prev => ({ ...prev, loading: true }));
 
@@ -433,7 +434,7 @@ const ProfileCard = ({ modal, setModal }) => {
           {/* Stats Card */}
           <div className="grid grid-cols-2 gap-3 p-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-xl">
             {[
-              { label: "Trips", value: stats.trips, icon: "✈️", loading: stats.loading },
+              { label: "Trips", value: profile.tripCount, icon: "✈️", loading: stats.loading },
               { label: "Blog Posts", value: stats.blogPosts, icon: "📝", loading: stats.loading },
             ].map((stat) => (
               <div
