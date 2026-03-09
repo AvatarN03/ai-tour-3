@@ -1,6 +1,5 @@
 "use client";
 import Header from "@/components/custom/Header";
-import ProfileCard from "@/components/custom/ProfileCard";
 import Sidebar from "@/components/custom/Sidebar";
 import { useAuth } from "@/providers/useAuth";
 import { WeatherProvider } from "@/providers/useWeather";

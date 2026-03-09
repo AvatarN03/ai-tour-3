@@ -34,6 +34,8 @@ import ThemeToggle from "@/components/custom/ThemeToggle";
 
 import { availablePreferences } from "@/lib/utils/constant";
 import { auth, db } from "@/lib/config/firebase";
+import { useTranslation } from "react-i18next";
+import LanguageSelector from "@/components/custom/LanguageSelector";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -51,6 +53,7 @@ export default function Auth() {
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (user) {
@@ -160,7 +163,7 @@ export default function Auth() {
             email: result.user.email,
             name: formData.name,
             username,
-            tripCount:0,
+            tripCount: 0,
             subscription: "free",
             avatarUrl: formData.avatarUrl,
             preferences: formData.preferences,
@@ -308,7 +311,8 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-violet-400 to-purple-500 dark:from-gray-900 dark:via-purple-900/20 dark:to-violet-900/20 flex items-center justify-center p-4">
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
+        <LanguageSelector />
         <ThemeToggle />
       </div>
 
@@ -356,19 +360,17 @@ export default function Auth() {
           )}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {isLogin ? "Sign In" : "Create Account"}
+              {isLogin ? t("auth.signInTitle") : t("auth.createAccountTitle")}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              {isLogin
-                ? "Enter your credentials to access your account"
-                : "Fill in your details to get started"}
+              {isLogin ? t("auth.signInSubtitle") : t("auth.createAccountSubtitle")}
             </p>
           </div>
 
           <form onSubmit={handleEmailAuth} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="email" className="text-sm font-semibold">
-                Email Address <span className="text-red-500">*</span>
+                <Label>{t("auth.emailLabel")}</Label> <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -377,7 +379,7 @@ export default function Auth() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => updateForm("email", e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder={t("auth.emailPlaceholder")}
                   required
                   className="pl-10 h-12"
                 />
@@ -386,7 +388,7 @@ export default function Auth() {
 
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-semibold">
-                Password <span className="text-red-500">*</span>
+                {t("auth.passwordLabel")}<span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -395,7 +397,7 @@ export default function Auth() {
                   type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={(e) => updateForm("password", e.target.value)}
-                  placeholder="Create a strong password"
+                  placeholder={t("auth.passwordPlaceholder")}
                   required
                   className="pl-10 pr-10 h-12"
                 />
@@ -417,7 +419,7 @@ export default function Auth() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-semibold">
-                    Full Name <span className="text-red-500">*</span>
+                    {t("auth.fullNameLabel")} <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -426,7 +428,7 @@ export default function Auth() {
                       type="text"
                       value={formData.name}
                       onChange={(e) => updateForm("name", e.target.value)}
-                      placeholder="Enter your full name"
+                      placeholder={t("auth.fullNamePlaceholder")}
                       required
                       className="pl-10 h-12"
                     />
@@ -437,7 +439,7 @@ export default function Auth() {
                     htmlFor="username-mobile"
                     className="text-sm font-semibold"
                   >
-                    Username <span className="text-red-500">*</span>
+                    {t("auth.usernameLabel")}<span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
                     <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
@@ -447,7 +449,7 @@ export default function Auth() {
                       type="text"
                       value={formData.username}
                       onChange={(e) => updateForm("username", e.target.value)}
-                      placeholder="Enter unique username"
+                      placeholder={t("auth.usernamePlaceholder")}
                       required
                       className="pl-10 h-12"
                     />
@@ -468,10 +470,8 @@ export default function Auth() {
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
                   {isLogin ? "Signing in..." : "Creating account..."}
                 </div>
-              ) : isLogin ? (
-                "Sign In"
               ) : (
-                "Create Account"
+                isLogin ? t("auth.signInTitle") : t("auth.createAccountTitle")
               )}
             </button>
           </form>

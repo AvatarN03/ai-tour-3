@@ -1,0 +1,201 @@
+{
+    "navbar": {
+        "console": "Console",
+        "login": "Se connecter",
+        "home": "Accueil",
+        "services": "Services",
+        "howItWorks": "Comment ça marche",
+        "pricing": "Tarifs",
+        "aboutUs": "À propos de nous"
+    },
+    "sidebar": {
+        "dashboard": "Tableau de bord",
+        "discover": "Découvrir",
+        "savedTrips": "Voyages sauvegardés",
+        "aiAssistant": "Assistant IA",
+        "zone": "Zone",
+        "tools": "Outils",
+        "insights": "Analyses"
+    },
+    "hero": {
+        "badge": "Planification de voyage alimentée par l'IA",
+        "assistantBadge": "Assistant IA pour planifier vos voyages",
+        "mainTitle": "Planifiez le voyage de vos rêves",
+        "subtitle": "avec l'intelligence artificielle",
+        "description": "Découvrez des destinations incroyables, créez des itinéraires personnalisés et obtenez des recommandations basées sur l'IA pour votre prochaine aventure. Une planification de voyage intelligente et simplifiée.",
+        "getStart": "Commencer",
+        "exploreDest": "Explorer les destinations"
+    },
+    "features": {
+        "sectionTitle": "Pourquoi choisir AI Tour ?",
+        "sectionSubtitle": "Tout ce dont vous avez besoin pour le voyage parfait, propulsé par l'IA"
+    },
+    "htw": {
+        "sectionTitle": "Planifiez votre voyage en 3 étapes simples",
+        "sectionSubtitle": "De l'inspiration à l'itinéraire en quelques minutes",
+        "steps": [
+            {
+                "title": "Parlez-nous de vos rêves",
+                "desc": "Indiquez votre destination, votre budget, vos centres d'intérêt et vos dates de voyage"
+            },
+            {
+                "title": "L'IA crée la magie",
+                "desc": "Notre IA analyse des millions de données pour concevoir votre itinéraire parfait"
+            },
+            {
+                "title": "Réservez et profitez",
+                "desc": "Consultez, personnalisez et réservez votre plan de voyage personnalisé"
+            }
+        ]
+    },
+    "pricing": {
+        "sectionTitle": "Plans tarifaires",
+        "sectionSubtitle": "De l'inspiration à l'itinéraire en quelques minutes"
+    },
+    "cta": {
+        "title": "Prêt à commencer votre aventure ?",
+        "description": "Rejoignez des milliers de voyageurs qui font confiance à AI Tour pour leurs vacances parfaites",
+        "button": "Commencer à planifier →"
+    },
+    "auth": {
+        "signInTitle": "Se connecter",
+        "createAccountTitle": "Créer un compte",
+        "signInSubtitle": "Entrez vos identifiants pour accéder à votre compte",
+        "createAccountSubtitle": "Remplissez vos informations pour commencer",
+        "emailLabel": "Adresse e-mail",
+        "emailPlaceholder": "vous@exemple.com",
+        "passwordLabel": "Mot de passe",
+        "passwordPlaceholder": "Créez un mot de passe fort",
+        "fullNameLabel": "Nom complet",
+        "fullNamePlaceholder": "Entrez votre nom complet",
+        "usernameLabel": "Nom d'utilisateur",
+        "usernamePlaceholder": "Entrez un nom d'utilisateur unique",
+        "signInButton": "Se connecter",
+        "createAccountButton": "Créer un compte",
+        "signingIn": "Connexion en cours...",
+        "creatingAccount": "Création du compte...",
+        "continueWith": "Ou continuer avec"
+    },
+    "dashboard": {
+        "welcomeTitle": "Bon retour, Voyageur !",
+        "welcomeDesc": " Prêt à planifier votre prochaine aventure ? Rendons-la inoubliable.",
+        "createTrip": "Créer un nouveau voyage",
+        "badge": "Assistant alimenté par l'IA",
+        "quickActions": "Actions rapides",
+        "quickOptions": [
+            {
+                "title": "Planifier un voyage",
+                "desc": "Créez un nouvel itinéraire avec l'aide de l'IA"
+            },
+            {
+                "title": "Voyages sauvegardés",
+                "desc": "Consultez et gérez vos itinéraires sauvegardés"
+            },
+            {
+                "title": "Assistant IA",
+                "desc": "Obtenez des recommandations de voyage personnalisées"
+            }
+        ],
+        "activity": {
+            "recentActivityTitle": "Activité récente",
+            "loadingActivities": "Chargement des activités...",
+            "noRecentActivity": "Aucune activité récente",
+            "noActivityDesc": "Votre activité apparaîtra ici une fois que vous aurez commencé à créer du contenu"
+        },
+        "recommendations": {
+            "title": "Recommandations de voyages",
+            "noRecommendations": "Aucune recommandation pour l'instant",
+            "noRecommendationsDesc": "Nous trouverons bientôt des voyages correspondant à vos centres d'intérêt !"
+        }
+    },
+    "trips": {
+        "myTrips": "Mes voyages",
+        "searchPlaceholder": "Rechercher des voyages...",
+        "createdBy": "Créé par",
+        "savedTrips": "Voyages sauvegardés"
+    },
+    "buttons": {
+        "save": "Enregistrer",
+        "create": "Créer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "cancel": "Annuler",
+        "submit": "Soumettre",
+        "saveTripButton": "Sauvegarder le voyage"
+    },
+    "forms": {
+        "title": "Titre",
+        "description": "Description",
+        "destination": "Destination",
+        "source": "Source",
+        "category": "Catégorie",
+        "currency": "Devise",
+        "budget": "Budget",
+        "days": "Jours",
+        "persons": "Personnes",
+        "startDate": "Date de début",
+        "interests": "Centres d'intérêt",
+        "accommodation": "Hébergement",
+        "transportation": "Transport",
+        "activities": "Activités",
+        "dietaryRestrictions": "Restrictions alimentaires",
+        "specialRequests": "Demandes spéciales"
+    },
+    "categories": {
+        "cityBreak": "Escapade en ville",
+        "beach": "Plage",
+        "mountain": "Montagne",
+        "adventure": "Aventure",
+        "cultural": "Culturel",
+        "relaxation": "Détente",
+        "business": "Affaires",
+        "family": "Famille",
+        "romantic": "Romantique",
+        "soloTravel": "Voyage en solo"
+    },
+    "interests": {
+        "historyCulture": "Histoire et culture",
+        "natureOutdoors": "Nature et plein air",
+        "foodDining": "Gastronomie et restaurants",
+        "nightlife": "Vie nocturne",
+        "shopping": "Shopping",
+        "artMuseums": "Art et musées",
+        "adventureSports": "Sports d'aventure",
+        "photography": "Photographie",
+        "beaches": "Plages",
+        "mountains": "Montagnes",
+        "architecture": "Architecture",
+        "musicFestivals": "Musique et festivals",
+        "wellnessSpa": "Bien-être et spa"
+    },
+    "messages": {
+        "loading": "Chargement...",
+        "success": "Succès !",
+        "error": "Erreur",
+        "welcome": "Bienvenue",
+        "logout": "Se déconnecter"
+    },
+    "planSteps": {
+        "step1Title": "Parlez-nous de vos rêves",
+        "step1Desc": "Indiquez votre destination, votre budget, vos centres d'intérêt et vos dates de voyage",
+        "step2Title": "L'IA crée la magie",
+        "step2Desc": "Notre IA analyse des millions de données pour concevoir votre itinéraire parfait",
+        "step3Title": "Réservez et profitez",
+        "step3Desc": "Consultez, personnalisez et réservez votre plan de voyage personnalisé"
+    },
+    "services": {
+        "planning": "Planification par IA",
+        "planningDesc": "Obtenez des recommandations de voyage personnalisées selon vos préférences et votre budget",
+        "discovery": "Découverte intelligente",
+        "discoveryDesc": "Explorez des destinations avec des cartes interactives et des informations locales",
+        "saveTime": "Gagnez du temps",
+        "saveTimeDesc": "Optimisez automatiquement votre itinéraire grâce à une planification intelligente",
+        "budgetTracking": "Suivi du budget",
+        "budgetTrackingDesc": "Suivez vos dépenses et trouvez les meilleures offres en temps réel"
+    },
+    "tools": {
+        "expenseTracker": "Suivi des dépenses",
+        "currencyConverter": "Convertisseur de devises",
+        "emergencyContacts": "Contacts d'urgence"
+    }
+}

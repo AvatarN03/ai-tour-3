@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from "react-i18next";
 import Link from 'next/link'
 
 import Logo from '../Logo'
@@ -16,8 +17,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils/utils'
+import LanguageSelector from '../LanguageSelector';
 
 const Navbar = () => {
+    const { t } = useTranslation();
     const { user, profile } = useAuth()
     const [showProfileModal, setShowProfileModal] = useState(false)
     const [navbg, setNavBg] = useState(false);
@@ -50,7 +53,7 @@ const Navbar = () => {
                                         <li className="text-sm tracking-wider transition-all hover:font-bold 
                                         hover:text-slate-700
                                         dark:hover:text-slate-100">
-                                            {menu.name}
+                                           {t(menu.translationKey)}
                                         </li>
                                     </Link>
                                 ))
@@ -59,19 +62,20 @@ const Navbar = () => {
                     </nav>
                     <div className="flex flex-1 gap-2 justify-end items-center">
                         <ThemeToggle />
+                        <LanguageSelector />
                         {user ? (
                             // Show user avatar and name when logged in
                             <div className="flex items-center gap-2 ">
                                 <Link href="/dashboard" >
                                     <Button>
-                                        Console
+                                        {t('navbar.console')}
                                     </Button>
                                 </Link>
                                 <button
                                     onClick={() => setShowProfileModal(true)}
                                     className="bg-popover rounded-md p-[3.5px] transition-colors cursor-pointer"
                                 >
-                                    <Avatar className="w-8 h-8">
+                                    <Avatar className="w-8 h-8 border-[.5px] border-purple-500">
                                         <AvatarImage 
                                             src={profile?.avatarUrl || "/profile.png"} 
                                             alt={profile?.name || "Profile"} 
@@ -86,7 +90,7 @@ const Navbar = () => {
                         ) : (
                             // Show login button when not logged in
                             <Link href={'/auth?continueTo=/dashboard'}>
-                                <Button className='cursor-pointer'>Log In</Button>
+                                <Button className='cursor-pointer'>{t('navbar.login')}</Button>
                             </Link>
                         )}
                     </div>

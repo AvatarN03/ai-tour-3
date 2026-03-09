@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { logActivity } from "@/lib/services/logActivity";
+import { useTranslation } from "react-i18next";
 // import AutoCompletion from "./AutoCompletion";
 
 const currencyOptions = [
@@ -27,12 +28,14 @@ const currencyOptions = [
 const CreateTripForm = () => {
   // merge currency default with initialForm to avoid breaking other code
   const [formData, setFormData] = useState(initialForm);
-  const { profile, user } = useAuth();
+  const { profile } = useAuth();
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const router = useRouter();
+
+  const { t } = useTranslation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,14 +52,14 @@ const CreateTripForm = () => {
     }
   };
 
-  const handleInterestToggle = (interest) => {
-    setFormData((prev) => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter((i) => i !== interest)
-        : [...prev.interests, interest],
-    }));
-  };
+const handleInterestToggle = (label) => {
+  setFormData((prev) => ({
+    ...prev,
+    interests: prev.interests.includes(label)
+      ? prev.interests.filter((i) => i !== label)
+      : [...prev.interests, label],
+  }));
+};
 
   const saveTrip = async (tripData, aiGeneratedPlan) => {
     const docId = Date.now().toString();
@@ -75,7 +78,7 @@ const CreateTripForm = () => {
     return docId;
   };
 
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -200,34 +203,37 @@ const CreateTripForm = () => {
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Category <span className="text-red-500">*</span>
-                </label>
-                <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.category
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
-                >
-                  <option value="">Select Category</option>
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat}
-                    </option>
-                  ))}
-                </select>
-                {errors.category && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.category}
-                  </p>
-                )}
-              </div>
+            <div>
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    Category <span className="text-red-500">*</span>
+  </label>
 
+  <select
+    name="category"
+    value={formData.category}
+    onChange={handleInputChange}
+    className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${
+      errors.category
+        ? "border-red-500"
+        : "border-gray-200 dark:border-gray-700"
+    }`}
+  >
+    <option value="">Select Category</option>
+
+    {categories.map((cat) => (
+      <option key={cat.label} value={cat.label}>
+        {t(cat.translationKey)}
+      </option>
+    ))}
+  </select>
+
+  {errors.category && (
+    <p className="text-red-500 text-sm mt-1 flex items-center">
+      <span className="mr-1">⚠️</span>
+      {errors.category}
+    </p>
+  )}
+</div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
@@ -484,20 +490,21 @@ const CreateTripForm = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {interests.map((interest) => (
                 <label
-                  key={interest}
-                  className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${formData.interests.includes(interest)
-                    ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
-                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                  key={interest.label}
+                  className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${formData.interests.includes(interest.label)
+                      ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
+                      : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                     }`}
                 >
                   <input
                     type="checkbox"
-                    checked={formData.interests.includes(interest)}
-                    onChange={() => handleInterestToggle(interest)}
+                    checked={formData.interests.includes(interest.label)}
+                    onChange={() => handleInterestToggle(interest.label)}
                     className="sr-only"
                   />
+
                   <span className="text-sm font-medium text-center">
-                    {interest}
+                    {t(interest.translationKey)}
                   </span>
                 </label>
               ))}

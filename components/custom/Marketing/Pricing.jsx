@@ -1,14 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { pricingPlans } from "@/lib/utils/constant";
 
 const Pricing = () => {
   const [hoverIdx, setHoverIdx] = useState(0);
+  
 
   const handleHover = (idx) => {
     setHoverIdx(idx);
   };
+
+  useEffect(()=>{
+    handleHover(0);
+  }, [])
 
   return (
     <motion.div
@@ -18,7 +23,7 @@ const Pricing = () => {
       }}
       whileInView={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.3, delay: 0.1, ease: "easeIn" }}
-      className="flex flex-col md:flex-row justify-center gap-6"
+      className="flex flex-col md:flex-row justify-center gap-14"
     >
       {pricingPlans.map((plan, idx) => {
         const isActive = hoverIdx === idx;
@@ -27,12 +32,13 @@ const Pricing = () => {
           <div
             key={idx}
             onMouseEnter={() => handleHover(idx)}
+            onPointerLeave={()=>setHoverIdx(null)}
             className={`
               transition-all duration-700 ease-in-out cursor-pointer relative overflow-hidden
               rounded-xl text-left p-5 md:h-[600px]
               ${
                 isActive
-                  ? "md:flex-1 dark:text-white bg-card max-w-xl border-2 border-purple-600 shadow-lg md:shadow-2xl"
+                  ? "md:flex-1 dark:text-white bg-card max-w-md border-2 border-purple-600 shadow-lg md:shadow-2xl"
                   : "md:flex-[0.1] bg-primary-foreground  md:text-primary"
               }
             `}

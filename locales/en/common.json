@@ -1,0 +1,183 @@
+{
+    "navbar": {
+        "console": "Console",
+        "login": "Log In",
+        "home": "Home",
+        "services": "Services",
+        "howItWorks": "How It Works",
+        "pricing": "Pricing",
+        "aboutUs": "About Us"
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "discover": "Discover",
+        "savedTrips": "Saved Trips",
+        "aiAssistant": "AI Assistant",
+        "zone": "Zone",
+        "tools": "Tools",
+        "insights": "Insights"
+    },
+    "hero": {
+        "badge": "AI-Powered Travel Planning",
+        "assistantBadge": "AI Assistant to Plan your Trips",
+        "mainTitle": "Plan Your Dream Trip",
+        "subtitle": "with AI Intelligence",
+        "description": "Discover amazing destinations, create personalized itineraries, and get AI-powered recommendations for your next adventure. Smart travel planning made simple.",
+        "getStart": "Get Started",
+        "exploreDest": "Explore Destinations"
+    },
+    "features": {
+        "sectionTitle": "Why Choose AI Tour?",
+        "sectionSubtitle": "Everything you need for the perfect trip, powered by AI"
+    },
+    "htw": {
+        "sectionTitle": "Plan Your Trip in 3 Easy Steps",
+        "sectionSubtitle": "From inspiration to itinerary in minutes",
+        "steps": [
+            {
+                "title": "Tell Us Your Dreams",
+                "desc": "Share your destination, budget, interests, and travel dates"
+            },
+            {
+                "title": "AI Creates Magic",
+                "desc": "Our AI analyzes millions of data points to craft your perfect itinerary"
+            },
+            {
+                "title": "Book & Enjoy",
+                "desc": "Review, customize, and book your personalized travel plan"
+            }
+        ]
+    },
+    "pricing": {
+        "sectionTitle": "Pricing Plans",
+        "sectionSubtitle": "From inspiration to itinerary in minutes"
+    },
+    "cta": {
+        "title": "Ready to Start Your Adventure?",
+        "description": "Join thousands of travelers who trust AI Tour for their perfect vacation",
+        "button": "Start Planning Now →"
+    },
+    "auth": {
+        "signInTitle": "Sign In",
+        "createAccountTitle": "Create Account",
+        "signInSubtitle": "Enter your credentials to access your account",
+        "createAccountSubtitle": "Fill in your details to get started",
+        "emailLabel": "Email Address",
+        "emailPlaceholder": "you@example.com",
+        "passwordLabel": "Password",
+        "passwordPlaceholder": "Create a strong password",
+        "fullNameLabel": "Full Name",
+        "fullNamePlaceholder": "Enter your full name",
+        "usernameLabel": "Username",
+        "usernamePlaceholder": "Enter unique username",
+        "signInButton": "Sign In",
+        "createAccountButton": "Create Account",
+        "signingIn": "Signing in...",
+        "creatingAccount": "Creating account...",
+        "continueWith": "Or continue with"
+    },
+    "dashboard": {
+        "welcomeTitle": "Welcome back, Traveler!",
+        "welcomeDesc": " Ready to plan your next adventure? Let's make it unforgettable.",
+        "createTrip": "Create New Trip",
+        "badge": "AI Powered Assistant",
+        "quickActions": "Quick Actions",
+        "quickOptions": [
+            {
+                "title": "Plan Trip",
+                "desc": "Create a new itinerary with AI assistance"
+            },
+            {
+                "title": "Saved Trips",
+                "desc": "View and manage your saved itineraries"
+            },
+            {
+                "title": "AI Assistant",
+                "desc": "Get personalized travel recommendations"
+            }
+        ],
+        "recommendations": {
+            "title": "Recommendation for You",
+            "desc":"Handpicked trips based on your interests",
+            "noRecommendations": "No Recommendations Yet"
+        },
+        "activity": {
+            "recentActivityTitle": "Recent Activity",
+            "loadingActivities": "Loading activities...",
+            "noRecentActivity": "No recent activity",
+            "noActivityDesc": "Your activity will appear here once you start creating content"
+        }
+    },
+    "trips": {
+        "myTrips": "My Trips",
+        "searchPlaceholder": "Search trips...",
+        "createdBy": "Created by",
+        "savedTrips": "Saved Trips"
+    },
+    "buttons": {
+        "save": "Save",
+        "create": "Create",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "submit": "Submit",
+        "saveTripButton": "Save Trip"
+    },
+    "forms": {
+        "title": "Title",
+        "description": "Description",
+        "destination": "Destination",
+        "source": "Source",
+        "category": "Category",
+        "currency": "Currency",
+        "budget": "Budget",
+        "days": "Days",
+        "persons": "Persons",
+        "startDate": "Start Date",
+        "interests": "Interests",
+        "accommodation": "Accommodation",
+        "transportation": "Transportation",
+        "activities": "Activities",
+        "dietaryRestrictions": "Dietary Restrictions",
+        "specialRequests": "Special Requests"
+    },
+    "categories": {
+        "cityBreak": "City Break",
+        "beach": "Beach",
+        "mountain": "Mountain",
+        "adventure": "Adventure",
+        "cultural": "Cultural",
+        "relaxation": "Relaxation",
+        "business": "Business",
+        "family": "Family",
+        "romantic": "Romantic",
+        "soloTravel": "Solo Travel"
+    },
+    "interests": {
+        "historyCulture": "History & Culture",
+        "natureOutdoors": "Nature & Outdoors",
+        "foodDining": "Food & Dining",
+        "nightlife": "Nightlife",
+        "shopping": "Shopping",
+        "artMuseums": "Art & Museums",
+        "adventureSports": "Adventure Sports",
+        "photography": "Photography",
+        "beaches": "Beaches",
+        "mountains": "Mountains",
+        "architecture": "Architecture",
+        "musicFestivals": "Music & Festivals",
+        "wellnessSpa": "Wellness & Spa"
+    },
+    "messages": {
+        "loading": "Loading...",
+        "success": "Success!",
+        "error": "Error",
+        "welcome": "Welcome",
+        "logout": "Logout"
+    },
+    "tools": {
+        "expenseTracker": "Expense Tracker",
+        "currencyConverter": "Currency Converter",
+        "emergencyContacts": "Emergency Contacts"
+    }
+}

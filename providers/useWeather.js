@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
-import { getWeatherByCity, getWeatherByCoords } from "@/lib/api/weather";
+import { getForecastByCity, getForecastByCoords, getWeatherByCity, getWeatherByCoords } from "@/lib/api/weather";
 
 const WeatherContext = createContext();
 
@@ -11,21 +11,37 @@ export const WeatherProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const [forecast, setForecast] = useState([]);
 
   // 🌍 Load weather from sessionStorage on mount
   useEffect(() => {
     const savedWeather = sessionStorage.getItem("weather");
+    const savedForecast = sessionStorage.getItem("forecast");
     if (savedWeather) {
       try {
         setWeather(JSON.parse(savedWeather));
       } catch (err) {
         console.error("Failed to parse saved weather data:", err);
       }
-    } else {
+    }
+    if (savedForecast) {
+      try {
+        setForecast(JSON.parse(savedForecast));
+      } catch (err) {
+        console.error("Failed to parse saved forecast data:", err);
+      }
+    }
+
+    if (!savedWeather) {
       getCurrentLocation();
     }
-    // Also fetch current location weather as fallback or initial load
   }, []);
+
+  useEffect(() => {
+    if (forecast.length > 0) {
+      sessionStorage.setItem("forecast", JSON.stringify(forecast));
+    }
+  }, [forecast]);
 
   // 🌍 Save weather to sessionStorage whenever it changes
   useEffect(() => {
@@ -54,36 +70,52 @@ export const WeatherProvider = ({ children }) => {
         setPermissionGranted(true);
 
         try {
-          const res = await getWeatherByCoords(lat, lon);
-          setWeather(res);
-          sessionStorage.setItem("weather", JSON.stringify(res)); // Update sessionStorage
+          const weatherRes = await getWeatherByCoords(lat, lon);
+          const forecastRes = await getForecastByCoords(lat, lon);
+
+          setWeather(weatherRes);
+          setForecast(forecastRes.forecast);
+
+          sessionStorage.setItem("weather", JSON.stringify(weatherRes));
+          sessionStorage.setItem(
+            "forecast",
+            JSON.stringify(forecastRes.forecast),
+          );
+
           toast.success("Location updated successfully!");
         } catch (err) {
           toast.error("Failed to fetch weather data");
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       },
       (error) => {
         toast.error(getLocationErrorMessage(error.code));
         setIsLoading(false);
         setPermissionGranted(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 },
     );
   };
 
   // 🏙️ Search weather by city
   const searchWeatherByCity = async (city) => {
-    if (!city.trim()) {
+    if (!city) {
       toast.error("Please enter a city name");
       return;
     }
 
     setIsSearching(true);
     try {
-      const res = await getWeatherByCity(city);
-      setWeather(res);
-      sessionStorage.setItem("weather", JSON.stringify(res)); // Update sessionStorage
+      const weatherRes = await getWeatherByCity(city);
+      const forecastRes = await getForecastByCity(city);
+
+      setWeather(weatherRes);
+      setForecast(forecastRes.forecast);
+
+      sessionStorage.setItem("weather", JSON.stringify(weatherRes));
+      sessionStorage.setItem("forecast", JSON.stringify(forecastRes.forecast));
+
       toast.success(`Weather data loaded for ${city}`);
     } catch (err) {
       toast.error("City not found. Please try another city.");
@@ -109,12 +141,13 @@ export const WeatherProvider = ({ children }) => {
     <WeatherContext.Provider
       value={{
         weather,
+        forecast,
         isLoading,
         isSearching,
         permissionGranted,
         getCurrentLocation,
         searchWeatherByCity,
-        setWeather, 
+        setWeather,
       }}
     >
       {children}

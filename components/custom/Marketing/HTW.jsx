@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 import { planSteps } from "@/lib/utils/constant";
 
@@ -11,9 +12,10 @@ const fadeInUp = {
 };
 
 const HTW = () => {
+  const { t } = useTranslation();
   return (
    <section className="py-20 px-6 relative overflow-hidden " id="htw">
-        <div className="max-w-7xl mx-auto px-4 min-h-screen flex flex-col gap-24">
+        <div className="max-w-7xl mx-auto px-4 min-h-auto my-20 flex flex-col gap-24">
           <motion.div
             initial="initial"
             whileInView="animate"
@@ -22,10 +24,10 @@ const HTW = () => {
             className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Plan Your Trip in 3 Easy Steps
+              {t('htw.sectionTitle')}
             </h2>
             <p className="text-base tracking-widest text-gray-600 dark:text-gray-300">
-              From inspiration to itinerary in minutes
+               {t('htw.sectionSubtitle')}
             </p>
           </motion.div>
 
@@ -48,10 +50,10 @@ const HTW = () => {
                     <item.icon className="w-7 h-7 text-white" />
                   </div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                    {item.title}
+                    {t(item.titleKey)}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {item.description}
+                    {t(item.descriptionKey)}
                   </p>
                 </div>
                 {index < 2 && (

@@ -7,6 +7,7 @@ import { useWeather } from "@/providers/useWeather";
 const LocationAccess = () => {
   const {
     weather,
+    forecast,
     isLoading,
     isSearching,
     getCurrentLocation,
@@ -18,14 +19,14 @@ const LocationAccess = () => {
   const handleCitySearch = (e) => {
     e.preventDefault();
     if (cityInput.trim()) {
-      searchWeatherByCity(cityInput);
+      searchWeatherByCity(cityInput.trim());
       setCityInput("");
     }
   };
 
-  // useEffect(()=>{
-  //   getCurrentLocation()
-  // }, [])
+  useEffect(() => {
+    getCurrentLocation()
+  }, [])
 
   return (
     <div className="p-3 rounded-md sm:p-6 dark:bg-gray-800 bg-accent">
@@ -73,49 +74,89 @@ const LocationAccess = () => {
           {isLoading ? "Getting Location..." : "📍 Use Current Location"}
         </Button>
       </div>
+      <div className="flex flex-col md:flex-row items-stretch gap-2 md:h-56">
 
-      {/* Weather Display */}
-      {weather && (
-        <div className="w-full max-w-sm mx-auto bg-gradient-to-tr from-blue-500 to-cyan-400 text-white rounded-xl shadow-lg p-3 md:p-6 flex flex-col gap-3 md:gap-4">
-          <h4 className="text-xl font-semibold flex items-center justify-center gap-2 mb-4  rounded-md">
-            📍 {weather.name}
-          </h4>
-          <div className="flex justify-center gap-4 items-center mb-2">
-            <span className="text-5xl font-extrabold">
-              {weather.current.icon}
-            </span>
-            <span className="text-5xl font-extrabold">
-              {Math.round(weather.current.temperature)}°C
-            </span>
+
+        {/* Weather Display */}
+        {weather && (
+          <div className="w-full h-full max-w-md xl:max-w-[600px] bg-gradient-to-tr from-blue-700 to-cyan-600 text-white rounded-xl shadow-lg p-3 md:p-6 flex flex-col gap-3 md:gap-4">
+            <h4 className="text-xl font-semibold flex items-center justify-center gap-2 mb-4  rounded-md">
+              📍 {weather.name}
+            </h4>
+            <div className="flex justify-center gap-4 items-center mb-2">
+              <span className="text-5xl font-extrabold">
+                {weather.current.icon}
+              </span>
+              <span className="text-5xl font-extrabold">
+                {Math.round(weather.current.temperature)}°C
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-4 mt-2 text-center">
+              <div>
+                <span className="block text-sm text-cyan-100 font-medium">
+                  Wind Speed
+                </span>
+                <span className="block text-lg font-semibold">
+                  {weather.current.windSpeed} km/h
+                </span>
+              </div>
+              <div>
+                <span className="block text-sm text-cyan-100 font-medium">
+                  Humidity
+                </span>
+                <span className="block text-lg font-semibold">
+                  {weather.current.humidity} %
+                </span>
+              </div>
+              <div>
+                <span className="block text-sm text-cyan-100 font-medium">
+                  Condition
+                </span>
+                <span className="block text-lg font-semibold">
+                  {weather.current.condition}
+                </span>
+              </div>
+            </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-2 text-center">
-            <div>
-              <span className="block text-sm text-cyan-100 font-medium">
-                Wind Speed
-              </span>
-              <span className="block text-lg font-semibold">
-                {weather.current.windSpeed} km/h
-              </span>
+        )}
+
+        {/* Forecast */}
+        <div className="flex h-full flex-1">
+
+          {forecast && forecast.length > 0 && (
+            <div className="flex gap-3 mt-4 md:mt-0 mx-auto w-full h-full items-stretch">
+              {forecast.map((day) => (
+                <div
+                  key={day.date}
+                  className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center shadow w-full max-w-[400px] flex flex-col justify-between h-full from-blue-300 dark:from-blue-600 to-cyan-500 hover:bg-gradient-to-tr transition-colors"
+                >
+                  <div className="">
+
+                    <p className="text-sm text-gray-800 dark:text-gray-300">
+                      {new Date(day.date).toLocaleDateString("en-US", {
+                        weekday: "short",
+                      })}
+                    </p>
+
+                    <div className="text-4xl my-1">{day.icon}</div>
+                  </div>
+                  <div className="flex flex-col gap-2">
+
+
+                    <p className="text-md md:text-base font-semibold text-gray-800 dark:text-white">
+                      {day.temperature}°C
+                    </p>
+
+                    <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+                      {day.condition}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div>
-              <span className="block text-sm text-cyan-100 font-medium">
-                Humidity
-              </span>
-              <span className="block text-lg font-semibold">
-                {weather.current.humidity} %
-              </span>
-            </div>
-            <div>
-              <span className="block text-sm text-cyan-100 font-medium">
-                Condition
-              </span>
-              <span className="block text-lg font-semibold">
-                {weather.current.condition}
-              </span>
-            </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Empty State */}
       {!weather && !isLoading && !isSearching && (

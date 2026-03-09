@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PanelLeftCloseIcon, ChevronRight } from "lucide-react";
@@ -13,9 +14,24 @@ import { motion, AnimatePresence } from "framer-motion";
 import Logo from "./Logo";
 
 export default function Sidebar({ isOpen, onClose }) {
+  const { t } = useTranslation();
   const pathname = usePathname();
   const [modal, setModal] = useState(false);
   const { profile } = useAuth();
+
+  // Map menu item names to translation keys
+  const getTranslatedMenuName = (menuName) => {
+    const menuTranslationMap = {
+      "Dashboard": "sidebar.dashboard",
+      "Discover": "sidebar.discover",
+      "Saved Trips": "sidebar.savedTrips",
+      "AI Assistant": "sidebar.aiAssistant",
+      "Zone": "sidebar.zone",
+      "Tools": "sidebar.tools",
+      "Insights": "sidebar.insights"
+    };
+    return t(menuTranslationMap[menuName] || menuName);
+  };
 
   const sidebarVariants = {
     open: {
@@ -151,7 +167,7 @@ export default function Sidebar({ isOpen, onClose }) {
                       >
                         <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`} />
                       </motion.div>
-                      <span className="relative">{item.name}</span>
+                      <span className="relative">{getTranslatedMenuName(item.name)}</span>
                       
                       {/* Hover Arrow */}
                       <ChevronRight className={`

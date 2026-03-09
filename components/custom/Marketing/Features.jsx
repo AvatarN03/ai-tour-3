@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
 import { services } from "@/lib/utils/constant";
@@ -25,12 +26,14 @@ const fadeInUp = {
 };
 
 const Features = () => {
+  const { t } = useTranslation();
+
   return (
     <section
       className="py-20 px-6     bg-indigo-200 dark:bg-gray-900 relative"
       id="services"
     >
-      <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-24 min-h-screen pb-20">
+      <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-24 min-h-auto my-20 pb-20">
         <div className="hidden md:block absolute bg-indigo-600 blur-[265px] bottom-0  -right-10 w-150 h-150 z-0" />
 
         <motion.div
@@ -44,13 +47,13 @@ const Features = () => {
             variants={fadeInUp}
             className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4"
           >
-            Why Choose AI Tour?
+              {t('features.sectionTitle')}
           </motion.h2>
           <motion.p
             variants={fadeInUp}
             className="text-base md:text-xl text-gray-600 dark:text-gray-300"
           >
-            Everything you need for the perfect trip, powered by AI
+              {t('features.sectionSubtitle')}
           </motion.p>
         </motion.div>
 

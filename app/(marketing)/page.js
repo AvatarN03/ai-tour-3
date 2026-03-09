@@ -1,4 +1,4 @@
-
+"use client"
 import Image from "next/image";
 
 import Navbar from "@/components/custom/Marketing/Navbar";
@@ -8,15 +8,12 @@ import HTW from "@/components/custom/Marketing/HTW";
 import Pricing from "@/components/custom/Marketing/Pricing";
 import AboutSection from "@/components/custom/Marketing/AboutSection";
 import CTA from "@/components/custom/Marketing/CTA";
-
-export const metadata = {
-  title: "Home - AI Tour",
-  description: "Plan trips smarter with AI",
-};
+import { useTranslation } from "react-i18next";
 
 
 
 const LandingPage = () => {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-300 via-indigo-200 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar />
@@ -40,11 +37,10 @@ const LandingPage = () => {
           <div className="hidden md:block absolute bg-indigo-700 blur-[265px] top-1/3 -translate-y-1/2 right-10 w-150 h-150 z-0 " />
 
           <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 z-20">
-            💸 Pricing Plans
+            💸 {t('pricing.sectionTitle')}
           </h2>
           <p className="text-base tracking-widest text-gray-700 dark:text-gray-300 z-20">
-            Simple pricing for smarter trips — free to start, powerful when you
-            upgrade.
+           {t('pricing.sectionSubtitle')}
           </p>
 
           <div className="flex gap-12 justify-center items-center flex-1 mt-6 w-full z-20 relative">

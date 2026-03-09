@@ -1,10 +1,13 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Globe, Map, Sparkles } from "lucide-react";
 
 const Hero = () => {
+    const { t } = useTranslation();
+
     return (
         <section className="relative overflow-x-hidden px-6 py-10  md:py-32 bg-gradient-to-br from-indigo-200 via-purple-200 to-pink-400 dark:from-gray-900 dark:via-purple-900/20 dark:to-indigo-900/20">
             <motion.div
@@ -38,7 +41,7 @@ const Hero = () => {
                     >
                         <Sparkles className="w-4 h-4" />
                         <span className="text-sm font-medium">
-                            AI-Powered Travel Planning
+                            {t('hero.badge')}
                         </span>
                     </motion.div>
                     <motion.div
@@ -64,7 +67,7 @@ const Hero = () => {
                             }}
                         />
                         <p className="relative z-10 bg-white dark:bg-gray-800 backdrop-blur-md rounded-full p-2">
-                            AI Assistant to Plan your Trips
+                            {t('hero.assistantBadge')}
                         </p>
                     </motion.div>
 
@@ -72,12 +75,12 @@ const Hero = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
-                        className="text-4xl md:text-7xl xl:text-8xl font-bold text-gray-900 dark:text-white mb-12 "
+                        className="text-4xl md:text-7xl font-bold text-gray-900 dark:text-white mb-12 "
                     >
-                        Plan Your Dream Trip
+                        {t('hero.mainTitle')}
                         <br />
                         <span className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600 dark:from-violet-400 dark:via-fuchsia-400 dark:to-pink-400 bg-clip-text text-transparent relative">
-                            with AI Intelligence
+                            {t('hero.subtitle')}
                             <div className="absolute -bottom-1 right-0 hidden md:block w-[75%] h-1  bg-pink-400 rounded-xl animate-collapsible-up" />
                         </span>
                     </motion.h1>
@@ -86,11 +89,9 @@ const Hero = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.5 }}
-                        className="text-base md:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto my-4"
+                        className="text-base  text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto my-4"
                     >
-                        Discover amazing destinations, create personalized itineraries,
-                        and get AI-powered recommendations for your next adventure. Smart
-                        travel planning made simple.
+                        {t('hero.description')}
                     </motion.p>
 
                     <motion.div
@@ -103,13 +104,13 @@ const Hero = () => {
                             href={"/auth?continueTo=/dashboard"}
                             className="px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white rounded-xl font-semibold transition-all transform  shadow-lg hover:shadow-2xl hover:shadow-fuchsia-500/50 cursor-pointer"
                         >
-                            Get Started
+                             {t('hero.getStart')}
                         </Link>
                         <Link
                             href={"/auth?continueTo=/discover"}
                             className="px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-900 dark:text-white rounded-xl font-semibold border-2 border-gray-200 dark:border-gray-700 hover:border-violet-600 dark:hover:border-violet-500 hover:bg-white dark:hover:bg-gray-800 transition-all shadow-md hover:shadow-lg cursor-pointer"
                         >
-                            Explore Destinations
+                              {t('hero.exploreDest')}
                         </Link>
                     </motion.div>
                 </motion.div>

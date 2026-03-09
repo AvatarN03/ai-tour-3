@@ -10,15 +10,17 @@ import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
 import { useRouter } from "next/navigation";
-import { getTripCategoryEmoji, getTripCategoryIcon } from "@/lib/utils/utils";
+import { getTripCategoryEmoji } from "@/lib/utils/utils";
 import { logActivity } from "@/lib/services/logActivity";
+import { useTranslation } from "react-i18next";
 
 export default function TripRecommendations() {
   const { user, profile } = useAuth();
   const [recommendations, setRecommendations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [savingId, setSavingId] = useState(null);
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!user?.uid || !profile?.preferences) return;
@@ -71,11 +73,11 @@ export default function TripRecommendations() {
     }
   };
 
-  if (!recommendations.length) {
+  if (!recommendations.length && !loading) {
     return (
       <div className="text-center py-12">
         <div className="text-6xl mb-4">✈️</div>
-        <h3 className="text-xl font-semibold mb-2">No Recommendations Yet</h3>
+        <h3 className="text-xl font-semibold mb-2">{t('dashboard.recommendations.noRecommendations')}</h3>
         <p className="text-gray-600">
           We'll find trips that match your interests soon!
         </p>
@@ -87,10 +89,10 @@ export default function TripRecommendations() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-2 flex justify-start items-center gap-2">
-          <Wand2 /> Recommended for You
+          <Wand2 />{t('dashboard.recommendations.title')}
         </h2>
         <p className="text-gray-700 dark:text-gray-500">
-          Handpicked trips based on your interests
+          {t('dashboard.recommendations.desc')}
         </p>
       </div>
       {loading ? (

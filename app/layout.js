@@ -9,30 +9,30 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/providers/useAuth";
+import { LanguageProvider } from "@/context/LanguageContext";
 
-import LanguageProvider from "../components/custom/LanguageProvider";
 
 const notoSans = Noto_Sans({
-  variable: "--font-noto-sans",
   subsets: ["latin", "devanagari"],
+  variable: "--font-en",
   display: "swap",
 });
 
 const notoSansTamil = Noto_Sans_Tamil({
-  variable: "--font-noto-sans-tamil",
   subsets: ["tamil"],
+  variable: "--font-ta",
   display: "swap",
 });
 
 const notoArabic = Noto_Naskh_Arabic({
-  variable: "--font-noto-arabic",
   subsets: ["arabic"],
+  variable: "--font-ar",
   display: "swap",
 });
 
 export const metadata = {
-  title: "Ai tour - Explore the world with AI-powered travel planning",
-  description: "version - 2 ",
+  title: "Ai tour",
+  description: "version - 2",
   icons: {
     icon: "/logo.png",
   },
@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased scrollbar-gradient`}
+        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased`}
       >
         <AuthProvider>
           <LanguageProvider>
