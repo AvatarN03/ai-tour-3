@@ -3,17 +3,7 @@ import { useEffect } from "react";
 
 export default function GoogleTranslate() {
   useEffect(() => {
-    // Prevent duplicate script injection
-    if (document.getElementById("google-translate-script")) {
-      // Script already exists, just init if google is ready
-      if (window.google?.translate) {
-        window.googleTranslateElementInit?.();
-      }
-      return;
-    }
-
-    window.googleTranslateElementInit = () => {
-      // Prevent duplicate widget init
+    const initTranslate = () => {
       const el = document.getElementById("google_translate_element");
       if (!el || el.innerHTML !== "") return;
 
@@ -27,6 +17,16 @@ export default function GoogleTranslate() {
         "google_translate_element"
       );
     };
+
+    if (document.getElementById("google-translate-script")) {
+      // Script already loaded, just init
+      if (window.google?.translate) {
+        initTranslate();
+      }
+      return;
+    }
+
+    window.googleTranslateElementInit = initTranslate;
 
     const script = document.createElement("script");
     script.id = "google-translate-script";
