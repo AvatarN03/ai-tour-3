@@ -323,3 +323,40 @@ body {
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
+
+.dark .form-control{
+  padding: 10px;
+  width: 100% !important;
+  background-color: #1f2937;
+  border-radius: 8px;
+}
+
+.dark .form-control:focus-visible{
+  border: 0.5px solid #eee;
+  outline: none;
+}
+
+.form-control{
+  padding: 10px;
+  width: 100% !important;
+  background-color: #eee;
+  border-radius: 8px;
+}
+
+.form-control:focus-visible{
+  border: 0.5px solid #222;
+  outline: none;
+}
+
+.autocomplete-dropdown {
+  background-color: white;
+}
+
+.dark .autocomplete-dropdown {
+  background-color: #1f2937 !important; /* dark gray */
+  color: white;
+}
+
+.dark .autocomplete-dropdown > div:hover{
+  background: #000;
+}

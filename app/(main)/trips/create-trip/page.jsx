@@ -14,6 +14,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { logActivity } from "@/lib/services/logActivity";
 import { useTranslation } from "react-i18next";
+import LocationComplete from "./LocationComplete";
 // import AutoCompletion from "./AutoCompletion";
 
 const currencyOptions = [
@@ -52,14 +53,14 @@ const CreateTripForm = () => {
     }
   };
 
-const handleInterestToggle = (label) => {
-  setFormData((prev) => ({
-    ...prev,
-    interests: prev.interests.includes(label)
-      ? prev.interests.filter((i) => i !== label)
-      : [...prev.interests, label],
-  }));
-};
+  const handleInterestToggle = (label) => {
+    setFormData((prev) => ({
+      ...prev,
+      interests: prev.interests.includes(label)
+        ? prev.interests.filter((i) => i !== label)
+        : [...prev.interests, label],
+    }));
+  };
 
   const saveTrip = async (tripData, aiGeneratedPlan) => {
     const docId = Date.now().toString();
@@ -86,6 +87,7 @@ const handleInterestToggle = (label) => {
       toast.error("Please fix the errors in the form");
       return;
     }
+
 
     // 🔥 FREE PLAN LIMIT CHECK
     const plan = profile?.subscription;
@@ -147,25 +149,28 @@ const handleInterestToggle = (label) => {
   }
 
   return (
-    <div className="bg-gradient-to-br w-full from-blue-200 via-blue-300 to-purple-500 dark:from-blue-500 dark:via-blue-800 dark:to-purple-900 py-8 px-4 sm:px-6 lg:px-8 rounded-md">
+    <div className="bg-gradient-to-br w-full from-blue-200 via-blue-300 to-purple-500 dark:from-blue-500 dark:via-blue-800 dark:to-purple-900 py-4 px-2 sm:px-6 rounded-md">
       <div className="max-w-7xl mx-auto overflow-y-auto">
         {/* Header */}
-        <div className="text-center mb-8 relative">
+        <div className="flex items-start gap-2 mb-8 relative w-full">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
-            <span className="text-3xl">✈️</span>
+            <span className="text-xl">✈️</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-            Plan Your Dream Trip
-          </h1>
-          <p className="text-gray-600 text-base dark:text-gray-400">
-            Fill in the details below to create your perfect travel experience
-          </p>
+          <div className="">
+
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+              Plan Your Dream Trip
+            </h1>
+            <p className="text-gray-600 text-base dark:text-gray-200">
+              Fill in the details below to create your perfect travel experience
+            </p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
           {/* Basic Information */}
-          <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-6">
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <div className="flex items-center mb-3">
               <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white text-xl">📝</span>
               </div>
@@ -203,37 +208,36 @@ const handleInterestToggle = (label) => {
                 )}
               </div>
 
-            <div>
-  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-    Category <span className="text-red-500">*</span>
-  </label>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Category <span className="text-red-500">*</span>
+                </label>
 
-  <select
-    name="category"
-    value={formData.category}
-    onChange={handleInputChange}
-    className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${
-      errors.category
-        ? "border-red-500"
-        : "border-gray-200 dark:border-gray-700"
-    }`}
-  >
-    <option value="">Select Category</option>
+                <select
+                  name="category"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.category
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
+                    }`}
+                >
+                  <option value="">Select Category</option>
 
-    {categories.map((cat) => (
-      <option key={cat.label} value={cat.label}>
-        {t(cat.translationKey)}
-      </option>
-    ))}
-  </select>
+                  {categories.map((cat) => (
+                    <option key={cat.label} value={cat.label}>
+                      {t(cat.translationKey)}
+                    </option>
+                  ))}
+                </select>
 
-  {errors.category && (
-    <p className="text-red-500 text-sm mt-1 flex items-center">
-      <span className="mr-1">⚠️</span>
-      {errors.category}
-    </p>
-  )}
-</div>
+                {errors.category && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {errors.category}
+                  </p>
+                )}
+              </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Description
@@ -251,8 +255,8 @@ const handleInterestToggle = (label) => {
           </Card>
 
           {/* Location Information */}
-          <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-6">
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <div className="flex items-center mb-3">
               <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white text-xl">📍</span>
               </div>
@@ -279,7 +283,16 @@ const handleInterestToggle = (label) => {
                     }))
                   }
                 /> */}
-                <input
+          
+                <LocationComplete
+                  name="destination"
+                  value={formData.destination}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Paris, France"
+                  error={errors.destination}
+                />
+
+                {/* <input
                   type="text"
                   name="destination"
                   value={formData.destination}
@@ -289,20 +302,29 @@ const handleInterestToggle = (label) => {
                     : "border-gray-200 dark:border-gray-700"
                     }`}
                   placeholder="e.g., Paris, France"
-                />
-                {errors.destination && (
+                /> */}
+                {/* {errors.destination && (
                   <p className="text-red-500 text-sm mt-1 flex items-center">
                     <span className="mr-1">⚠️</span>
                     {errors.destination}
                   </p>
-                )}
+                )} */}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Starting From <span className="text-red-500">*</span>
                 </label>
-                <input
+                
+
+                <LocationComplete
+                  name="source"
+                  value={formData.source}
+                  onChange={handleInputChange}
+                  placeholder="e.g., New York, USA"
+                  error={errors.source}
+                />
+                {/* <input
                   type="text"
                   name="source"
                   value={formData.source}
@@ -318,14 +340,14 @@ const handleInterestToggle = (label) => {
                     <span className="mr-1">⚠️</span>
                     {errors.source}
                   </p>
-                )}
+                )} */}
               </div>
             </div>
           </Card>
 
           {/* Trip Details */}
-          <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-6">
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <div className="flex items-center mb-3">
               <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white text-xl">📅</span>
               </div>
@@ -472,8 +494,8 @@ const handleInterestToggle = (label) => {
           </Card>
 
           {/* Interests */}
-          <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-6">
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <div className="flex items-center mb-3">
               <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white text-xl">❤️</span>
               </div>
@@ -492,8 +514,8 @@ const handleInterestToggle = (label) => {
                 <label
                   key={interest.label}
                   className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${formData.interests.includes(interest.label)
-                      ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
-                      : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+                    ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
+                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                     }`}
                 >
                   <input
@@ -512,8 +534,8 @@ const handleInterestToggle = (label) => {
           </Card>
 
           {/* Additional Information */}
-          <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-6">
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <div className="flex items-center mb-3">
               <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center mr-3">
                 <span className="text-white text-xl">ℹ️</span>
               </div>
@@ -527,7 +549,7 @@ const handleInterestToggle = (label) => {
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-3 text-sm">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Accommodation Preferences
@@ -536,7 +558,7 @@ const handleInterestToggle = (label) => {
                   name="accommodation"
                   value={formData.accommodation}
                   onChange={handleInputChange}
-                  rows={2}
+                  rows={1}
                   className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
                   placeholder="e.g., Hotel near city center, Airbnb with kitchen, Budget hostel..."
                 />
@@ -550,7 +572,7 @@ const handleInterestToggle = (label) => {
                   name="transportation"
                   value={formData.transportation}
                   onChange={handleInputChange}
-                  rows={2}
+                  rows={1}
                   className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
                   placeholder="e.g., Round-trip flight, Train passes, Rental car..."
                 />
@@ -564,7 +586,7 @@ const handleInterestToggle = (label) => {
                   name="activities"
                   value={formData.activities}
                   onChange={handleInputChange}
-                  rows={2}
+                  rows={1}
                   className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
                   placeholder="e.g., Visit Eiffel Tower, Wine tasting tour, Cooking class..."
                 />
@@ -577,7 +599,7 @@ const handleInterestToggle = (label) => {
                   name="dietaryRestrictions"
                   value={formData.dietaryRestrictions}
                   onChange={handleInputChange}
-                  rows={2}
+                  rows={1}
                   className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 transition-all"
                   placeholder="e.g., Vegetarian, Gluten-free, Nut allergy..."
                 />
@@ -600,10 +622,10 @@ const handleInterestToggle = (label) => {
           </Card>
 
           {/* Form Actions */}
-          <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
+          <div className="flex flex-row justify-start md:justify-end gap-4 pt-4">
             <Button
               type="button"
-              variant="outline"
+              variant="destructive"
               disabled={isSubmitting}
               className="sm:min-w-[140px] h-12 text-base font-medium"
               onClick={() => setFormData(initialForm)}
