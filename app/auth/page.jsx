@@ -59,7 +59,7 @@ export default function Auth() {
     if (user) {
       router.push(continueTo || "/dashboard");
     }
-  }, []);
+  }, [user, continueTo, router]);
 
   const updateForm = (field, value) =>
     setFormData((prev) => ({ ...prev, [field]: value }));

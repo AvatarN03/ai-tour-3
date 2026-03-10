@@ -1,9 +1,10 @@
 "use client";
 import Header from "@/components/custom/Header";
 import Sidebar from "@/components/custom/Sidebar";
+import GoogleTranslate from "@/components/features/GoogleTranslation";
 import { useAuth } from "@/providers/useAuth";
 import { WeatherProvider } from "@/providers/useWeather";
-import { Loader2 } from "lucide-react";
+import { Languages, Loader2 } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import React, { Suspense, useState, useEffect } from "react";
 
@@ -12,6 +13,8 @@ const layout = ({ children }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, profile } = useAuth();
+
+  const [isTranslateShow, setTranslateShow] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -38,14 +41,24 @@ const layout = ({ children }) => {
     return (
       <>
         <WeatherProvider>
+          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed bottom-4 right-4 w-16 h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-2 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
+            {
+              isTranslateShow && (
+
+                <GoogleTranslate />
+
+              )
+            }
+            <Languages />
+          </div>
           <div className="p-2 bg-slate-200 dark:bg-card rounded-md">
             <div className="flex gap-2 ">
               <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
               <div
-                className={`flex-1 bg-background rounded-xl md:p-2 ${
-                  sidebarOpen ? "md:ml-64" : " "
-                } transition-all duration-300 ease-in-out flex flex-col`}
+                className={`flex-1 bg-background rounded-xl md:p-2 ${sidebarOpen ? "md:ml-64" : " "
+                  } transition-all duration-300 ease-in-out flex flex-col`}
               >
+
                 <Header
                   toggleSidebar={toggleSidebar}
                   isSidebarOpen={sidebarOpen}

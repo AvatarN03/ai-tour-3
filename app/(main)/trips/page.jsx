@@ -7,7 +7,7 @@ import Link from "next/link";
 import { db } from "@/lib/config/firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "@/providers/useAuth";
-import { Calendar, Clock, DollarSign, MapPin } from "lucide-react";
+import { Calendar, Clock, DollarSign, MapPin, Plus } from "lucide-react";
 
 export default function SavedTripsPage() {
   const { profile } = useAuth();
@@ -105,15 +105,15 @@ export default function SavedTripsPage() {
       <div className="flex flex-col sm:flex-row  w-full sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            Saved Trips
+            Trips Inbox
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
             Manage and explore travel plans
           </p>
         </div>
         <Link href="/trips/create-trip">
-          <Button className="w-full sm:w-auto cursor-pointer">
-            + Create New Trip
+          <Button className="w-full sm:w-auto cursor-pointer p-2">
+            <Plus className="w-3 h-3 mr-2" /> Create New Trip
           </Button>
         </Link>
       </div>

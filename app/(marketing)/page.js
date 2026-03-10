@@ -9,14 +9,30 @@ import Pricing from "@/components/custom/Marketing/Pricing";
 import AboutSection from "@/components/custom/Marketing/AboutSection";
 import CTA from "@/components/custom/Marketing/CTA";
 import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 
 
 const LandingPage = () => {
   const { t } = useTranslation();
+
+
+  // useEffect(() => {
+
+
+  //   window.googleTranslateElementInit = () => {
+  //     new window.google.translate.TranslateElement(
+  //       { pageLanguage: "en" },
+  //       "google_translate_element"
+  //     );
+  //   };
+  // }, []);
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-300 via-indigo-200 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar />
+      <div id="google_translate_element"></div>
 
       {/* Hero Section */}
       <Hero />

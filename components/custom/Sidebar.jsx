@@ -85,7 +85,7 @@ export default function Sidebar({ isOpen, onClose }) {
         initial="closed"
         animate={isOpen ? "open" : "closed"}
         variants={sidebarVariants}
-        className="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 border-r border-gray-200 dark:border-gray-800 h-screen flex flex-col shadow-2xl"
+        className="fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-950 border-r border-gray-200 dark:border-gray-800 h-svh md:h-screen flex flex-col shadow-2xl"
       >
         {/* Logo Section with Gradient Background */}
         <div className="relative p-6 border-b border-gray-200 dark:border-gray-800 overflow-hidden">

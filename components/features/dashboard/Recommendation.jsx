@@ -142,13 +142,13 @@ export default function TripRecommendations() {
                   {trip.interests.slice(0, 3).map((interest, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1 bg-blue-600 dark:bg-blue-200  text-indigo-100 dark:text-indigo-800 text-xs font-medium rounded-full flex justify-center items-center"
+                      className="px-3 py-1 bg-blue-600 dark:bg-blue-200  text-indigo-100 dark:text-indigo-800 text-xs font-medium rounded-xl flex justify-center items-center"
                     >
                       {interest}
                     </span>
                   ))}
                   {trip.interests.length > 3 && (
-                    <span className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full flex justify-center items-center">
+                    <span title={trip.interest} className="px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full flex justify-center items-center">
                       +{trip.interests.length - 3}
                     </span>
                   )}

@@ -260,3 +260,66 @@ html {
 html.scrollbar-gradient, body.scrollbar-gradient {
   /* Already defined in Tailwind layer, so you can use the class */
 }
+
+
+/* Hide Google Translate toolbar banner & top bar */
+.goog-te-banner-frame,
+.goog-te-banner-frame.skiptranslate,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+}
+
+/* Remove top offset Google adds to <body> */
+body {
+  top: 0 !important;
+  position: static !important;
+}
+
+/* Hide the Google Translate branding text */
+.goog-logo-link,
+.goog-te-gadget span {
+  display: none !important;
+}
+
+/* Clean up the wrapper */
+.goog-te-gadget {
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+/* Style the select dropdown itself */
+.goog-te-gadget select,
+.goog-te-combo {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 36px 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a202c;
+  cursor: pointer;
+  outline: none;
+  width: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover state */
+.goog-te-gadget select:hover,
+.goog-te-combo:hover {
+  border-color: #a0aec0;
+}
+
+/* Focus state */
+.goog-te-gadget select:focus,
+.goog-te-combo:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}

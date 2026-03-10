@@ -128,9 +128,9 @@ const LocationAccess = () => {
               {forecast.map((day) => (
                 <div
                   key={day.date}
-                  className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center shadow w-full max-w-[400px] flex flex-col justify-between h-full from-blue-300 dark:from-blue-600 to-cyan-500 hover:bg-gradient-to-tr transition-colors"
+                  className="bg-white dark:bg-gray-700 rounded-lg p-3 text-center shadow w-full max-w-[400px] flex flex-col justify-between h-full from-blue-300 dark:from-blue-600 to-cyan-500 hover:bg-gradient-to-tr transition-colors group"
                 >
-                  <div className="">
+                  <div className="flex flex-col gap-4">
 
                     <p className="text-sm text-gray-800 dark:text-gray-300">
                       {new Date(day.date).toLocaleDateString("en-US", {
@@ -138,7 +138,7 @@ const LocationAccess = () => {
                       })}
                     </p>
 
-                    <div className="text-4xl my-1">{day.icon}</div>
+                    <div className="text-4xl my-1 group-hover:text-5xl group-hover:mt-2 transition-discrete ease-in-out duration-150">{day.icon}</div>
                   </div>
                   <div className="flex flex-col gap-2">
 
