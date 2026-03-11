@@ -41,13 +41,13 @@ const layout = ({ children }) => {
     return (
       <>
         <WeatherProvider>
-          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed bottom-4 right-4 w-16 h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-2 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
+          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed bottom-4 right-4 w-16 h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-2 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow ">
             <div className={isTranslateShow ? "block" : "hidden"}>
               <GoogleTranslate />
             </div>
             <Languages />
           </div>
-          <div className="p-2 bg-slate-200 dark:bg-card rounded-md">
+          <div className="p-2 bg-slate-200 dark:bg-card rounded-md ">
             <div className="flex gap-2 ">
               <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />
               <div
@@ -59,11 +59,11 @@ const layout = ({ children }) => {
                   toggleSidebar={toggleSidebar}
                   isSidebarOpen={sidebarOpen}
                 />
-                <div className=" md:px-2 md:py-4 w-full max-w-5xl mx-auto">
+                <div className=" md:px-2 md:py-4 w-full max-w-6xl mx-auto">
                   <Suspense
                     fallback={
                       <>
-                        <div className="h-screen flex justify-center items-center flex-col w-full">
+                        <div className="h-screen flex justify-center items-center flex-col w-full ">
                           <Loader2 className="animate-spin mr-2" />
                           <div className="text-3xl text-white">Loading...</div>
                         </div>

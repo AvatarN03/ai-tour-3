@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased`}
+        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased scrollbar-gradient`}
       >
         <AuthProvider>
           <LanguageProvider>

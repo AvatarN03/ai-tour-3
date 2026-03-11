@@ -256,10 +256,7 @@ html {
 
 }
 
-  
-html.scrollbar-gradient, body.scrollbar-gradient {
-  /* Already defined in Tailwind layer, so you can use the class */
-}
+
 
 
 /* Hide Google Translate toolbar banner & top bar */
