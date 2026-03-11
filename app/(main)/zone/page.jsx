@@ -11,7 +11,7 @@ import { useAuth } from '@/providers/useAuth'
 import { logActivity } from '@/lib/services/logActivity'
 import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
 
-export default function BlogListPage() {
+const BlogListPage = ()=>{
   const router = useRouter()
   const { profile } = useAuth()
 
@@ -263,3 +263,5 @@ export default function BlogListPage() {
     </div>
   )
 }
+
+export default BlogListPage;
