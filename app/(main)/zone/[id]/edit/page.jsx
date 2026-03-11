@@ -11,6 +11,7 @@ import { db } from '@/lib/config/firebase'
 import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
 import { useAuth } from '@/providers/useAuth'
 import { logActivity } from '@/lib/services/logActivity'
+import { toast } from 'sonner'
 
 export default function EditPostPage() {
     const router = useRouter()
@@ -37,7 +38,7 @@ export default function EditPostPage() {
                 setImagePreview(data.imageUrl || null)
             } catch (error) {
                 console.error('Error fetching post:', error)
-                alert('Failed to load post')
+                toast.error('Failed to load post')
                 router.push('/zone')
             } finally {
                 setIsLoading(false)
@@ -113,11 +114,11 @@ export default function EditPostPage() {
                 entityId: id,
                 metadata: { postId: id },
             })
-
+            toast.success('Post updated successfully!')
             router.push(`/zone/${id}/view`)
         } catch (error) {
             console.error('Error updating post:', error)
-            alert(`Failed to update post: ${error.message}`)
+            toast.error(`Failed to update post: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }

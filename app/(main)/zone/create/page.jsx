@@ -11,6 +11,7 @@ import { db } from '@/lib/config/firebase'
 import { doc, setDoc, Timestamp } from 'firebase/firestore'
 import { useAuth } from '@/providers/useAuth'
 import { logActivity } from '@/lib/services/logActivity'
+import { toast } from 'sonner'
 
 export default function CreatePostPage() {
     const router = useRouter()
@@ -86,6 +87,7 @@ export default function CreatePostPage() {
                 category: post.category,
                 imageUrl: uploadedImageUrl,
                 author: profile?.name || 'Anonymous',
+                authorImage: profile?.avatarUrl || null,
                 authorUid: profile?.uid,
                 createdAt: Timestamp.now(),
                 likes: 0,
@@ -100,11 +102,12 @@ export default function CreatePostPage() {
                 entityId: postId,
                 metadata: { tripName: postData.title },
             })
+            toast.success('Post published successfully!')
 
             router.push('/zone')
         } catch (error) {
             console.error('Error creating post:', error)
-            alert(`Failed to publish post: ${error.message}`)
+            toast.error(`Failed to publish post: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }

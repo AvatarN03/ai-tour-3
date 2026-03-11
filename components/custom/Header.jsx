@@ -144,7 +144,7 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
             <ThemeToggle />
 
             {/* Language Selector Component */}
-            <LanguageSelector />
+            {/* <LanguageSelector /> */}
           </div>
         </div>
       </motion.div>
