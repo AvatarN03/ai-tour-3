@@ -357,3 +357,7 @@ body {
 .dark .autocomplete-dropdown > div:hover{
   background: #000;
 }
+
+.dark .recharts-default-tooltip{
+  background: #233 !important;
+}

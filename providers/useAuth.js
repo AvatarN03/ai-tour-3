@@ -3,13 +3,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/config/firebase";
-import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 import Loading from "@/components/custom/Loading";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser]       = useState(null);
+  const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,24 +25,24 @@ export const AuthProvider = ({ children }) => {
 
       if (authUser) {
         try {
-          const docRef  = doc(db, "users", authUser.uid);
+          const docRef = doc(db, "users", authUser.uid);
           const docSnap = await getDoc(docRef);
 
           if (docSnap.exists()) {
             // Merge Firestore data with live Google auth fields
             setProfile({
               displayName: authUser.displayName,
-              email:       authUser.email,
-              photoURL:    authUser.photoURL,
-              ...docSnap.data(),             // Firestore fields win over defaults
+              email: authUser.email,
+              photoURL: authUser.photoURL,
+              ...docSnap.data(), // Firestore fields win over defaults
             });
           } else {
             // First Google login — create the base document
             const baseProfile = {
               displayName: authUser.displayName,
-              email:       authUser.email,
-              photoURL:    authUser.photoURL,
-              createdAt:   serverTimestamp(),
+              email: authUser.email,
+              photoURL: authUser.photoURL,
+              createdAt: serverTimestamp(),
             };
             await setDoc(docRef, baseProfile);
             setProfile(baseProfile);
@@ -46,8 +52,8 @@ export const AuthProvider = ({ children }) => {
           // Fallback: at least show Google data so UI isn't empty
           setProfile({
             displayName: authUser.displayName,
-            email:       authUser.email,
-            photoURL:    authUser.photoURL,
+            email: authUser.email,
+            photoURL: authUser.photoURL,
           });
         }
       } else {
@@ -61,20 +67,18 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Re-fetch full profile from Firestore and sync local state
-  const refreshProfile = async () => {
-    if (!user) return;
-    try {
-      const docSnap = await getDoc(doc(db, "users", user.uid));
-      if (docSnap.exists()) {
-        setProfile({
-          displayName: user.displayName,
-          email:       user.email,
-          photoURL:    user.photoURL,
-          ...docSnap.data(),
-        });
+  const refreshProfile = async (data = null) => {
+    if (data) {
+      setProfile(data); // ✅ set directly, no Firestore call needed
+      return;
+    }
+
+    // fallback fetch from Firestore (used on page reload / Google login)
+    if (auth.currentUser) {
+      const snap = await getDoc(doc(db, "users", auth.currentUser.uid));
+      if (snap.exists()) {
+        setProfile(snap.data()); // ✅ full data from Firestore
       }
-    } catch (err) {
-      console.error("Error refreshing profile:", err);
     }
   };
 
@@ -104,7 +108,7 @@ export const AuthProvider = ({ children }) => {
         user,
         profile,
         setProfile,
-        refreshProfile,   // ← expose this
+        refreshProfile, // ← expose this
         logout,
         updateProfilePicture,
         updatePreferences,

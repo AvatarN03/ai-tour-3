@@ -32,7 +32,8 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { logActivity } from "@/lib/services/logActivity";
 
 const ProfileCard = ({ modal, setModal }) => {
-  const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();
+  const { profile, logout, updateProfilePicture, updatePreferences, user, refreshProfile } = useAuth();
+  const displayName = profile?.name || profile?.displayName || "";
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileRef = useRef(null);
@@ -51,6 +52,8 @@ const ProfileCard = ({ modal, setModal }) => {
     if (profile?.preferences) {
       setPrefs(profile.preferences);
     }
+    console.log(profile)
+    refreshProfile();
   }, [profile?.preferences]);
 
   // Fetch stats when modal opens
@@ -209,7 +212,7 @@ const ProfileCard = ({ modal, setModal }) => {
             <Avatar className="relative w-28 h-28  ring-4 ring-white dark:ring-gray-900 shadow-xl">
               <AvatarImage
                 src={profile?.avatarUrl}
-                alt={profile?.name}
+                alt={displayName || "Profile"}
                 className="object-cover"
               />
               <AvatarFallback className="text-2xl font-bold bg-gradient-to-br from-blue-600 to-purple-600 text-white">
@@ -243,7 +246,7 @@ const ProfileCard = ({ modal, setModal }) => {
           {/* User Info */}
           <div className="mt-4">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              @{profile?.username}
+              @{profile?.username || displayName || "user"}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1.5 mt-1">
               <Mail className="w-4 h-4" />

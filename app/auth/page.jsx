@@ -52,7 +52,7 @@ export default function Auth() {
   const [error, setError] = useState("");
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -145,34 +145,33 @@ export default function Auth() {
 
       if (!isLogin) {
         const username = formData.username.toLowerCase().trim();
+        const profileData = {
+          uid: result.user.uid,
+          email: result.user.email,
+          name: formData.name,
+          username,
+          tripCount: 0,
+          subscription: "free",
+          avatarUrl: formData.avatarUrl,
+          preferences: formData.preferences,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
 
         await runTransaction(db, async (transaction) => {
           const userRef = doc(db, "users", result.user.uid);
           const usernameRef = doc(db, "usernames", username);
 
           const usernameSnap = await transaction.get(usernameRef);
+          if (usernameSnap.exists()) throw new Error("Username already taken");
 
-          if (usernameSnap.exists()) {
-            throw new Error("Username already taken");
-          }
+          transaction.set(usernameRef, { uid: result.user.uid });
+          transaction.set(userRef, profileData); // ✅ reuse same object
+        });;
 
-          transaction.set(usernameRef, {
-            uid: result.user.uid,
-          });
 
-          transaction.set(userRef, {
-            uid: result.user.uid,
-            email: result.user.email,
-            name: formData.name,
-            username,
-            tripCount: 0,
-            subscription: "free",
-            avatarUrl: formData.avatarUrl,
-            preferences: formData.preferences,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-        });
+        // Instead of just refreshProfile(), do this:
+        refreshProfile(profileData);
         toast.success("Account created successfully!");
       } else {
         toast.success("Signed in successfully!");
@@ -231,7 +230,7 @@ export default function Auth() {
                   key={pref}
                   type="button"
                   onClick={() => togglePreference(pref)}
-                  className={`w-full text-left px-3 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all ${formData.preferences.includes(pref)
+                  className={`w-full text-left px-2 py-2.5 rounded-lg mb-1 text-sm font-medium transition-all ${formData.preferences.includes(pref)
                     ? "bg-gradient-to-r from-purple-500 to-fuchsia-500 text-white"
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }`}
@@ -271,7 +270,7 @@ export default function Auth() {
               key={pref}
               type="button"
               onClick={() => togglePreference(pref)}
-              className={`py-2.5 px-3 rounded-xl text-sm font-medium transition-all transform hover:scale-105 ${formData.preferences.includes(pref)
+              className={`py-2.5 px-1 rounded-lg text-sm font-medium transition-all transform hover:scale-105 ${formData.preferences.includes(pref)
                 ? "bg-gradient-to-br from-purple-500 to-fuchsia-500 text-white shadow-lg"
                 : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-2 border-gray-200 dark:border-gray-600 hover:border-purple-400"
                 }`}

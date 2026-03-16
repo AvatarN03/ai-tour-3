@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -18,6 +18,10 @@ export default function Sidebar({ isOpen, onClose }) {
   const pathname = usePathname();
   const [modal, setModal] = useState(false);
   const { profile } = useAuth();
+
+  useEffect(()=>{
+    console.log(profile)
+  }, [])
 
   // Map menu item names to translation keys
   const getTranslatedMenuName = (menuName) => {

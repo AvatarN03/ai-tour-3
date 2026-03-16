@@ -43,12 +43,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/* <body
-        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased scrollbar-gradient`}
-      > */}
       <body
-        className={` ${inter.className} antialiased scrollbar-gradient`}
+        className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased scrollbar-gradient`}
       >
+      {/* <body
+        className={` ${inter.className} antialiased scrollbar-gradient`}
+      > */}
         <AuthProvider>
           <LanguageProvider>
             <ThemeProvider attribute="class" enableSystem defaultTheme="system">
