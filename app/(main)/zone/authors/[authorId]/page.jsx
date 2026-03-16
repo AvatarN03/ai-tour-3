@@ -2,14 +2,14 @@
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
-import { ArrowLeft, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Edit2, MessageCircle } from 'lucide-react'
 
 import { collection, getDocs, query, where } from 'firebase/firestore'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { db } from '@/lib/config/firebase'
-import { formatDate } from 'date-fns'
-import { renderContent } from '@/lib/utils/blogHelpers'
+import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
+import { useAuth } from '@/providers/useAuth'
 
 export default function AuthorPostsPage() {
     const router = useRouter()
@@ -19,6 +19,7 @@ export default function AuthorPostsPage() {
     const [authorName, setAuthorName] = useState('')
     const [comments, setComments] = useState({})
     const [isLoading, setIsLoading] = useState(true)
+    const { profile } = useAuth();
 
     useEffect(() => { fetchAuthorPosts() }, [authorId])
 
@@ -102,56 +103,72 @@ export default function AuthorPostsPage() {
                 ) : (
                     <div className="space-y-4">
                         {posts.map((post) => (
-                            <Card
-                                key={post.id}
-                                className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                                onClick={() => router.push(`/zone/${post.id}/view`)}
-                            >
-                                <div className="flex flex-col md:flex-row">
-                                    {post.imageUrl && (
-                                        <div className="md:w-1/3 shrink-0">
-                                            <img
-                                                src={post.imageUrl}
-                                                alt={post.title}
-                                                className="w-full h-48 md:h-full object-cover"
-                                            />
-                                        </div>
-                                    )}
+                            <div
+                key={post.id}
+                className="overflow-hidden md:h-60 hover:shadow-lg transition-shadow cursor-pointer rounded-lg bg-gray-800 h-full"
+                onClick={() => router.push(`/zone/${post.id}/view`)}
+              >
+                <div className="flex flex-col md:flex-row h-full">
+                  {post.imageUrl && (
+                    <div className="h-60 md:h-auto md:w-1/3 shrink-0">
+                      <img
+                        src={post.imageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover md:object-fill object-center"
+                      />
+                    </div>
+                  )}
 
-                                    <div className={`p-6 flex flex-col justify-between gap-3 ${post.imageUrl ? 'md:w-2/3' : 'w-full'}`}>
-                                        {/* Top */}
-                                        <div className="space-y-2">
-                                            <div className="flex items-center gap-2 flex-wrap">
-                                                <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-full text-xs font-medium">
-                                                    {post.category}
-                                                </span>
-                                                <span className="text-xs text-gray-400">
-                                                    📅 {formatDate(post.createdAt)}
-                                                </span>
-                                            </div>
+                  <div className={`p-3 md:p-6 flex flex-col justify-between gap-3 ${post.imageUrl ? 'md:w-2/3' : 'w-full'}`}>
+                    {/* Top */}
+                    <div className="space-y-4">
+                      <h3 className="text-xl md:text-2xl xl:text-3xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+                        {post.title}
+                      </h3>
+                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span>✍️ {post.author}</span>
+                        <span className='text-right'>📅 {formatDate(post.createdAt)}</span>
+                        <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-3xl w-fit text-xs font-medium">
+                          {post.category}
+                        </span>
+                      </div>
+                      <div
+                        className="text-gray-600 flex flex-1 dark:text-gray-400 text-sm line-clamp-2"
+                        dangerouslySetInnerHTML={{
+                          __html:
+                            renderContent((post.content || '').substring(0, 160)) +
+                            ((post.content || '').length > 160 ? '...' : ''),
+                        }}
+                      />
+                    </div>
 
-                                            <h3 className="text-xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
-                                                {post.title}
-                                            </h3>
+                    {/* Footer */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-sm">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>{(comments[post.id] || []).length} comments</span>
+                      </div>
 
-                                            <div
-                                                className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2"
-                                                dangerouslySetInnerHTML={{
-                                                    __html:
-                                                        renderContent((post.content || '').substring(0, 160)) +
-                                                        ((post.content || '').length > 160 ? '...' : ''),
-                                                }}
-                                            />
-                                        </div>
+                      {post.authorUid === profile?.uid && (
 
-                                        {/* Footer */}
-                                        <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400 text-sm pt-3 border-t border-gray-200 dark:border-gray-700">
-                                            <MessageCircle className="w-4 h-4" />
-                                            <span>{comments[post.id] ?? 0} comments</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </Card>
+                        <Button
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            router.push(`/zone/${post.id}/edit`)
+                          }}
+                          className="flex items-center gap-1"
+                        >
+                          <Edit2 className="w-3 h-3" />
+                          Edit
+                        </Button>
+
+
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
                         ))}
                     </div>
                 )}

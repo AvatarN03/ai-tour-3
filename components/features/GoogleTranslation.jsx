@@ -36,5 +36,5 @@ export default function GoogleTranslate() {
     document.body.appendChild(script);
   }, []);
 
-  return <div id="google_translate_element" />;
+  return <div id="google_translate_element" className="bg-red-400 rounded-md overflow-hidden w-6 h-6 flex justify-center items-center"/>;
 }

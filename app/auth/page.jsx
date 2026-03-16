@@ -94,6 +94,8 @@ export default function Auth() {
           name: user.displayName || "NA",
           avatarUrl: user.photoURL || "",
           preferences: [],
+          tripCount: 0,
+          subscription: "free",
           createdAt: new Date(),
         });
 

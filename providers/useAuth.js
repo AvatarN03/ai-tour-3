@@ -1,112 +1,116 @@
-"use client"; // if using App Router in Next.js 13+
+"use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "@/lib/config/firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import Loading from "@/components/custom/Loading";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);     
-  const [profile, setProfile] = useState(null); 
+  const [user, setUser]       = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       setUser(authUser || null);
-      setLoading(false);
 
       if (authUser) {
-       
         try {
-          const docRef = doc(db, "users", authUser.uid);
+          const docRef  = doc(db, "users", authUser.uid);
           const docSnap = await getDoc(docRef);
-          setProfile(docSnap.exists() ? docSnap.data() : null);
+
+          if (docSnap.exists()) {
+            // Merge Firestore data with live Google auth fields
+            setProfile({
+              displayName: authUser.displayName,
+              email:       authUser.email,
+              photoURL:    authUser.photoURL,
+              ...docSnap.data(),             // Firestore fields win over defaults
+            });
+          } else {
+            // First Google login — create the base document
+            const baseProfile = {
+              displayName: authUser.displayName,
+              email:       authUser.email,
+              photoURL:    authUser.photoURL,
+              createdAt:   serverTimestamp(),
+            };
+            await setDoc(docRef, baseProfile);
+            setProfile(baseProfile);
+          }
         } catch (err) {
           console.error("Error fetching profile:", err);
-          setProfile(null);
+          // Fallback: at least show Google data so UI isn't empty
+          setProfile({
+            displayName: authUser.displayName,
+            email:       authUser.email,
+            photoURL:    authUser.photoURL,
+          });
         }
       } else {
         setProfile(null);
       }
+
+      setLoading(false);
     });
 
     return () => unsubscribe();
   }, []);
 
-  const logout = () => {
-    console.log(user);
-    console.log(profile);
-    signOut(auth);
+  // Re-fetch full profile from Firestore and sync local state
+  const refreshProfile = async () => {
+    if (!user) return;
+    try {
+      const docSnap = await getDoc(doc(db, "users", user.uid));
+      if (docSnap.exists()) {
+        setProfile({
+          displayName: user.displayName,
+          email:       user.email,
+          photoURL:    user.photoURL,
+          ...docSnap.data(),
+        });
+      }
+    } catch (err) {
+      console.error("Error refreshing profile:", err);
+    }
+  };
+
+  const logout = async () => {
+    await signOut(auth);
     setUser(null);
     setProfile(null);
   };
 
-  // Update profile picture
   const updateProfilePicture = async (avatarUrl) => {
-    if (!user) {
-      throw new Error("No user logged in");
-    }
-
-    try {
-      const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, { avatarUrl });
-      
-      // Update local profile state
-      setProfile((prev) => ({
-        ...prev,
-        avatarUrl,
-      }));
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating profile picture:", error);
-      throw error;
-    }
+    if (!user) throw new Error("No user logged in");
+    await updateDoc(doc(db, "users", user.uid), { avatarUrl });
+    setProfile((prev) => ({ ...prev, avatarUrl }));
   };
 
-  // Update preferences
   const updatePreferences = async (preferences) => {
-    if (!user) {
-      throw new Error("No user logged in");
-    }
-
-    try {
-      const userDocRef = doc(db, "users", user.uid);
-      await updateDoc(userDocRef, { preferences });
-      
-      // Update local profile state
-      setProfile((prev) => ({
-        ...prev,
-        preferences,
-      }));
-
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating preferences:", error);
-      throw error;
-    }
+    if (!user) throw new Error("No user logged in");
+    await updateDoc(doc(db, "users", user.uid), { preferences });
+    setProfile((prev) => ({ ...prev, preferences }));
   };
 
-
-  if (loading) {
-    return <Loading />;
-  }
+  if (loading) return <Loading />;
 
   return (
-    <AuthContext.Provider 
-      value={{ 
-        user, 
-        profile, 
-        setProfile, 
+    <AuthContext.Provider
+      value={{
+        user,
+        profile,
+        setProfile,
+        refreshProfile,   // ← expose this
         logout,
         updateProfilePicture,
         updatePreferences,
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };
