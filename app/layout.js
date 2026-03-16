@@ -2,6 +2,7 @@ import {
   Noto_Sans,
   Noto_Sans_Tamil,
   Noto_Naskh_Arabic,
+  Inter
 } from "next/font/google";
 
 import "./globals.css";
@@ -11,6 +12,7 @@ import { Toaster } from "sonner";
 import { AuthProvider } from "@/providers/useAuth";
 import { LanguageProvider } from "@/context/LanguageContext";
 
+const inter = Inter({ subsets: ['latin'] })
 
 const notoSans = Noto_Sans({
   subsets: ["latin", "devanagari"],
@@ -41,8 +43,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body
+      {/* <body
         className={`${notoSans.variable} ${notoSansTamil.variable} ${notoArabic.variable} antialiased scrollbar-gradient`}
+      > */}
+      <body
+        className={` ${inter.className} antialiased scrollbar-gradient`}
       >
         <AuthProvider>
           <LanguageProvider>

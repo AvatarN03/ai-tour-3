@@ -271,51 +271,13 @@ const CreateTripForm = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Destination <span className="text-red-500">*</span>
-                </label>
-                {/* <AutoCompletion
-                  onPlaceSelect={(place) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      destination: place.formattedAddress,
-                    }))
-                  }
-                /> */}
-          
-                <LocationComplete
-                  name="destination"
-                  value={formData.destination}
-                  onChange={handleInputChange}
-                  placeholder="e.g., Paris, France"
-                  error={errors.destination}
-                />
 
-                {/* <input
-                  type="text"
-                  name="destination"
-                  value={formData.destination}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.destination
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
-                  placeholder="e.g., Paris, France"
-                /> */}
-                {/* {errors.destination && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.destination}
-                  </p>
-                )} */}
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Starting From <span className="text-red-500">*</span>
                 </label>
-                
+
 
                 <LocationComplete
                   name="source"
@@ -339,6 +301,46 @@ const CreateTripForm = () => {
                   <p className="text-red-500 text-sm mt-1 flex items-center">
                     <span className="mr-1">⚠️</span>
                     {errors.source}
+                  </p>
+                )} */}
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Destination <span className="text-red-500">*</span>
+                </label>
+                {/* <AutoCompletion
+                  onPlaceSelect={(place) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      destination: place.formattedAddress,
+                    }))
+                  }
+                /> */}
+
+                <LocationComplete
+                  name="destination"
+                  value={formData.destination}
+                  onChange={handleInputChange}
+                  placeholder="e.g., Paris, France"
+                  error={errors.destination}
+                />
+
+                {/* <input
+                  type="text"
+                  name="destination"
+                  value={formData.destination}
+                  onChange={handleInputChange}
+                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.destination
+                    ? "border-red-500"
+                    : "border-gray-200 dark:border-gray-700"
+                    }`}
+                  placeholder="e.g., Paris, France"
+                /> */}
+                {/* {errors.destination && (
+                  <p className="text-red-500 text-sm mt-1 flex items-center">
+                    <span className="mr-1">⚠️</span>
+                    {errors.destination}
                   </p>
                 )} */}
               </div>

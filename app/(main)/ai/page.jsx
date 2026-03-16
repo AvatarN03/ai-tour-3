@@ -1,27 +1,6 @@
-// // 'use client'
+'use client'
 
-// // import { Button } from '@/components/ui/button'
-// // import { useEffect, useMemo, useRef, useState } from 'react'
 
-// // const STORAGE_KEY = 'ai_chat_messages'
-
-// // export default function AIAssistantPage() {
-// //   const [messages, setMessages] = useState(() => {
-// //     try {
-// //       const saved = typeof window !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null
-// //       return saved ? JSON.parse(saved) : [
-// //         {
-// //           id: 1,
-// //           type: 'ai',
-// //           content: "Hello! I'm your AI travel assistant. I can help you plan trips, find destinations, and answer travel questions. What would you like to know?",
-// //           timestamp: new Date().toISOString()
-// //         }
-// //       ]
-// //     } catch {
-// //       return []
-// //     }
-// //   })
-  
 // //   const [inputMessage, setInputMessage] = useState('')
 // //   const [isTyping, setIsTyping] = useState(false)
 // //   const [isListening, setIsListening] = useState(false)
@@ -2173,7 +2152,6 @@
 //     </div>
 //   )
 // }
-'use client'
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
