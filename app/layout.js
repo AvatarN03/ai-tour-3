@@ -33,7 +33,7 @@ const notoArabic = Noto_Naskh_Arabic({
 });
 
 export const metadata = {
-  title: "Ai tour",
+  title: "AI TOUR",
   description: "version - 2",
   icons: {
     icon: "/logo.png",

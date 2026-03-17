@@ -1,3 +1,4 @@
+"use client"
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,6 +22,7 @@ import {
   Loader2,
   CreditCard,
   Crown,
+  Info,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { getUserInitials } from "@/lib/utils/nameInitial";
@@ -30,9 +32,10 @@ import { formatDate } from "@/lib/utils/utils";
 import { db } from "@/lib/config/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { logActivity } from "@/lib/services/logActivity";
+import PaymentButton from "../payment/PaymentButton";
 
 const ProfileCard = ({ modal, setModal }) => {
-  const { profile, logout, updateProfilePicture, updatePreferences, user, refreshProfile } = useAuth();
+  const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();
   const displayName = profile?.name || profile?.displayName || "";
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
@@ -40,6 +43,7 @@ const ProfileCard = ({ modal, setModal }) => {
   const [editPrefs, setEditPrefs] = useState(false);
   const [prefs, setPrefs] = useState([]);
   const [savingPrefs, setSavingPrefs] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   // Stats state
   const [stats, setStats] = useState({
@@ -49,11 +53,15 @@ const ProfileCard = ({ modal, setModal }) => {
   });
 
   useEffect(() => {
+
+
     if (profile?.preferences) {
       setPrefs(profile.preferences);
     }
     console.log(profile)
-    refreshProfile();
+
+
+
   }, [profile?.preferences]);
 
   // Fetch stats when modal opens
@@ -200,6 +208,13 @@ const ProfileCard = ({ modal, setModal }) => {
     );
   };
 
+  const handleHint = () => {
+    setShowHint(true);
+    setTimeout(() => {
+      setShowHint(false);
+    }, 2000)
+  }
+
   return (
     <Dialog open={modal} onOpenChange={setModal}>
       <DialogContent className="sm:max-w-[500px] h-[80vh] overflow-y-auto p-0 scrollbar-gradient">
@@ -254,17 +269,45 @@ const ProfileCard = ({ modal, setModal }) => {
             </p>
           </div>
 
-          <div className="absolute top-1/2 translate-y-1/2 right-4  bg-gray-800 rounded-full px-3 py-2 shadow-md">
+          <div className="absolute top-1/2 -translate-y-1/2 right-4">
             {profile?.subscription === "pro" ? (
-              <div className="flex items-center gap-1">
-                <Crown className="w-5 h-5 text-yellow-600" />
-                <span className="ml-1 text-sm font-medium text-yellow-600">Pro</span>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 px-3 py-2 rounded-lg">
+                <Crown className="w-5 h-5 text-yellow-500" />
+                <div className="flex flex-col leading-tight">
+                  <span className="text-xs text-yellow-400 font-semibold">Pro Plan</span>
+                  <span className="text-[11px] text-gray-400">Premium Access</span>
+                </div>
               </div>
             ) : (
-              <div className="flex items-center gap-1">
-                <CreditCard className="w-5 h-5 text-yellow-600" />
+              <div className=" relative flex items-center gap-3 bg-gray-800/80 border border-gray-700 px-3 py-1 rounded-lg shadow-sm">
+                {showHint && (
+                  <div className="absolute top-10 right-0 w-56 text-xs bg-gray-900 text-gray-300 p-2 rounded-md shadow-lg border border-gray-700">
+                    7 trip creation and unlimited blog posts.
 
-                <span className="ml-1 text-sm font-medium text-gray-300 dark:text-gray-300">Free</span>
+                  </div>
+                )}
+
+                {/* Plan Info */}
+                <div className="flex items-center gap-2">
+                  <CreditCard className="w-5 h-5 text-yellow-500" />
+                  <div className="flex flex-col leading-tight">
+                    <span className="text-xs font-semibold flex flex-nowrap items-center gap-1 text-gray-200" >Free Plan <Info className="w-3 h-3" onClick={handleHint} /></span>
+                    <span className="text-[11px] text-gray-400">
+                      Limited features
+                    </span>
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="w-px h-6 bg-gray-600"></div>
+
+                <div
+                  onClick={() => setModal(false)}
+                >
+                  <PaymentButton className="text-xs px-3 py-2 cursor-pointer bg-indigo-600 hover:bg-yellow-600">
+                    Upgrade
+                  </PaymentButton>
+                </div>
               </div>
             )}
           </div>

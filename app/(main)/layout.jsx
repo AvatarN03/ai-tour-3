@@ -12,7 +12,7 @@ const layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile, loading } = useAuth();
 
   const [isTranslateShow, setTranslateShow] = useState(false);
 
@@ -24,13 +24,18 @@ const layout = ({ children }) => {
     setSidebarOpen(false);
   };
 
-  useEffect(() => {
-    if (user === null) {
-      // Redirect to auth page with current path as continueTo
+
+useEffect(() => {
+  if (loading) return;
+
+    if (!user) {
       router.push(`/auth?continueTo=${encodeURIComponent(pathname)}`);
+      return;
     }
-    refreshProfile();
-  }, [user, router, pathname]);
+
+}, [user, loading, router, pathname]);
+
+
   useEffect(() => {
     if (profile && !profile?.preferences?.length === 0) {
       router.push(`/preferences?continueTo=dashboard`);

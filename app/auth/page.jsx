@@ -52,7 +52,7 @@ export default function Auth() {
   const [error, setError] = useState("");
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
-  const { user, refreshProfile } = useAuth();
+  const { user, setProfile } = useAuth();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -167,11 +167,9 @@ export default function Auth() {
 
           transaction.set(usernameRef, { uid: result.user.uid });
           transaction.set(userRef, profileData); // ✅ reuse same object
-        });;
-
-
-        // Instead of just refreshProfile(), do this:
-        refreshProfile(profileData);
+        });
+       
+        setProfile(profileData); 
         toast.success("Account created successfully!");
       } else {
         toast.success("Signed in successfully!");

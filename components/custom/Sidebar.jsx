@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PanelLeftCloseIcon, ChevronRight } from "lucide-react";
+import { PanelLeftCloseIcon, ChevronRight, Crown } from "lucide-react";
 import { sidebarMenus } from "@/lib/utils/constant";
 import ProfileCard from "./ProfileCard";
 import { useAuth } from "@/providers/useAuth";
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { getUserInitials } from "@/lib/utils/nameInitial";
 import { motion, AnimatePresence } from "framer-motion";
 import Logo from "./Logo";
+import clsx from "clsx";
 
 export default function Sidebar({ isOpen, onClose }) {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ export default function Sidebar({ isOpen, onClose }) {
   const [modal, setModal] = useState(false);
   const { profile } = useAuth();
 
-  useEffect(()=>{
+  useEffect(() => {
     console.log(profile)
   }, [])
 
@@ -106,9 +107,9 @@ export default function Sidebar({ isOpen, onClose }) {
             }}
             className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"
           />
-          
+
           <div className="relative flex items-center justify-between">
-           <Logo />
+            <Logo />
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -142,10 +143,9 @@ export default function Sidebar({ isOpen, onClose }) {
                     whileTap={{ scale: 0.98 }}
                     className={`
                       group relative flex items-center px-4 py-3.5 text-sm font-medium rounded-xl transition-all duration-200 overflow-hidden
-                      ${
-                        isActive
-                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                      ${isActive
+                        ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg shadow-blue-500/30"
+                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
                       }
                     `}
                   >
@@ -162,7 +162,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         }}
                       />
                     )}
-                    
+
                     {/* Content */}
                     <div className="relative flex items-center flex-1">
                       <motion.div
@@ -172,7 +172,7 @@ export default function Sidebar({ isOpen, onClose }) {
                         <item.icon className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'}`} />
                       </motion.div>
                       <span className="relative">{getTranslatedMenuName(item.name)}</span>
-                      
+
                       {/* Hover Arrow */}
                       <ChevronRight className={`
                         w-4 h-4 ml-auto opacity-0 group-hover:opacity-100 transition-opacity
@@ -200,11 +200,12 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="relative p-4 border-t border-gray-200 dark:border-gray-800">
           {/* Subtle Gradient Background */}
           <div className="absolute inset-0 bg-gradient-to-t from-blue-50/50 to-transparent dark:from-blue-950/20" />
-          
+
+
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="relative flex gap-3 items-center p-3 rounded-xl w-full justify-start cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700"
+            className={clsx(" relative flex gap-3 items-center p-3 rounded-xl w-full justify-start cursor-pointer bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700", profile?.subscription === "pro" ? "ring-2 ring-yellow-400" : "")}
             onClick={() => setModal(true)}
           >
             {/* Avatar with Gradient Ring */}
@@ -221,9 +222,10 @@ export default function Sidebar({ isOpen, onClose }) {
                 className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur-sm opacity-50"
               />
               <Avatar className="relative w-11 h-11 ring-2 ring-white dark:ring-gray-800">
-                <AvatarImage 
-                  src={profile?.avatarUrl} 
-                  alt={profile?.name || "Profile"} 
+                <AvatarImage
+                  src={profile?.avatarUrl}
+                  alt={profile?.name || "Profile"}
+                  className={"object-center object-cover"}
                 />
                 <AvatarFallback className="text-sm font-semibold bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                   {getUserInitials()}

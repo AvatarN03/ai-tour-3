@@ -2,16 +2,17 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { pricingPlans } from "@/lib/utils/constant";
+import PaymentButton from "@/components/payment/PaymentButton";
 
 const Pricing = () => {
   const [hoverIdx, setHoverIdx] = useState(0);
-  
+
 
   const handleHover = (idx) => {
     setHoverIdx(idx);
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     handleHover(0);
   }, [])
 
@@ -32,14 +33,13 @@ const Pricing = () => {
           <div
             key={idx}
             onMouseEnter={() => handleHover(idx)}
-            onPointerLeave={()=>setHoverIdx(null)}
+            onPointerLeave={() => setHoverIdx(null)}
             className={`
               transition-all duration-700 ease-in-out cursor-pointer relative overflow-hidden
               rounded-xl text-left p-5 md:h-[600px]
-              ${
-                isActive
-                  ? "md:flex-1 dark:text-white bg-card max-w-md border-2 border-purple-600 shadow-lg md:shadow-2xl"
-                  : "md:flex-[0.1] bg-primary-foreground  md:text-primary"
+              ${isActive
+                ? "md:flex-1 dark:text-white bg-card max-w-md border-2 border-purple-600 shadow-lg md:shadow-2xl"
+                : "md:flex-[0.1] bg-primary-foreground  md:text-primary"
               }
             `}
           >
@@ -48,10 +48,9 @@ const Pricing = () => {
               className={`
                 hidden md:flex items-center gap-3 absolute top-1/2 left-1/2 
                 -translate-x-1/2 -translate-y-1/2 transition-all duration-500
-                ${
-                  isActive
-                    ? "rotate-0 opacity-0 -translate-x-full pointer-events-none"
-                    : "rotate-90 opacity-100"
+                ${isActive
+                  ? "rotate-0 opacity-0 -translate-x-full pointer-events-none"
+                  : "rotate-90 opacity-100"
                 }
               `}
             >
@@ -65,10 +64,9 @@ const Pricing = () => {
             <div
               className={`
                 md:transition-all md:duration-700 md:delay-150 h-full
-                ${
-                  isActive
-                    ? "opacity-100 translate-y-0"
-                    : "md:opacity-0 md:translate-y-8 md:pointer-events-none"
+                ${isActive
+                  ? "opacity-100 translate-y-0"
+                  : "md:opacity-0 md:translate-y-8 md:pointer-events-none"
                 }
               `}
             >
@@ -97,9 +95,16 @@ const Pricing = () => {
               </ul>
 
               {/* CTA */}
-              <button className="w-full py-2 rounded-lg font-medium bg-sidebar-accent  text-accent-foreground hover:opacity-90 transition-opacity mb-0 cursor-pointer">
-                Get Started
-              </button>
+              {
+                idx === 1 ?
+                  <PaymentButton />
+                  : (
+
+                    <button className="w-full py-2 rounded-lg font-medium bg-sidebar-accent  text-accent-foreground hover:opacity-90 transition-opacity mb-0 cursor-pointer">
+                      Get Started
+                    </button>
+                  )
+              }
             </div>
           </div>
         );

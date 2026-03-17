@@ -14,7 +14,7 @@ export default function PreferencesPage() {
   const searchParams = useSearchParams();
   const continueTo = searchParams.get("continueTo");
   const router = useRouter();
-  const { user, profile, refreshProfile } = useAuth();
+  const { user, profile } = useAuth();
 
   const [selected, setSelected] = useState([]);
   const [username, setUsername] = useState(
@@ -85,7 +85,7 @@ export default function PreferencesPage() {
       batch.set(doc(db, "usernames", username.trim()), { uid: user.uid });
       await batch.commit();
 
-      await refreshProfile();
+     
 
     } catch (err) {
       console.error("Batch write error:", err);

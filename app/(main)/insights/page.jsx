@@ -41,7 +41,7 @@ function getLastMonths(count) {
 }
 
 export default function InsightsPage() {
-  const { user, profile, refreshProfile } = useAuth()
+  const { user, profile } = useAuth()
   const [loading, setLoading] = useState(true)
 
   const [stats, setStats] = useState({
@@ -137,7 +137,7 @@ export default function InsightsPage() {
         savingsGoal: goalNumber,
       })
       toast.success('Monthly budget goal saved')
-      await refreshProfile()
+      
     } catch (err) {
       console.error('Error saving goal:', err)
       toast.error('Could not save budget goal')
