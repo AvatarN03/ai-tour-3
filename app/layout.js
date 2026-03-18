@@ -6,10 +6,12 @@ import {
 } from "next/font/google";
 
 import "./globals.css";
+
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/providers/useAuth";
+
 import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({ subsets: ['latin'] })

@@ -1,8 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
+
 import { motion } from "framer-motion";
-import { pricingPlans } from "@/lib/utils/constant";
+
 import PaymentButton from "@/components/payment/PaymentButton";
+
+import { pricingPlans } from "@/lib/utils/constant";
+
+
 
 const Pricing = () => {
   const [hoverIdx, setHoverIdx] = useState(0);

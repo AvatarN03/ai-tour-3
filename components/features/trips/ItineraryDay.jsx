@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+
 import {
   Clock,
   DollarSign,
@@ -8,30 +9,12 @@ import {
   Navigation,
   Star
 } from "lucide-react";
+
 import PlaceImage from "./PlaceImage";
 
-// Rating stars helper
-const getRatingStars = (rating) => {
-  const numRating = parseFloat(rating);
-  return (
-    <div className="flex items-center gap-1 flex-shrink-0">
-      {[...Array(5)].map((_, i) => (
-        <Star
-          key={i}
-          size={14}
-          className={
-            i < Math.floor(numRating)
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300 dark:text-gray-600"
-          }
-        />
-      ))}
-      <span className="text-sm ml-1 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-        {rating}
-      </span>
-    </div>
-  );
-};
+import { getRatingStars } from "@/lib/utils/utils";
+
+
 
 const ItineraryDay = ({ dayData, destination }) => {
   if (!dayData?.plan?.length) {

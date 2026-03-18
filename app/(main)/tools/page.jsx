@@ -1,11 +1,16 @@
 "use client";
+
 import React, { useState } from "react";
 
-import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
-import { TABS } from "@/lib/utils/constant";
-import Emergency from "@/components/features/tools/Emergency";
-import ExpenseTracker from "../../../components/features/tools/ExpenseTracker";
 import { useTranslation } from "react-i18next";
+
+import Emergency from "@/components/features/tools/Emergency";
+import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
+import ExpenseTracker from "@/components/features/tools/ExpenseTracker";
+
+
+import { TABS } from "@/lib/utils/constant";
+
 
 export default function TravelTools() {
   const [activeTab, setActiveTab] = useState("expense");
@@ -55,10 +60,6 @@ export default function TravelTools() {
           <Emergency/>
         )}
 
-        {/* AI Assistant
-        {activeTab === "ai" && (
-          <AITravelAssistant/>
-        )} */}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
-import { ArrowRightLeft } from "lucide-react";
 import React, { useState, useEffect } from "react";
+
+import { ArrowRightLeft } from "lucide-react";
 
 function CurrencyConverter() {
   const [amount, setAmount] = useState(1);

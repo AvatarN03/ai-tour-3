@@ -1,13 +1,16 @@
 
-import { CommentMenu } from "./CommentMenu"
 import { useState } from "react"
+
+import { Check, X } from "lucide-react"
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { formatDate } from "@/lib/utils/blogHelpers"
 import { Avatar, AvatarImage } from "@/components/ui/avatar"
-import { useAuth } from "@/providers/useAuth"
-import { Check, X } from "lucide-react"
+
+import { CommentMenu } from "./CommentMenu"
+
+import { formatDate } from "@/lib/utils/blogHelpers"
 
 
 export function CommentCard({ comment, canDelete, canEdit, onDelete, onEdit }) {

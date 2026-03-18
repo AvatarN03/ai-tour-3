@@ -1,5 +1,6 @@
+import { Copy, Save } from "lucide-react"; 
+
 import { Button } from "@/components/ui/button";
-import { Copy, Save } from "lucide-react"; // Assume there's an icon
 
 export const TripCard = ({ trip, onSave, isSaving }) => {
   const tripTitle = trip.title || trip.destination;

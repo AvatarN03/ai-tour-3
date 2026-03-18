@@ -1,5 +1,6 @@
-import { usePlacesAutocomplete } from 'places-autocomplete-hook';
 import React, { useState } from 'react';
+
+import { usePlacesAutocomplete } from 'places-autocomplete-hook';
 
 const AutoCompletion = ({ onPlaceSelect }) => {
   const {

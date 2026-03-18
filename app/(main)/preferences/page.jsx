@@ -2,13 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+
 import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore";
-import { db } from "@/lib/config/firebase";
-import { useAuth } from "@/providers/useAuth";
-import { categories } from "@/lib/utils/constant";
 import { toast } from "sonner";
 
-const USERNAME_REGEX = /^[a-zA-Z0-9_]{3,20}$/;
+import { useAuth } from "@/providers/useAuth";
+
+import { db } from "@/lib/config/firebase";
+import { categories, USERNAME_REGEX } from "@/lib/utils/constant";
+ 
 
 export default function PreferencesPage() {
   const searchParams = useSearchParams();

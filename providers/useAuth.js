@@ -1,10 +1,13 @@
 "use client"; // if using App Router in Next.js 13+
 
 import { createContext, useContext, useEffect, useState } from "react";
+
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "@/lib/config/firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+
 import Loading from "@/components/custom/Loading";
+
+import { auth, db } from "@/lib/config/firebase";
 
 const AuthContext = createContext();
 

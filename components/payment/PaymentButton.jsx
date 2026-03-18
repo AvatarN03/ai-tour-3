@@ -1,12 +1,15 @@
 "use client";
 
-import { useAuth } from "@/providers/useAuth";
-import { load } from "@cashfreepayments/cashfree-js";
-import clsx from "clsx";
 import { useState } from "react";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/config/firebase";
+
 import { toast } from "sonner";
+import clsx from "clsx";
+import { doc, updateDoc } from "firebase/firestore";
+import { load } from "@cashfreepayments/cashfree-js";
+
+import { useAuth } from "@/providers/useAuth";
+
+import { db } from "@/lib/config/firebase";
 
 export default function PaymentButton({ children, className }) {
   const [loading, setLoading] = useState(false);
@@ -102,7 +105,7 @@ export default function PaymentButton({ children, className }) {
         },
         body: JSON.stringify({
           customerId: profile?.uid,
-          email: profile?.email
+          email: profile?.email,
         })
       });
 

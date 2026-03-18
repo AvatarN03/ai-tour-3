@@ -1,6 +1,8 @@
 "use client";
-import { Star } from "lucide-react";
 import React, { useState } from "react";
+
+import { Star } from "lucide-react";
+
 import PlaceImage from "./PlaceImage";
 
 // 2. Accept 'destination' as a prop

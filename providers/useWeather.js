@@ -1,7 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
+
 import { toast } from "sonner";
+
 import { getForecastByCity, getForecastByCoords, getWeatherByCity, getWeatherByCoords } from "@/lib/api/weather";
 
 const WeatherContext = createContext();

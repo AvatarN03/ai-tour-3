@@ -1,161 +1,70 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
+
 import {
   MapPin,
   Calendar,
   Users,
   DollarSign,
-  Star,
-  Clock,
   Navigation,
   Hotel,
   Utensils,
   AlertCircle,
   Package,
-  Sun,
-  Share2,
-  Download,
-  Check,
-  Copy,
-  User,
-  Mail,
   Trash,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useParams, useRouter } from "next/navigation";
-import { arrayUnion, deleteDoc, doc, getDoc, increment, updateDoc } from "firebase/firestore";
-import { db } from "@/lib/config/firebase";
-import { useAuth } from "@/providers/useAuth";
-import Hotels from "../../../../components/features/trips/Hotels";
-import ItineraryDay from "../../../../components/features/trips/ItineraryDay";
+import {
+  deleteDoc,
+  doc,
+  getDoc,
+  increment,
+  updateDoc,
+} from "firebase/firestore";
+
 import { ViewTripLoading } from "@/components/custom/Loading";
+import Hotels from "@/components/features/trips/Hotels";
+import ItineraryDay from "@/components/features/trips/ItineraryDay";
+
+
+import { useAuth } from "@/providers/useAuth";
+
+import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/logActivity";
 
-const printStyles = `
-@media print {
-  .no-print { display: none !important; }
-  body { background: #fff !important; }
-  #pdf-content { box-shadow: none !important; }
-}
-`;
 
 const TripViewCard = () => {
   const [activeDay, setActiveDay] = useState(0);
-  const [showShareMenu, setShowShareMenu] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const { tripId } = useParams();
   const [plan, setPlanData] = useState(null);
-  const [createdUser, setCreatedUser] = useState(null);
+  const { tripId } = useParams();
   const { profile, user, setProfile } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    fetchPlanData();
-  }, [tripId]);
+    if (profile?.uid && tripId) fetchPlanData();
+  }, [tripId, profile?.uid]);
 
   const fetchPlanData = async () => {
-    try {
-      const docRef = doc(db, "trips", tripId);
-      const docSnap = await getDoc(docRef);
+  try {
+    const docRef = doc(db, "users", profile.uid, "trips", String(tripId));
+    const docSnap = await getDoc(docRef);
 
-      if (!docSnap.exists()) {
-        toast.error("❌ No such document!");
-        router.replace("/trips");
-        return;
-      }
-      setPlanData(docSnap.data().GeneratedPlan);
-      setCreatedUser(docSnap.data());
-    } catch (error) {
-      toast.error("🔥 Error fetching trip:", error.message);
+    if (!docSnap.exists()) {
+      toast.error("❌ No such document!");
+      router.replace("/trips");
+      return;
     }
-  };
 
-  const savePlanToMyTrips = async () => {
-    try {
-      if (!plan) {
-        toast.error("No plan data to save.");
-        return;
-      }
+    const data = docSnap.data();
 
-      if (!user) {
-        router.replace(
-          `/auth?redirect=${encodeURIComponent("/trips/" + tripId)}`
-        );
-      }
-      const tripRef = doc(db, "trips", tripId);
-      await updateDoc(tripRef, {
-        savedBy: arrayUnion(user.email),
-      });
-      toast.success("Trip saved to your list!");
-      router.push("/trips");
-    } catch (error) {
-      toast.error("Error saving trip:", error.message);
-    }
-  };
+    setPlanData(data.GeneratedPlan);
 
-  const handleShareLink = async () => {
-    const currentUrl = window.location.href;
-    try {
-      await navigator.clipboard.writeText(currentUrl);
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-        setShowShareMenu(false);
-      }, 2000);
-    } catch (err) {
-      console.error("Failed to copy link:", err);
-    }
-  };
-
-  const getRatingStars = (rating) => {
-    const numRating = parseFloat(rating);
-    return (
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className={
-              i < Math.floor(numRating)
-                ? "fill-yellow-400 text-yellow-400"
-                : "text-gray-300 dark:text-gray-600"
-            }
-          />
-        ))}
-        <span className="text-sm ml-1 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-          {rating}
-        </span>
-      </div>
-    );
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "";
-    if (typeof date === "object" && date.seconds) {
-      return new Date(date.seconds * 1000).toLocaleDateString();
-    }
-    const d = new Date(date);
-    return isNaN(d) ? "" : d.toLocaleDateString();
-  };
-
-  // Currency symbol mapping
-  const getCurrencySymbol = (currency) => {
-    const symbols = {
-      USD: "$",
-      INR: "₹",
-      EUR: "€",
-      GBP: "£",
-      AUD: "A$",
-      JPY: "¥",
-    };
-    return symbols[currency] || currency;
-  };
-
-  if (!plan) {
-    return <ViewTripLoading />;
+  } catch (error) {
+    toast.error("🔥 Error fetching trip: " + error.message);
   }
-
+};
 
   const deleteTrip = async () => {
     if (!user) {
@@ -172,25 +81,25 @@ const TripViewCard = () => {
     }
 
     try {
-      const plan = profile?.subscription;
-
-
       await updateDoc(doc(db, "users", profile.uid), {
         tripCount: increment(-1),
       });
+
       setProfile((prev) => ({
         ...prev,
         tripCount: prev.tripCount - 1,
       }));
 
-      await deleteDoc(doc(db, "trips", tripId));
+      await deleteDoc(doc(db, "users", profile.uid, "trips", tripId));
+
       await logActivity({
         userId: profile?.uid,
         action: "DELETE",
         entity: "TRIP",
         entityId: tripId,
-        metadata: { tripName: plan?.tripData?.title },
+        metadata: { tripName: plan?.tripDetails?.title },
       });
+
       toast.success("Trip deleted successfully!");
       router.push("/trips");
     } catch (error) {
@@ -198,17 +107,29 @@ const TripViewCard = () => {
     }
   };
 
+  if (!plan) {
+    return <ViewTripLoading />;
+  }
+
+  const getCurrencySymbol = (currency) => {
+    const symbols = {
+      USD: "$", INR: "₹", EUR: "€",
+      GBP: "£", AUD: "A$", JPY: "¥",
+    };
+    return symbols[currency] || currency;
+  };
+
   const currency = plan?.currency || "INR";
   const currencySymbol = getCurrencySymbol(currency);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
-      <div className="max-w-5xl mx-auto p- md:p-6">
-        {/* Action Buttons */}
+      <div className="max-w-5xl mx-auto p-0 md:p-6">
+
         {/* Delete Button */}
         <button
           onClick={deleteTrip}
-          className="px-4 py-2 flex justify-center items-center gap-2 cursor-pointer fixed bottom-5 right-5 rounded-full  bg-red-600 hover:bg-red-700 text-white font-bold  shadow-md transition"
+          className="px-4 py-2 flex justify-center items-center gap-2 cursor-pointer fixed bottom-5 right-5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-md transition"
         >
           <Trash />
           <p className="hidden md:block">Delete Trip</p>
@@ -252,7 +173,7 @@ const TripViewCard = () => {
               <div className="min-w-0">
                 <p className="text-xs opacity-80">Total Budget ({currency})</p>
                 <p className="font-light md:font-semibold text-xs md:text-base max-w-xs">
-                  {plan?.total_estimated_cost}
+                  {currencySymbol} {plan?.total_estimated_cost}
                 </p>
               </div>
             </div>
@@ -262,10 +183,7 @@ const TripViewCard = () => {
         {/* Hotel Options Section */}
         <div className="rounded-xl md:rounded-2xl md:p-6 mb-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
           <div className="flex items-center gap-2 mb-4 p-2">
-            <Hotel
-              className="text-blue-600 dark:text-blue-400 flex-shrink-0"
-              size={24}
-            />
+            <Hotel className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               Accommodation Options
             </h2>
@@ -283,19 +201,13 @@ const TripViewCard = () => {
         </div>
 
         {/* Itinerary Section */}
-        {/* Activities for Selected Day */}
         <div className="rounded-xl md:rounded-2xl p-3 md:p-6 mb-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
           <div className="flex items-center gap-2 mb-4 px-1">
-            <Navigation
-              className="text-blue-600 dark:text-blue-400 flex-shrink-0"
-              size={24}
-            />
+            <Navigation className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
             <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
               Day-by-Day Itinerary
             </h2>
           </div>
-
-          {/* Day Selector Dropdown */}
           <div className="mb-6">
             <select
               value={activeDay}
@@ -309,59 +221,46 @@ const TripViewCard = () => {
               ))}
             </select>
           </div>
-
-          {/* Render Itinerary for the selected day */}
           <ItineraryDay dayData={plan?.itinerary?.[activeDay]} />
         </div>
 
-        {/* Budget Breakdown */}
+        {/* Budget Breakdown + Local Cuisine */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
           <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <DollarSign
-                className="text-green-600 dark:text-green-400 flex-shrink-0"
-                size={24}
-              />
+              <DollarSign className="text-green-600 dark:text-green-400 flex-shrink-0" size={24} />
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Budget Breakdown ({currency})
               </h2>
             </div>
             <div className="space-y-3">
-              {Object.entries(plan?.budget_breakdown || {}).map(
-                ([key, value]) => (
-                  <div
-                    key={key}
-                    className="flex justify-center items-start flex-col  pb-2 border-b border-gray-200 dark:border-gray-700 gap-4"
-                  >
-                    <span className="capitalize font-medium text-gray-700 dark:text-gray-300 break-words">
-                      {key}
-                    </span>
-                    <span className="font-bold text-gray-900 dark:text-white whitespace-wrap">
-                      {value}
-                    </span>
-                  </div>
-                )
-              )}
+              {Object.entries(plan?.budget_breakdown || {}).map(([key, value]) => (
+                <div
+                  key={key}
+                  className="flex flex-col pb-2 border-b border-gray-200 dark:border-gray-700 gap-1"
+                >
+                  <span className="capitalize font-medium text-gray-700 dark:text-gray-300 break-words">
+                    {key}
+                  </span>
+                  <span className="font-bold text-gray-900 dark:text-white">
+                    {value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
           <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <Utensils
-                className="text-orange-600 dark:text-orange-400 flex-shrink-0"
-                size={24}
-              />
+              <Utensils className="text-orange-600 dark:text-orange-400 flex-shrink-0" size={24} />
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Local Cuisine
               </h2>
             </div>
             <ul className="space-y-2">
               {plan?.local_cuisine?.map((food, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-gray-700 dark:text-gray-300"
-                >
-                  <span className="w-2 h-2 bg-orange-600 dark:bg-orange-400 rounded-full mt-2 flex-shrink-0"></span>
+                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="w-2 h-2 bg-orange-600 dark:bg-orange-400 rounded-full mt-2 flex-shrink-0" />
                   <span className="break-words">{food}</span>
                 </li>
               ))}
@@ -369,25 +268,19 @@ const TripViewCard = () => {
           </div>
         </div>
 
-        {/* Additional Information */}
+        {/* Safety Tips + Packing */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <AlertCircle
-                className="text-red-600 dark:text-red-400 flex-shrink-0"
-                size={24}
-              />
+              <AlertCircle className="text-red-600 dark:text-red-400 flex-shrink-0" size={24} />
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Safety Tips
               </h2>
             </div>
             <ul className="space-y-2">
               {plan?.safety_tips?.map((tip, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-gray-700 dark:text-gray-300"
-                >
-                  <span className="w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full mt-2 flex-shrink-0"></span>
+                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full mt-2 flex-shrink-0" />
                   <span className="break-words">{tip}</span>
                 </li>
               ))}
@@ -396,21 +289,15 @@ const TripViewCard = () => {
 
           <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
             <div className="flex items-center gap-2 mb-4">
-              <Package
-                className="text-purple-600 dark:text-purple-400 flex-shrink-0"
-                size={24}
-              />
+              <Package className="text-purple-600 dark:text-purple-400 flex-shrink-0" size={24} />
               <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
                 Packing Suggestions
               </h2>
             </div>
             <ul className="space-y-2">
               {plan?.packing_suggestions?.map((item, idx) => (
-                <li
-                  key={idx}
-                  className="flex items-start gap-2 text-gray-700 dark:text-gray-300"
-                >
-                  <span className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full mt-2 flex-shrink-0"></span>
+                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                  <span className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full mt-2 flex-shrink-0" />
                   <span className="break-words">{item}</span>
                 </li>
               ))}
@@ -429,7 +316,7 @@ const TripViewCard = () => {
         </div>
 
         {/* Best Season */}
-        <div className="rounded-xl md:rounded-2xl p-4 md:p-6 mt-6 border-l-4 bg-green-50 dark:bg-green-900/30 border-green-600 dark:border-green-400 overflow-hidden">
+        <div className="rounded-xl md:rounded-2xl p-4 md:p-6 mt-6 mb-10 border-l-4 bg-green-50 dark:bg-green-900/30 border-green-600 dark:border-green-400 overflow-hidden">
           <h3 className="font-bold text-lg mb-2 text-green-900 dark:text-green-200">
             Best Season to Visit
           </h3>

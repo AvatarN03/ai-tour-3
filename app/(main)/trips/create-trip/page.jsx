@@ -7,8 +7,8 @@ import { useAuth } from "@/providers/useAuth";
 import { generateTravelPlan } from "@/lib/api/AI_Model";
 import { categories, initialForm, interests } from "@/lib/utils/constant";
 import { db } from "@/lib/config/firebase";
-import { validateForm } from "@/lib/utils/validation";
-import { doc, increment, setDoc, updateDoc } from "firebase/firestore";
+import { validateForm } from "@/lib/form/validation";
+import { addDoc, collection, doc, increment, setDoc, updateDoc } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -64,21 +64,19 @@ const CreateTripForm = () => {
 
   const saveTrip = async (tripData, aiGeneratedPlan) => {
     const docId = Date.now().toString();
-    await setDoc(doc(db, "trips", docId), {
+
+    await setDoc(doc(db, "users", profile?.uid, "trips", docId), {
       id: docId,
       userId: profile?.uid,
-      userEmail: profile?.email,
-      userName: profile?.name,
       userSelection: tripData,
       GeneratedPlan: aiGeneratedPlan,
       createdAt: new Date(),
       updatedAt: new Date(),
-      savedBy: [],
       currency: tripData.currency || "INR",
     });
+
     return docId;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();

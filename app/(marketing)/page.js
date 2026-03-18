@@ -1,6 +1,8 @@
 "use client"
 import Image from "next/image";
 
+import { useTranslation } from "react-i18next";
+
 import Navbar from "@/components/custom/Marketing/Navbar";
 import Hero from "@/components/custom/Marketing/Hero";
 import Features from "@/components/custom/Marketing/Features";
@@ -8,26 +10,10 @@ import HTW from "@/components/custom/Marketing/HTW";
 import Pricing from "@/components/custom/Marketing/Pricing";
 import AboutSection from "@/components/custom/Marketing/AboutSection";
 import CTA from "@/components/custom/Marketing/CTA";
-import { useTranslation } from "react-i18next";
-import { useEffect } from "react";
-
 
 
 const LandingPage = () => {
   const { t } = useTranslation();
-
-
-  // useEffect(() => {
-
-
-  //   window.googleTranslateElementInit = () => {
-  //     new window.google.translate.TranslateElement(
-  //       { pageLanguage: "en" },
-  //       "google_translate_element"
-  //     );
-  //   };
-  // }, []);
-
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-300 via-indigo-200 to-purple-200 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">

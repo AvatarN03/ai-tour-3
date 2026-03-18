@@ -1,17 +1,21 @@
-"use client"
+"use client";
+
 import { useRef, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 
+import { X, Bold, Italic, Link, ArrowLeft, Upload, Trash2 } from 'lucide-react';
+import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
+import { toast } from 'sonner'
+
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { X, Bold, Italic, Link, ArrowLeft, Upload, Trash2 } from 'lucide-react'
+
+import { useAuth } from '@/providers/useAuth'
+
 import { categories } from '@/lib/utils/constant'
 import { db } from '@/lib/config/firebase'
-import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
-import { useAuth } from '@/providers/useAuth'
 import { logActivity } from '@/lib/services/logActivity'
-import { toast } from 'sonner'
 
 export default function EditPostPage() {
     const router = useRouter()

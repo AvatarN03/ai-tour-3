@@ -16,26 +16,24 @@ import {
   ChevronDown,
   AtSign,
 } from "lucide-react";
-
 import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  updateProfile,
 } from "firebase/auth";
 import { doc, getDoc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/providers/useAuth";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ThemeToggle from "@/components/custom/ThemeToggle";
+import LanguageSelector from "@/components/custom/LanguageSelector";
 
 import { availablePreferences } from "@/lib/utils/constant";
 import { auth, db } from "@/lib/config/firebase";
-import { useTranslation } from "react-i18next";
-import LanguageSelector from "@/components/custom/LanguageSelector";
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);

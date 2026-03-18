@@ -1,14 +1,17 @@
-"use client"
+"use client";
+
 import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
 import { ArrowLeft, Edit2, MessageCircle } from 'lucide-react'
-
 import { collection, getDocs, query, where } from 'firebase/firestore'
+
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+
 import { db } from '@/lib/config/firebase'
-import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
+import { formatDate, renderContent } from '@/lib/utils/blogHelpers';
+
 import { useAuth } from '@/providers/useAuth'
 
 export default function AuthorPostsPage() {

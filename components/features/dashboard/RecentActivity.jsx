@@ -1,13 +1,16 @@
 "use client";
-import { formatActivity } from "@/lib/services/formatActivity";
-import { getRecentActivities } from "@/lib/services/getActivities";
+
 import { useEffect, useState } from "react";
+
+import { useTranslation } from "react-i18next";
 import {
     Clock,
     Activity as ActivityIcon
 } from "lucide-react";
+
+import { formatActivity } from "@/lib/services/formatActivity";
+import { getRecentActivities } from "@/lib/services/getActivities";
 import { getActivityColor, getActivityIcon } from "@/lib/services/logActivity";
-import { useTranslation } from "react-i18next";
 
 
 
@@ -30,7 +33,7 @@ export default function RecentActivity({ userId }) {
 
     return (
         <div className="w-full p-2">
-           
+
 
             {/* Loading State */}
             {loading && (
@@ -50,10 +53,10 @@ export default function RecentActivity({ userId }) {
                         <ActivityIcon className="w-8 h-8 text-gray-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-700 mb-1">
-                       {t('dashboard.activity.noRecentActivity')}
+                        {t('dashboard.activity.noRecentActivity')}
                     </h3>
                     <p className="text-sm text-gray-500">
-                         {t('dashboard.activity.noRecentActivitDesc')}
+                        {t('dashboard.activity.noRecentActivitDesc')}
                     </p>
                 </div>
             )}
@@ -75,21 +78,21 @@ export default function RecentActivity({ userId }) {
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
                                 <div className="flex items-start gap-4 relative">
-                                   
+
                                     <div
                                         className={`flex-shrink-0 w-8 h-8 rounded-xl border flex items-center justify-center transition-transform group-hover:scale-110 ${colorClass}`}
                                     >
                                         <Icon className="w-5 h-5" />
                                     </div>
 
-                                   
+
                                     <div className="flex-1 min-w-0">
-                                       
+
                                         <p className="text-base font-medium dark:text-gray-200 text-gray-900 mb-1">
                                             {formatActivity(activity)}
                                         </p>
 
-                                        
+
                                         <div className="flex items-center gap-4 text-sm text-gray-500">
                                             <div className="flex items-center gap-1">
                                                 <Clock className="w-3.5 h-3.5" />
@@ -110,7 +113,7 @@ export default function RecentActivity({ userId }) {
                                             </span>
                                         </div>
 
-                                        
+
                                         <p className="text-xs text-gray-400 mt-2  transition-opacity">
                                             {timestamp.toLocaleString("en-US", {
                                                 dateStyle: "medium",
@@ -119,7 +122,7 @@ export default function RecentActivity({ userId }) {
                                         </p>
                                     </div>
 
-                                  
+
                                     <div className="absolute bottom-0 right-0">
                                         <span
                                             className={`text-xs font-semibold px-3 py-1 rounded-full ${colorClass}`}

@@ -3,14 +3,16 @@
 
 import { useEffect, useState } from "react";
 
+import { ActivityIcon, Clock, Loader } from "lucide-react";
+
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+
 import { useAuth } from "@/providers/useAuth";
 
 import { getRecentActivities } from "@/lib/services/getActivities";
 import { getActivityColor } from "@/lib/services/logActivity";
 import { formatActivity } from "@/lib/services/formatActivity";
 
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { ActivityIcon, Clock, Loader } from "lucide-react";
 
 export const Notification = ({ children }) => {
     const [activities, setActivities] = useState([]);

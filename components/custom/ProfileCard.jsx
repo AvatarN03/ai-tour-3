@@ -1,15 +1,7 @@
 "use client"
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useAuth } from "@/providers/useAuth";
+
+import { useEffect, useRef, useState } from "react";
+
 import {
   LogOut,
   User,
@@ -24,15 +16,29 @@ import {
   Crown,
   Info,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { getUserInitials } from "@/lib/utils/nameInitial";
 import { toast } from "sonner";
+import { collection, query, where, getDocs } from "firebase/firestore";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+import PaymentButton from "../payment/PaymentButton";
+
+import { useAuth } from "@/providers/useAuth";
+
+import { getUserInitials } from "@/lib/utils/nameInitial";
 import { preferenceColors } from "@/lib/utils/constant";
 import { formatDate } from "@/lib/utils/utils";
 import { db } from "@/lib/config/firebase";
-import { collection, query, where, getDocs } from "firebase/firestore";
 import { logActivity } from "@/lib/services/logActivity";
-import PaymentButton from "../payment/PaymentButton";
 
 const ProfileCard = ({ modal, setModal }) => {
   const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();

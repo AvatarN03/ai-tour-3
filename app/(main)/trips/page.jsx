@@ -1,108 +1,124 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
+
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+  startAfter,
+} from "firebase/firestore";
+import { Calendar, Clock, DollarSign, MapPin, Plus, ChevronLeft, ChevronRight } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import Link from "next/link";
+
 import { db } from "@/lib/config/firebase";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { formatDate } from "@/lib/utils/blogHelpers";
+import { PAGE_SIZE } from "@/lib/utils/constant";
+
 import { useAuth } from "@/providers/useAuth";
-import { Calendar, Clock, DollarSign, MapPin, Plus } from "lucide-react";
+
+
 
 export default function SavedTripsPage() {
   const { profile } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [myTrips, setMyTrips] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
-  useEffect(() => {
-    const fetchTrips = async () => {
-      if (!profile?.email) return;
+  // Stack of page cursors: index 0 = page 1 start (null), index 1 = page 2 start, etc.
+  const pageCursors = useRef([null]);
 
-      const tripsRef = collection(db, "trips");
+  const fetchTrips = async (pageNum = 1, search = "") => {
+    if (!profile?.uid) return;
+    setIsLoading(true);
 
-      // Trips created by me
-      const qCreated = query(tripsRef, where("userEmail", "==", profile.email));
-      const createdSnapshot = await getDocs(qCreated);
-      const createdTrips = createdSnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+    try {
+      const tripsRef = collection(db, "users", profile.uid, "trips");
 
-      // Trips saved by me
-      const qSaved = query(
-        tripsRef,
-        where("savedBy", "array-contains", profile.uid)
-      );
-      const savedSnapshot = await getDocs(qSaved);
-      const savedTrips = savedSnapshot.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
+      if (search.trim()) {
+        // Search mode: prefix-range query on destination field in Firebase
+        const term = search.trim();
+        const q = query(
+          tripsRef,
+          where("userSelection.destination", ">=", term),
+          where("userSelection.destination", "<=", term + "\uf8ff"),
+          limit(PAGE_SIZE)
+        );
+        const snapshot = await getDocs(q);
+        const trips = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setMyTrips(trips);
+        setTotalCount(trips.length);
+      } else {
+        // Pagination mode: cursor-based, 10 per page
+        const cursor = pageCursors.current[pageNum - 1];
+        const constraints = [orderBy("createdAt", "desc"), limit(PAGE_SIZE)];
+        if (cursor) constraints.push(startAfter(cursor));
 
-      // Merge and remove duplicates (if user saved their own trip)
-      const mergedTrips = [
-        ...createdTrips,
-        ...savedTrips.filter(
-          (t) => !createdTrips.some((c) => c.id === t.id)
-        ),
-      ];
+        const q = query(tripsRef, ...constraints);
+        const snapshot = await getDocs(q);
+        const trips = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-      setMyTrips(mergedTrips);
-    };
+        // Save the last doc as the cursor for the next page
+        if (snapshot.docs.length > 0 && !pageCursors.current[pageNum]) {
+          pageCursors.current[pageNum] = snapshot.docs[snapshot.docs.length - 1];
+        }
 
-    fetchTrips();
-  }, [profile?.email]);
+        setMyTrips(trips);
 
-  // Filter trips based on search query (title or destination)
-  const filteredTrips = useMemo(() => {
-    if (!searchQuery) return myTrips;
-
-    return myTrips.filter((trip) => {
-      const title =
-        trip.tripDetails?.title ||
-        trip.userSelection?.title ||
-        trip.title ||
-        "";
-      const destination =
-        trip.userSelection?.destination ||
-        trip.tripDetails?.destination ||
-        trip.destination ||
-        "";
-
-      return (
-        title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        destination.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
-  }, [searchQuery, myTrips]);
-
-  // Currency symbol helper
-  const getCurrencySymbol = (currency = "USD") => {
-    const map = {
-      USD: "$",
-      EUR: "€",
-      INR: "₹",
-      GBP: "£",
-      JPY: "¥",
-      AUD: "A$",
-      CAD: "C$",
-      SGD: "S$",
-      CNY: "¥",
-    };
-    return map[currency.toUpperCase()] || "$";
+        // Fetch total count once on first page load
+        if (pageNum === 1) {
+          const countSnapshot = await getDocs(query(tripsRef));
+          setTotalCount(countSnapshot.size);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching trips:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Format date utility
-  const formatDate = (date) => {
-    if (!date) return "";
-    if (typeof date === "object" && date.toDate) return date.toDate().toLocaleDateString();
-    return new Date(date).toLocaleDateString();
+  useEffect(() => {
+    fetchTrips(page, searchQuery);
+  }, [profile?.uid, page, searchQuery]);
+
+  const handleSearch = () => {
+    pageCursors.current = [null];
+    setPage(1);
+    setSearchQuery(inputValue);
+  };
+
+  const handleClearSearch = () => {
+    setInputValue("");
+    setSearchQuery("");
+    pageCursors.current = [null];
+    setPage(1);
+  };
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const isSearchMode = searchQuery.trim().length > 0;
+
+  const getCurrencySymbol = (currency = "USD") => {
+    const map = {
+      USD: "$", EUR: "€", INR: "₹", GBP: "£",
+      JPY: "¥", AUD: "A$", CAD: "C$", SGD: "S$", CNY: "¥",
+    };
+    return map[currency?.toUpperCase()] || "$";
   };
 
   return (
     <div className="p-4 min-h-screen w-full px-3 md:px-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row  w-full sm:items-center sm:justify-between space-y-4 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row w-full sm:items-center sm:justify-between space-y-4 sm:space-y-0">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
             Trips Inbox
@@ -119,28 +135,38 @@ export default function SavedTripsPage() {
       </div>
 
       {/* Search Bar */}
-      <div className="bg-accent w-full rounded-md p-2  my-6">
+      <div className="bg-accent w-full rounded-md p-2 my-6">
         <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-4">
           <div className="flex-1 w-full">
             <input
               type="text"
-              placeholder="Search trips..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search by destination..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
             />
           </div>
-          <Button className="w-full sm:w-auto" onClick={() => {}}>
-            Search
-          </Button>
+          <div className="flex gap-2 w-full sm:w-auto">
+            <Button className="flex-1 sm:flex-none" onClick={handleSearch}>
+              Search
+            </Button>
+            {isSearchMode && (
+              <Button variant="outline" className="flex-1 sm:flex-none" onClick={handleClearSearch}>
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Trips List */}
-      <div className="">
+      <div>
         <div className="grid gap-6 border-b-2 rounded-md md:p-8">
-          {filteredTrips.length > 0 ? (
-            filteredTrips.map((trip) => (
+          {isLoading ? (
+            <p className="text-gray-500 dark:text-gray-400">Loading trips...</p>
+          ) : myTrips.length > 0 ? (
+            myTrips.map((trip) => (
               <Card
                 key={trip.id}
                 className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700"
@@ -179,9 +205,7 @@ export default function SavedTripsPage() {
                             <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Saved
-                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Saved</p>
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                               {formatDate(trip.createdAt)}
                             </p>
@@ -193,9 +217,7 @@ export default function SavedTripsPage() {
                             <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Budget
-                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Budget</p>
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                               {getCurrencySymbol(
                                 trip.userSelection?.currency || trip.currency
@@ -210,12 +232,9 @@ export default function SavedTripsPage() {
                             <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Duration
-                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {trip.userSelection?.days || trip.duration || 0}{" "}
-                              days
+                              {trip.userSelection?.days || trip.duration || 0} days
                             </p>
                           </div>
                         </div>
@@ -224,7 +243,7 @@ export default function SavedTripsPage() {
 
                     <Link
                       href={`/trips/${trip.id}`}
-                      className=" px-6 py-3 w-full  text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                      className="px-6 py-3 w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
                     >
                       View Details
                     </Link>
@@ -236,6 +255,33 @@ export default function SavedTripsPage() {
             <p className="text-gray-500 dark:text-gray-400">No trips found</p>
           )}
         </div>
+
+        {/* Pagination controls — hidden in search mode */}
+        {!isSearchMode && totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6 px-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1 || isLoading}
+              >
+                <ChevronLeft className="w-4 h-4 mr-1" /> Prev
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage((p) => p + 1)}
+                disabled={page >= totalPages || myTrips.length < PAGE_SIZE || isLoading}
+              >
+                Next <ChevronRight className="w-4 h-4 ml-1" />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

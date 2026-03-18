@@ -1,10 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { useAuth } from '@/providers/useAuth'
-import { db } from '@/lib/config/firebase'
+import Link from 'next/link'
+
 import { collection, doc, getDocs, query, where, updateDoc } from 'firebase/firestore'
 import { toast } from 'sonner'
 import {
@@ -20,25 +18,18 @@ import {
   Pie,
   Cell,
 } from 'recharts'
-import { format } from 'date-fns'
-import Link from 'next/link'
 
-const MONTHS_TO_SHOW = 6
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 
-function getMonthKey(date) {
-  const d = typeof date === 'string' ? new Date(date) : date
-  return format(d, 'MMM yyyy')
-}
+import { useAuth } from '@/providers/useAuth'
 
-function getLastMonths(count) {
-  const now = new Date()
-  const months = []
-  for (let i = count - 1; i >= 0; i -= 1) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
-    months.push(format(d, 'MMM yyyy'))
-  }
-  return months
-}
+import { db } from '@/lib/config/firebase'
+import { getLastMonths, getMonthKey } from '@/lib/utils/utils'
+import { MONTHS_TO_SHOW } from '@/lib/utils/constant'
+
+
+
 
 export default function InsightsPage() {
   const { user, profile } = useAuth()
@@ -66,7 +57,6 @@ export default function InsightsPage() {
     return getLastMonths(1)[0]
   }, [])
 
-  const [selectedMonth, setSelectedMonth] = useState(currentMonthLabel)
 
   const goalNumber = Number(goalInput || 0)
   const currentMonthSpending = useMemo(() => {
@@ -76,47 +66,6 @@ export default function InsightsPage() {
 
   const goalProgress = goalNumber > 0 ? Math.min((currentMonthSpending / goalNumber) * 100, 100) : 0
 
-  const selectedMonthDetails = useMemo(() => {
-    if (!selectedMonth) return null
-
-    const trend = stats.monthlyTrends.find((t) => t.month === selectedMonth) || {
-      month: selectedMonth,
-      trips: 0,
-      spending: 0,
-    }
-
-    const activities = stats.activitiesByMonth?.[selectedMonth] ?? 0
-
-    const tripsForMonth = (stats.allTrips || []).filter((trip) => {
-      const createdAt = trip?.createdAt?.toDate ? trip.createdAt.toDate() : trip?.createdAt
-      if (!createdAt) return false
-      return getMonthKey(createdAt) === selectedMonth
-    })
-
-    const expenseCategories = tripsForMonth.reduce((acc, trip) => {
-      const category = trip?.userSelection?.category || 'Other'
-      const amount = Number(trip?.userSelection?.budget || 0)
-      acc[category] = (acc[category] || 0) + amount
-      return acc
-    }, {})
-
-    const expenseTotal = Object.values(expenseCategories).reduce((sum, value) => sum + value, 0)
-
-    return {
-      month: selectedMonth,
-      trips: tripsForMonth,
-      tripCount: tripsForMonth.length,
-      spending: trend.spending,
-      activities,
-      goal: goalNumber,
-      goalProgress: goalNumber > 0 ? Math.min((trend.spending / goalNumber) * 100, 100) : 0,
-      expenseBreakdown: Object.entries(expenseCategories).map(([category, amount]) => ({
-        category,
-        amount,
-        percentage: expenseTotal ? Math.round((amount / expenseTotal) * 100) : 0,
-      })),
-    }
-  }, [selectedMonth, stats, goalNumber])
 
   const handleMonthClick = (data) => {
     if (!data?.activeLabel) return
@@ -137,7 +86,7 @@ export default function InsightsPage() {
         savingsGoal: goalNumber,
       })
       toast.success('Monthly budget goal saved')
-      
+
     } catch (err) {
       console.error('Error saving goal:', err)
       toast.error('Could not save budget goal')
@@ -165,17 +114,14 @@ export default function InsightsPage() {
 
       try {
         // Trips
-        const tripsRef = collection(db, 'trips')
-        const tripsQuery = query(tripsRef, where('userId', '==', user.uid))
+        const tripsRef = collection(db, 'users', user.uid, 'trips')
+        const tripsQuery = query(tripsRef)
         const tripsSnapshot = await getDocs(tripsQuery)
-        const trips = tripsSnapshot
-          .docs
-          .map((doc) => ({ id: doc.id, ...doc.data() }))
-          .sort((a, b) => {
-            const aDate = a?.createdAt?.toDate ? a.createdAt.toDate() : new Date(0)
-            const bDate = b?.createdAt?.toDate ? b.createdAt.toDate() : new Date(0)
-            return bDate - aDate
-          })
+
+        const trips = tripsSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
 
         const totalSpent = trips.reduce((acc, trip) => {
           const amount = Number(trip?.userSelection?.budget || 0)
@@ -456,7 +402,7 @@ export default function InsightsPage() {
         </Card>
       </div>
 
-     
+
 
       {/* Recent Trips Performance */}
       <Card className="p-6">

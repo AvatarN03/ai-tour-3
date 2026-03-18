@@ -1,4 +1,9 @@
 "use client";
+
+import React, { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
 import {
   PanelLeftClose,
   PanelRightClose,
@@ -7,12 +12,9 @@ import {
   Bell,
   Search,
 } from "lucide-react";
-import React, { useState, useEffect } from "react";
-import ThemeToggle from "./ThemeToggle";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
 import { motion } from "framer-motion";
-import LanguageSelector from "./LanguageSelector";
+
+import ThemeToggle from "./ThemeToggle";
 import PageSearch from "./PageSearch";
 import { Notification } from "./Notification";
 

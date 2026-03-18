@@ -1,12 +1,16 @@
-"use client";
+"use client";;
+
+import React, { Suspense, useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
+
+import { Languages, Loader2 } from "lucide-react";
+
 import Header from "@/components/custom/Header";
 import Sidebar from "@/components/custom/Sidebar";
 import GoogleTranslate from "@/components/features/GoogleTranslation";
+
 import { useAuth } from "@/providers/useAuth";
 import { WeatherProvider } from "@/providers/useWeather";
-import { Languages, Loader2 } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import React, { Suspense, useState, useEffect } from "react";
 
 const layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);

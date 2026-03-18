@@ -1,18 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { useTranslation } from "react-i18next";
 import { PanelLeftCloseIcon, ChevronRight, Crown } from "lucide-react";
-import { sidebarMenus } from "@/lib/utils/constant";
-import ProfileCard from "./ProfileCard";
-import { useAuth } from "@/providers/useAuth";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { getUserInitials } from "@/lib/utils/nameInitial";
 import { motion, AnimatePresence } from "framer-motion";
-import Logo from "./Logo";
 import clsx from "clsx";
+
+import ProfileCard from "./ProfileCard";
+import Logo from "./Logo";
+
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+
+import { useAuth } from "@/providers/useAuth";
+
+import { sidebarMenus } from "@/lib/utils/constant";
+import { getUserInitials } from "@/lib/utils/nameInitial";
 
 export default function Sidebar({ isOpen, onClose }) {
   const { t } = useTranslation();
@@ -20,9 +25,6 @@ export default function Sidebar({ isOpen, onClose }) {
   const [modal, setModal] = useState(false);
   const { profile } = useAuth();
 
-  useEffect(() => {
-    console.log(profile)
-  }, [])
 
   // Map menu item names to translation keys
   const getTranslatedMenuName = (menuName) => {

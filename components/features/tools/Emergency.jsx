@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from "react";
+
 import {
   Phone,
   Search,
@@ -8,6 +9,7 @@ import {
   Heart,
   Shield,
 } from "lucide-react";
+
 import { emergencyContacts } from "@/lib/utils/constant";
 
 const getTypeIcon = (type) => {

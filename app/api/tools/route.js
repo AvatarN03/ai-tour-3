@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 
-export const revalidate = 43200; // 12 hours = 43,200 seconds
+import { revalidate12 } from "@/lib/utils/constant";
+
+export const revalidate = 43200;
 
 export async function GET() {
   try {
     const res = await fetch("https://api.frankfurter.app/latest?from=EUR", {
-      next: { revalidate: 43200 }, // revalidate every 12 hours
+      next: { revalidate: revalidate12 }, 
     });
 
     if (!res.ok) {

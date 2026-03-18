@@ -1,6 +1,8 @@
 "use client"
+
 import { motion } from "framer-motion";
 import { Linkedin, Github, Mail } from "lucide-react";
+
 import { teamMembers } from "@/lib/utils/constant";
 
 const AboutSection = () => {

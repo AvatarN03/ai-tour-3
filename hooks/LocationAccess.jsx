@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import { Button } from "../components/ui/button";
+
 import { useWeather } from "@/providers/useWeather";
 
 const LocationAccess = () => {

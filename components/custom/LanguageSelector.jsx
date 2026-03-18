@@ -1,37 +1,15 @@
 "use client";
 
-import { Globe, Check } from "lucide-react";
 import React, { useState } from "react";
+
+import { Globe, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
 import { useLanguage } from "@/context/LanguageContext";
 
-const languages = [
-  {
-    code: "en",
-    label: "English",
-    flag: "🇬🇧",
-  },
-  {
-    code: "fr",
-    label: "Français",
-    flag: "🇫🇷",
-  },
-  {
-    code: "ta",
-    label: "தமிழ்",
-    flag: "🇮🇳",
-  },
-  {
-    code: "mr",
-    label: "मराठी",
-    flag: "🇮🇳",
-  },
-  {
-    code: "ar",
-    label: "العربية",
-    flag: "🇸🇦",
-  },
-];
+import { languages } from "@/lib/utils/constant";
+
+
 
 const LanguageSelector = () => {
   const { language, changeLanguage } = useLanguage();

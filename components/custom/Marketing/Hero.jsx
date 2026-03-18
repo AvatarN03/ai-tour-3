@@ -1,7 +1,8 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
 import Link from "next/link";
+
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { Globe, Map, Sparkles } from "lucide-react";
 

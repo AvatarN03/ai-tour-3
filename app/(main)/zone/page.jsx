@@ -1,14 +1,18 @@
-"use client"
+"use client";
+
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+
+import { Search, X, MessageCircle, Plus } from 'lucide-react'
+import { collection, getDocs } from 'firebase/firestore'
+
+import { useAuth } from '@/providers/useAuth'
+
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Search, X, Trash2, Edit2, MessageCircle, Plus } from 'lucide-react'
+
 import { db } from '@/lib/config/firebase'
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore'
-import { useAuth } from '@/providers/useAuth'
-import { logActivity } from '@/lib/services/logActivity'
 import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
 
 const BlogListPage = () => {

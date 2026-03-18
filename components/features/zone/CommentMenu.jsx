@@ -1,6 +1,7 @@
 
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react"
+
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 
 export function CommentMenu({ onEdit, onDelete }) {
     const [open, setOpen] = useState(false);

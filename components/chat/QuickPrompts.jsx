@@ -1,13 +1,5 @@
-import { Plane, Sparkles, Map, Compass } from "lucide-react";
+import { defaultPrompts, icons } from "@/lib/utils/constant";
 
-const icons = { Plane, Sparkles, Map, Compass };
-
-const defaultPrompts = [
-  { text: "Plan a weekend trip to Paris", icon: "Plane" },
-  { text: "Best time to visit Bali?", icon: "Sparkles" },
-  { text: "Budget destinations in Europe", icon: "Map" },
-  { text: "7-day itinerary for Japan", icon: "Compass" }
-];
 
 export const QuickPrompts = ({ prompts = defaultPrompts, onSelect }) => (
   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4 mt-2">

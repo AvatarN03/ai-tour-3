@@ -1,6 +1,7 @@
 "use client";
-import LocationInput from "address-autocomplete-react/dist/LocationInput";
 import React from "react";
+
+import LocationInput from "address-autocomplete-react/dist/LocationInput";
 
 const LocationComplete = ({ name, value, onChange, placeholder, error }) => {
   const handleLocationSelect = (location) => {

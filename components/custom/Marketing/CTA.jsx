@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
 import { useTranslation } from "react-i18next";
 import {motion} from "framer-motion"
-import Link from "next/link";
 
 const CTA = () => {
   const { t } = useTranslation();

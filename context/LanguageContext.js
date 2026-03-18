@@ -1,7 +1,8 @@
 "use client";
 
-import i18n from "@/lib/i8n";
 import { createContext, useContext, useState, useEffect } from "react";
+
+import i18n from "@/lib/i8n";
 
 
 const LanguageContext = createContext();

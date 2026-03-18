@@ -1,18 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Bookmark, Loader, Loader2, MapPin, Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
-
 import { updateDoc, doc, arrayUnion } from "firebase/firestore";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
-import { useRouter } from "next/navigation";
 import { getTripCategoryEmoji } from "@/lib/utils/utils";
 import { logActivity } from "@/lib/services/logActivity";
-import { useTranslation } from "react-i18next";
 
 export default function TripRecommendations() {
   const { user, profile } = useAuth();

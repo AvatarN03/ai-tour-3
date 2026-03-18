@@ -1,7 +1,9 @@
 "use client";
-import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import React, { useState, useEffect, useCallback } from "react";
+
+import { Search, X, ChevronUp, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
 import { Input } from "../ui/input";
 
 const PageSearch = ({ isOpen, onClose }) => {

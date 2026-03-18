@@ -1,7 +1,8 @@
 "use client";
 
-import { useTranslation } from "react-i18next";
 import Link from "next/link";
+
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import {
   Plane,
@@ -12,12 +13,14 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+
 import TripRecommendations from "@/components/features/dashboard/Recommendation";
+import RecentActivity from "@/components/features/dashboard/RecentActivity";
 
 import LocationAccess from "@/hooks/LocationAccess";
 
 import { dashboardQuickstarts } from "@/lib/utils/constant";
-import RecentActivity from "@/components/features/dashboard/RecentActivity";
+
 import { useAuth } from "@/providers/useAuth";
 
 export default function DashboardPage() {

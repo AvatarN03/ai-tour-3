@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+
 import { DollarSign, Plus, Trash2, Globe } from "lucide-react";
 
 export default function ExpenseTracker() {

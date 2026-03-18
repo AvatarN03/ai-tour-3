@@ -1,23 +1,25 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { useTranslation } from "react-i18next";
 import Link from 'next/link'
 
-import Logo from '../Logo'
-import ThemeToggle from '../ThemeToggle'
-import ProfileCard from '../ProfileCard'
+import { useTranslation } from "react-i18next";
+
+import Logo from '../Logo';
+import ThemeToggle from '../ThemeToggle';
+import LanguageSelector from '../LanguageSelector';
+import ProfileCard from '../ProfileCard';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
 
 import { useAuth } from '@/providers/useAuth'
 
 import { landingPageMenus } from '@/lib/utils/constant'
 import { getUserInitials } from '@/lib/utils/nameInitial'
-
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
-
 import { cn } from '@/lib/utils/utils'
-import LanguageSelector from '../LanguageSelector';
+
+
 
 const Navbar = () => {
     const { t } = useTranslation();
