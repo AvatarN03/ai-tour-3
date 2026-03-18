@@ -33,6 +33,7 @@ import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/logActivity";
+import { useTrip } from "@/hooks/useTrip";
 
 
 const TripViewCard = () => {
@@ -41,69 +42,56 @@ const TripViewCard = () => {
   const { tripId } = useParams();
   const { profile, user, setProfile } = useAuth();
   const router = useRouter();
+  const { deleteTrip, loading } = useTrip();
 
   useEffect(() => {
     if (profile?.uid && tripId) fetchPlanData();
   }, [tripId, profile?.uid]);
 
   const fetchPlanData = async () => {
-  try {
-    const docRef = doc(db, "users", profile.uid, "trips", String(tripId));
-    const docSnap = await getDoc(docRef);
-
-    if (!docSnap.exists()) {
-      toast.error("❌ No such document!");
-      router.replace("/trips");
-      return;
-    }
-
-    const data = docSnap.data();
-
-    setPlanData(data.GeneratedPlan);
-
-  } catch (error) {
-    toast.error("🔥 Error fetching trip: " + error.message);
-  }
-};
-
-  const deleteTrip = async () => {
-    if (!user) {
-      toast.error("You must be logged in to delete a trip!");
-      return;
-    }
-
-    if (
-      !confirm(
-        "Are you sure you want to delete this trip? This action cannot be undone."
-      )
-    ) {
-      return;
-    }
-
     try {
-      await updateDoc(doc(db, "users", profile.uid), {
-        tripCount: increment(-1),
-      });
+      const docRef = doc(db, "users", profile.uid, "trips", String(tripId));
+      const docSnap = await getDoc(docRef);
 
+      if (!docSnap.exists()) {
+        toast.error("❌ No such document!");
+        router.replace("/trips");
+        return;
+      }
+
+      const data = docSnap.data();
+
+      setPlanData(data.GeneratedPlan);
+
+    } catch (error) {
+      toast.error("🔥 Error fetching trip: " + error.message);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!user) {
+      toast.error("You must be logged in");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete this trip?")) return;
+
+    const res = await deleteTrip({
+      profile,
+      tripId,
+      plan,
+    });
+
+    if (res.success) {
       setProfile((prev) => ({
         ...prev,
         tripCount: prev.tripCount - 1,
       }));
 
-      await deleteDoc(doc(db, "users", profile.uid, "trips", tripId));
-
-      await logActivity({
-        userId: profile?.uid,
-        action: "DELETE",
-        entity: "TRIP",
-        entityId: tripId,
-        metadata: { tripName: plan?.tripDetails?.title },
-      });
-
       toast.success("Trip deleted successfully!");
       router.push("/trips");
-    } catch (error) {
-      toast.error("Error deleting trip: " + error.message);
+    } else {
+      toast.error(res.error);
     }
   };
 
@@ -124,19 +112,19 @@ const TripViewCard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
-      <div className="max-w-5xl mx-auto p-0 md:p-6">
+      <div className="max-w-5xl mx-auto p-0 md:p-6 relative">
 
-        {/* Delete Button */}
-        <button
-          onClick={deleteTrip}
-          className="px-4 py-2 flex justify-center items-center gap-2 cursor-pointer fixed bottom-5 right-5 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold shadow-md transition"
-        >
-          <Trash />
-          <p className="hidden md:block">Delete Trip</p>
-        </button>
 
         {/* Header Section */}
-        <div className="rounded-md md:rounded-2xl p-6 md:p-8 mb-6 shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 text-white overflow-hidden">
+        <div className="rounded-md md:rounded-2xl p-6 md:p-8 mb-6 shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 text-white overflow-hidden relative">
+        {/* Delete Button */}
+        <button
+          onClick={handleDelete}
+          disabled={loading}
+          className="px-4 py-2 absolute top-5 right-5 rounded-full bg-red-600 text-white cursor-pointer hover:bg-red-500"
+        >
+          {loading ? "Deleting..." : "Delete Trip"}
+        </button>
           <h1 className="text-2xl md:text-4xl font-bold mb-4 break-words">
             {plan?.tripDetails?.title || `Trip to ${plan?.destination}`}
           </h1>
@@ -172,7 +160,7 @@ const TripViewCard = () => {
               <DollarSign size={18} className="flex-shrink-0" />
               <div className="min-w-0">
                 <p className="text-xs opacity-80">Total Budget ({currency})</p>
-                <p className="font-light md:font-semibold text-xs md:text-base max-w-xs">
+                <p className="font-light md:font-semibold text-xs md:text-base max-w-xs line-clamp-2">
                   {currencySymbol} {plan?.total_estimated_cost}
                 </p>
               </div>

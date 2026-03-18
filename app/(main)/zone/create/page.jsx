@@ -17,11 +17,13 @@ import { useAuth } from '@/providers/useAuth'
 import { categories } from '@/lib/utils/constant'
 import { db } from '@/lib/config/firebase'
 import { logActivity } from '@/lib/services/logActivity'
+import { useBlog } from '@/hooks/useBlog';
 
 export default function CreatePostPage() {
     const router = useRouter()
     const { profile } = useAuth()
     const inputRef = useRef(null)
+    const { createPost, loading } = useBlog();
 
     const [post, setPost] = useState({
         title: '',
@@ -67,56 +69,25 @@ export default function CreatePostPage() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
+
         if (!post.title.trim() || !post.content.trim() || !post.category) {
-            return alert('Please fill all required fields')
+            return alert("Please fill all required fields");
         }
-        if (!profile?.uid) return alert('You must be logged in to create a post')
 
-        setIsSubmitting(true)
-        try {
-            let uploadedImageUrl = ''
-            if (post.imageFile) {
-                const formData = new FormData()
-                formData.append('file', post.imageFile)
-                const res = await fetch('/api/media/upload', { method: 'POST', body: formData })
-                if (!res.ok) throw new Error('Image upload failed')
-                const data = await res.json()
-                uploadedImageUrl = data?.url || ''
-            }
-
-            const postId = `post_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-            const postData = {
-                title: post.title.trim(),
-                content: post.content.trim(),
-                category: post.category,
-                imageUrl: uploadedImageUrl,
-                author: profile?.name || 'Anonymous',
-                authorImage: profile?.avatarUrl || null,
-                authorUid: profile?.uid,
-                createdAt: Timestamp.now(),
-                likes: 0,
-            }
-
-            await setDoc(doc(db, 'blog_posts', postId), postData)
-            await setDoc(doc(db, 'blog_comments', postId), { comments: [] })
-            await logActivity({
-                userId: profile?.uid,
-                action: 'CREATE',
-                entity: 'BLOG',
-                entityId: postId,
-                metadata: { tripName: postData.title },
-            })
-            toast.success('Post published successfully!')
-
-            router.push('/zone')
-        } catch (error) {
-            console.error('Error creating post:', error)
-            toast.error(`Failed to publish post: ${error.message}`)
-        } finally {
-            setIsSubmitting(false)
+        if (!profile?.uid) {
+            return alert("You must be logged in");
         }
-    }
+
+        const res = await createPost({ post, profile });
+
+        if (res.success) {
+            toast.success("Post published successfully!");
+            router.push("/zone");
+        } else {
+            toast.error(res.error);
+        }
+    };
 
     return (
         <div className="h-full bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-6">
@@ -266,10 +237,10 @@ export default function CreatePostPage() {
                                 <div className="flex flex-col gap-3">
                                     <Button
                                         type="submit"
-                                        disabled={isSubmitting}
+                                        disabled={loading}
                                         className="bg-green-600 hover:bg-green-700 w-full"
                                     >
-                                        {isSubmitting ? 'Publishing...' : 'Publish Post'}
+                                        {loading ? "Publishing..." : "Publish Post"}
                                     </Button>
                                     <Button
                                         type="button"

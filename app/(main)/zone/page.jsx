@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { Search, X, MessageCircle, Plus } from 'lucide-react'
+import { Search, X, MessageCircle, Plus, Edit2 } from 'lucide-react'
 import { collection, getDocs } from 'firebase/firestore'
 
 import { useAuth } from '@/providers/useAuth'

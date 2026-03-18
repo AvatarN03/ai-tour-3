@@ -23,6 +23,8 @@ import { CommentCard } from '@/components/features/zone/CommentCard'
 
 import { useAuth } from '@/providers/useAuth';
 
+import { useBlog } from '@/hooks/useBlog';
+
 import { db } from '@/lib/config/firebase'
 import { logActivity } from '@/lib/services/logActivity'
 import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
@@ -40,41 +42,35 @@ export default function ViewPostPage() {
     const [isExpanded, setIsExpanded] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+    const { getPost, getComments, updateComment, addComment, deleteComment } = useBlog();
+    const [editingCommentId, setEditingCommentId] = useState(null);
+    const [editText, setEditText] = useState("");
 
     useEffect(() => { fetchData() }, [id])
 
     const fetchData = async () => {
-        setIsLoading(true)
-        try {
-            const postSnap = await getDoc(doc(db, 'blog_posts', id))
-            if (!postSnap.exists()) {
-                alert('Post not found')
-                return router.push('/zone')
-            }
-            const data = postSnap.data()
-            setPost({
-                id: postSnap.id,
-                ...data,
-                createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
-                updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt ? new Date(data.updatedAt) : null),
-            })
+        setIsLoading(true);
 
-            const commentSnap = await getDoc(doc(db, 'blog_comments', id))
-            if (commentSnap.exists()) {
-                setComments(
-                    (commentSnap.data().comments || []).map((c) => ({
-                        ...c,
-                        createdAt: c.createdAt?.toDate?.() || new Date(c.createdAt),
-                    }))
-                )
-            }
-            console.log(profile)
-        } catch (error) {
-            console.error('Error fetching post:', error)
-        } finally {
-            setIsLoading(false)
+        const postRes = await getPost({ postId: id });
+        if (!postRes.success) {
+            toast.error(postRes.error);
+            return router.push("/zone");
         }
-    }
+
+        setPost(postRes.data);
+
+        const commentRes = await getComments({ postId: id });
+        if (commentRes.success) {
+            setComments(commentRes.data);
+        }
+
+        setIsLoading(false);
+    };
+
+    const handleEditClick = (comment) => {
+        setEditingCommentId(comment.id);
+        setEditText(comment.text);
+    };
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this post?')) return
@@ -91,68 +87,58 @@ export default function ViewPostPage() {
     }
 
     const handleAddComment = async (e) => {
-        e.preventDefault()
-        if (!newComment.trim()) return alert('Comment cannot be empty')
-        if (!profile?.uid) return alert('You must be logged in to comment')
+        e.preventDefault();
 
-        setIsSubmittingComment(true)
-        try {
-            const comment = {
-                id: `comment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                text: newComment.trim(),
-                author: profile?.name || 'User',
-                authorUid: profile?.uid,
-                authorImage: profile?.avatarUrl || null,
-                createdAt: Timestamp.now(),
-            }
-            const commentRef = doc(db, 'blog_comments', id)
-            const commentDoc = await getDoc(commentRef)
-            if (commentDoc.exists()) {
-                await updateDoc(commentRef, { comments: arrayUnion(comment) })
-            } else {
-                await setDoc(commentRef, { comments: [comment] })
-            }
-            await logActivity({ userId: profile?.uid, action: commentDoc.exists() ? 'UPDATE' : 'CREATE', entity: 'COMMENT', entityId: id, metadata: { postId: id, commentId: comment.id } })
-            setComments((prev) => [...prev, { ...comment, createdAt: new Date() }])
-            setNewComment('')
-            toast.success('Comment posted successfully!')
+        if (!newComment.trim()) return;
 
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to post comment.')
-        } finally {
-            setIsSubmittingComment(false)
+        const res = await addComment({
+            postId: id,
+            text: newComment,
+            profile,
+        });
+
+        if (res.success) {
+            setComments((prev) => [...prev, { ...res.data, createdAt: new Date() }]);
+            setNewComment("");
+            toast.success("Comment added!");
+        } else {
+            toast.error(res.error);
         }
-    }
+    };
 
     const handleDeleteComment = async (commentId) => {
-        if (!confirm('Delete this comment?')) return
-        try {
-            const updated = comments.filter((c) => c.id !== commentId)
-            await setDoc(doc(db, 'blog_comments', id), { comments: updated })
-            await logActivity({ userId: profile?.uid, action: 'DELETE', entity: 'COMMENT', entityId: id, metadata: { postId: id, commentId } })
-            setComments(updated)
-            toast.success('Comment deleted successfully!')
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to delete comment.')
-        }
-    }
+        const res = await deleteComment({
+            postId: id,
+            comments,
+            commentId,
+            profile,
+        });
 
-    const handleEditComment = async (commentId, newText) => {
-        try {
-            const updated = comments.map((c) =>
-                c.id === commentId ? { ...c, text: newText } : c
-            )
-            await setDoc(doc(db, 'blog_comments', id), { comments: updated })
-            await logActivity({ userId: profile?.uid, action: 'UPDATE', entity: 'COMMENT', entityId: id, metadata: { postId: id, commentId } })
-            setComments(updated)
-            toast.success('Comment updated successfully!')
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to edit comment.')
+        if (res.success) {
+            setComments(res.data);
+            toast.success("Deleted!");
+        } else {
+            toast.error(res.error);
         }
+    };
+
+
+    const handleUpdateComment = async (commentId, text) => { 
+        
+    const res = await updateComment({
+        postId: post.id,
+        commentId,
+        text,
+    });
+
+    if (res.success) {
+        setComments((prev) =>
+            prev.map((c) =>
+                c.id === commentId ? { ...c, text } : c
+            )
+        );
     }
+};
 
     if (isLoading) {
         return (
@@ -299,7 +285,7 @@ export default function ViewPostPage() {
                                     <Button
                                         type="submit"
                                         disabled={isSubmittingComment || !newComment.trim()}
-                                        
+
                                     >
                                         {isSubmittingComment ? 'Posting…' : 'Post Comment'}
                                     </Button>
@@ -309,20 +295,16 @@ export default function ViewPostPage() {
                             {/* Comment list */}
                             {comments.length > 0 ? (
                                 <div className="space-y-3">
-                                    {comments.map((comment) => {
-                                        const isCommentOwner = comment.authorUid === profile?.uid
-                                        const canAct = isCommentOwner || isPostOwner
-                                        return (
-                                            <CommentCard
-                                                key={comment.id}
-                                                comment={comment}
-                                                canDelete={canAct}
-                                                canEdit={isCommentOwner}
-                                                onDelete={() => handleDeleteComment(comment.id)}
-                                                onEdit={handleEditComment}
-                                            />
-                                        )
-                                    })}
+                                    {comments.map((comment) => (
+                                        <CommentCard
+                                            key={comment.id}
+                                            comment={comment}
+                                            canEdit={comment.authorUid === profile?.uid}
+                                            canDelete={comment.authorUid === profile?.uid || isPostOwner}
+                                            onEdit={handleUpdateComment}           // (commentId, text) => ...
+                                            onDelete={() => handleDeleteComment(comment.id)}
+                                        />
+                                    ))}
                                 </div>
                             ) : (
                                 <p className="text-gray-400 text-center py-8 text-sm">

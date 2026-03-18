@@ -22,6 +22,8 @@ import { formatDate } from "@/lib/utils/blogHelpers";
 import { PAGE_SIZE } from "@/lib/utils/constant";
 
 import { useAuth } from "@/providers/useAuth";
+import { useTrip } from "@/hooks/useTrip";
+import { toDate } from "@/lib/utils/utils";
 
 
 
@@ -33,58 +35,36 @@ export default function SavedTripsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const { getTrips, loading } = useTrip();
 
   // Stack of page cursors: index 0 = page 1 start (null), index 1 = page 2 start, etc.
   const pageCursors = useRef([null]);
 
   const fetchTrips = async (pageNum = 1, search = "") => {
     if (!profile?.uid) return;
-    setIsLoading(true);
 
-    try {
-      const tripsRef = collection(db, "users", profile.uid, "trips");
+    const cursor = pageCursors.current[pageNum - 1];
 
-      if (search.trim()) {
-        // Search mode: prefix-range query on destination field in Firebase
-        const term = search.trim();
-        const q = query(
-          tripsRef,
-          where("userSelection.destination", ">=", term),
-          where("userSelection.destination", "<=", term + "\uf8ff"),
-          limit(PAGE_SIZE)
-        );
-        const snapshot = await getDocs(q);
-        const trips = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setMyTrips(trips);
-        setTotalCount(trips.length);
-      } else {
-        // Pagination mode: cursor-based, 10 per page
-        const cursor = pageCursors.current[pageNum - 1];
-        const constraints = [orderBy("createdAt", "desc"), limit(PAGE_SIZE)];
-        if (cursor) constraints.push(startAfter(cursor));
+    const res = await getTrips({
+      userId: profile.uid,
+      pageSize: PAGE_SIZE,
+      cursor,
+      searchQuery: search,
+    });
 
-        const q = query(tripsRef, ...constraints);
-        const snapshot = await getDocs(q);
-        const trips = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-        // Save the last doc as the cursor for the next page
-        if (snapshot.docs.length > 0 && !pageCursors.current[pageNum]) {
-          pageCursors.current[pageNum] = snapshot.docs[snapshot.docs.length - 1];
-        }
-
-        setMyTrips(trips);
-
-        // Fetch total count once on first page load
-        if (pageNum === 1) {
-          const countSnapshot = await getDocs(query(tripsRef));
-          setTotalCount(countSnapshot.size);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching trips:", error);
-    } finally {
-      setIsLoading(false);
+    if (!res.success) {
+      console.error(res.error);
+      return;
     }
+
+    setMyTrips(res.data);
+
+    // Save cursor for next page
+    if (res.lastDoc && !pageCursors.current[pageNum]) {
+      pageCursors.current[pageNum] = res.lastDoc;
+    }
+
+    // Optional: total count (keep your existing logic or optimize later)
   };
 
   useEffect(() => {
@@ -166,91 +146,154 @@ export default function SavedTripsPage() {
           {isLoading ? (
             <p className="text-gray-500 dark:text-gray-400">Loading trips...</p>
           ) : myTrips.length > 0 ? (
-            myTrips.map((trip) => (
-              <Card
-                key={trip.id}
-                className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700"
-              >
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-                <div className="p-3 sm:p-6">
-                  <div className="flex flex-col lg:items-start lg:justify-between gap-6">
-                    <div className="flex-1 space-y-4 w-full">
-                      <div className="flex items-start gap-4">
-                        <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300">
-                          ✈️
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 truncate">
-                            {trip.tripDetails?.title ||
-                              trip.userSelection?.title ||
-                              trip.title ||
-                              "Untitled Trip"}
-                          </h3>
-                          <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
-                            <MapPin className="w-4 h-4 flex-shrink-0" />
-                            <span className="font-medium">
-                              {trip.userSelection?.destination ||
-                                trip.tripDetails?.destination ||
-                                trip.destination ||
-                                "Unknown Destination"}
+            
+              myTrips.map((trip) => {
+                const plan = trip.GeneratedPlan || {};
+                const sel = trip.userSelection || {};
+                const info = trip.tripDetails || {};
+
+                return (
+                  <Card
+                    key={trip.id}
+                    className="group relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700"
+                  >
+                    {/* Top accent bar */}
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
+
+                    <div className="p-3 sm:p-6">
+                      <div className="flex flex-col gap-6">
+
+                        {/* ── Title + Destination ── */}
+                        <div className="flex items-start gap-4">
+                          <div className="flex-shrink-0 w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-2xl shadow-lg transform group-hover:scale-110 transition-transform duration-300">
+                            ✈️
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 truncate">
+                              {info.title || sel.title || "Untitled Trip"}
+                            </h3>
+                            <div className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
+                              <MapPin className="w-4 h-4 flex-shrink-0" />
+                              <span className="font-medium truncate">
+                                {plan.destination || sel.destination || "Unknown Destination"}
+                              </span>
+                            </div>
+                            {info.source && (
+                              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                                From: {info.source}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Budget category badge — top right */}
+                          {plan.budget_category && (
+                            <span className="flex-shrink-0 text-xs font-medium px-2.5 py-1 rounded-full bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300">
+                              {plan.budget_category}
                             </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Trip details grid */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-4 w-full">
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md w-full">
-                          <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Calendar className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Saved</p>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {formatDate(trip.createdAt)}
-                            </p>
-                          </div>
+                          )}
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md w-full">
-                          <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        {/* ── Stats grid ── */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3 w-full">
+
+                          {/* Saved date */}
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                            <div className="w-9 h-9 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Saved</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {toDate(trip.createdAt)}
+                              </p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Budget</p>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {getCurrencySymbol(
-                                trip.userSelection?.currency || trip.currency
-                              )}{" "}
-                              {trip.userSelection?.budget || trip.budget || 0}
-                            </p>
+
+                          {/* Budget */}
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                            <div className="w-9 h-9 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <DollarSign className="w-4 h-4 text-green-600 dark:text-green-400" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Budget</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {plan.total_estimated_cost ||
+                                  `${getCurrencySymbol(sel.currency || trip.currency)}${sel.budget || 0}`}
+                              </p>
+                            </div>
                           </div>
+
+                          {/* Duration */}
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                            <div className="w-9 h-9 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <Clock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {plan.duration || `${sel.days || 0} days`}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Travel type */}
+                          <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                            <div className="w-9 h-9 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <span className="text-base">🧳</span>
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Type</p>
+                              <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                {plan.travel_type || info.category || sel.category || "—"}
+                              </p>
+                            </div>
+                          </div>
+
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md w-full">
-                          <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Clock className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        {/* ── Interests tags ── */}
+                        {(info.interests || sel.interests)?.length > 0 && (
+                          <div className="flex flex-wrap gap-1.5">
+                            {(info.interests || sel.interests).slice(0, 4).map((interest) => (
+                              <span
+                                key={interest}
+                                className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300"
+                              >
+                                {interest}
+                              </span>
+                            ))}
+                            {(info.interests || sel.interests).length > 4 && (
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
+                                +{(info.interests || sel.interests).length - 4} more
+                              </span>
+                            )}
                           </div>
-                          <div className="min-w-0">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Duration</p>
-                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                              {trip.userSelection?.days || trip.duration || 0} days
-                            </p>
-                          </div>
+                        )}
+
+                        {/* ── Persons + Start date row ── */}
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 border-t border-gray-100 dark:border-gray-700 pt-3">
+                          <span>
+                            👤 {sel.persons || 1} {sel.persons === 1 ? "person" : "persons"}
+                          </span>
+                          {sel.startDate && (
+                            <span>📅 Starts {sel.startDate}</span>
+                          )}
                         </div>
+
+                        {/* ── View Details button ── */}
+                        <Link
+                          href={`/trips/${trip.id}`}
+                          className="px-6 py-3 w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                          View Details
+                        </Link>
+
                       </div>
                     </div>
-
-                    <Link
-                      href={`/trips/${trip.id}`}
-                      className="px-6 py-3 w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
-              </Card>
-            ))
+                  </Card>
+                );
+              })
+            
           ) : (
             <p className="text-gray-500 dark:text-gray-400">No trips found</p>
           )}

@@ -16,6 +16,7 @@ import { useAuth } from '@/providers/useAuth'
 import { categories } from '@/lib/utils/constant'
 import { db } from '@/lib/config/firebase'
 import { logActivity } from '@/lib/services/logActivity'
+import { useBlog } from '@/hooks/useBlog';
 
 export default function EditPostPage() {
     const router = useRouter()
@@ -26,30 +27,28 @@ export default function EditPostPage() {
     const [post, setPost] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
     const [newImageFile, setNewImageFile] = useState(null)
-    const [isLoading, setIsLoading] = useState(true)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
+    const { getPost, updatePost, loading } = useBlog();
+
     useEffect(() => {
+        // AFTER
         const fetchPost = async () => {
-            try {
-                const snap = await getDoc(doc(db, 'blog_posts', id))
-                if (!snap.exists()) {
-                    alert('Post not found')
-                    return router.push('/zone')
-                }
-                const data = snap.data()
-                setPost({ id: snap.id, ...data })
-                setImagePreview(data.imageUrl || null)
-            } catch (error) {
-                console.error('Error fetching post:', error)
-                toast.error('Failed to load post')
-                router.push('/zone')
-            } finally {
-                setIsLoading(false)
+            const res = await getPost({ postId: id });
+
+            if (!res.success) {
+                alert(res.error);
+                router.push("/zone");
+                return;
             }
-        }
-        fetchPost()
-    }, [id])
+
+            setPost(res.data);
+            setImagePreview(res.data.imageUrl || null);
+            
+        };
+
+        fetchPost();
+    }, [id]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0]
@@ -87,48 +86,20 @@ export default function EditPostPage() {
     }
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        if (!post.title.trim() || !post.content.trim() || !post.category) {
-            return alert('Please fill all required fields')
+        e.preventDefault();
+
+        const res = await updatePost({ id, post, newImageFile });
+
+        if (!res.success) {
+            toast.error(res.error);
+            return;
         }
 
-        setIsSubmitting(true)
-        try {
-            let finalImageUrl = post.imageUrl || ''
-            if (newImageFile) {
-                const formData = new FormData()
-                formData.append('file', newImageFile)
-                const res = await fetch('/api/media/upload', { method: 'POST', body: formData })
-                if (!res.ok) throw new Error('Image upload failed')
-                const data = await res.json()
-                finalImageUrl = data?.url || ''
-            }
+        toast.success("Post updated successfully!");
+        router.push(`/zone/${id}/view`);
+    };
 
-            await updateDoc(doc(db, 'blog_posts', id), {
-                title: post.title.trim(),
-                content: post.content.trim(),
-                category: post.category,
-                imageUrl: finalImageUrl,
-                updatedAt: Timestamp.now(),
-            })
-            await logActivity({
-                userId: profile?.uid,
-                action: 'UPDATE',
-                entity: 'BLOG',
-                entityId: id,
-                metadata: { postId: id },
-            })
-            toast.success('Post updated successfully!')
-            router.push(`/zone/${id}/view`)
-        } catch (error) {
-            console.error('Error updating post:', error)
-            toast.error(`Failed to update post: ${error.message}`)
-        } finally {
-            setIsSubmitting(false)
-        }
-    }
-
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600" />

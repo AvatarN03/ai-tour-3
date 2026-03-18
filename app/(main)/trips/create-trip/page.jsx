@@ -1,56 +1,43 @@
 "use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 import { GenPlanLoading } from "@/components/custom/Loading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useAuth } from "@/providers/useAuth";
-import { generateTravelPlan } from "@/lib/api/AI_Model";
-import { categories, initialForm, interests } from "@/lib/utils/constant";
-import { db } from "@/lib/config/firebase";
-import { validateForm } from "@/lib/form/validation";
-import { addDoc, collection, doc, increment, setDoc, updateDoc } from "firebase/firestore";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { toast } from "sonner";
-import { logActivity } from "@/lib/services/logActivity";
-import { useTranslation } from "react-i18next";
-import LocationComplete from "./LocationComplete";
-// import AutoCompletion from "./AutoCompletion";
+import { FieldLabel } from "@/components/features/trips/FieldLabel";
+import { SectionHeader } from "@/components/features/trips/SectionHeader";
+import { FieldError } from "@/components/features/trips/FieldError";
 
-const currencyOptions = [
-  { value: "USD", label: "USD - $" },
-  { value: "INR", label: "INR - ₹" },
-  { value: "EUR", label: "EUR - €" },
-  { value: "GBP", label: "GBP - £" },
-  { value: "AUD", label: "AUD - A$" },
-  { value: "JPY", label: "JPY - ¥" },
-];
+import LocationComplete from "./LocationComplete";
+import { useAuth } from "@/providers/useAuth";
+
+import { useTrip } from "@/hooks/useTrip";
+
+import { categories, createTripData, CURRENCY_OPTIONS, initialForm, interests } from "@/lib/utils/constant";
+import { validateForm } from "@/lib/form/validation";
+import { getCurrencySymbol, inputClass, selectClass } from "@/lib/utils/utils";
+
 
 const CreateTripForm = () => {
-  // merge currency default with initialForm to avoid breaking other code
   const [formData, setFormData] = useState(initialForm);
-  const { profile } = useAuth();
-
   const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const router = useRouter();
 
+  const { profile } = useAuth();
+  const { createTrip, loading, generating } = useTrip(); 
+  const router = useRouter();
   const { t } = useTranslation();
+
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear field error on change
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
   const handleInterestToggle = (label) => {
@@ -62,21 +49,7 @@ const CreateTripForm = () => {
     }));
   };
 
-  const saveTrip = async (tripData, aiGeneratedPlan) => {
-    const docId = Date.now().toString();
-
-    await setDoc(doc(db, "users", profile?.uid, "trips", docId), {
-      id: docId,
-      userId: profile?.uid,
-      userSelection: tripData,
-      GeneratedPlan: aiGeneratedPlan,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      currency: tripData.currency || "INR",
-    });
-
-    return docId;
-  };
+  const handleReset = () => setFormData(initialForm);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,65 +59,25 @@ const CreateTripForm = () => {
       return;
     }
 
-
-    // 🔥 FREE PLAN LIMIT CHECK
-    const plan = profile?.subscription;
-    const tripCount = profile?.tripCount || 0;
-
-    if (plan === "free" && tripCount >= 7) {
+    if (profile?.subscription === "free" && (profile?.tripCount ?? 0) >= 7) {
       toast.error("Free plan allows only 7 trips. Upgrade to Pro 🚀");
       return;
     }
 
-    setIsSubmitting(true);
+    const res = await createTrip({ formData, profile });
 
-    try {
-      const tripData = {
-        ...formData,
-        budget: parseFloat(formData.budget || 0),
-        days: parseInt(formData.days || 0, 10),
-        persons: parseInt(formData.persons || 1, 10),
-        currency: formData.currency || "INR",
-      };
-
-      toast.success("The Travel Plan is generating ... hold on");
-      setIsGenerating(true);
-
-      const aiGeneratedPlan = await generateTravelPlan(tripData);
-
-      const docId = await saveTrip(tripData, aiGeneratedPlan);
-
-      // 🔥 Increment trip count AFTER successful save
-      await updateDoc(doc(db, "users", profile.uid), {
-        tripCount: increment(1),
-      });
-
-      toast.success("Trip created successfully! 🎉");
-
-      await logActivity({
-        userId: profile?.uid,
-        action: "CREATE",
-        entity: "TRIP",
-        entityId: docId,
-        metadata: { tripName: tripData.title },
-      });
-
-      setFormData({ ...initialForm, currency: tripData.currency || "INR" });
-
-      router.push("/trips/" + docId);
-
-    } catch (error) {
-      console.error("Error creating trip:", error);
+    if (!res?.success) {
       toast.error("Failed to create trip. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-      setIsGenerating(false);
+      return;
     }
+
+    toast.success("Trip created successfully! 🎉");
+    router.push(`/trips/${res.docId}`);
   };
 
-  if (isGenerating) {
-    return <GenPlanLoading />;
-  }
+  if (generating) return <GenPlanLoading />;
+
+  // ─── Render ─────────────────────────────────────────────────────────────────
 
   return (
     <div className="bg-gradient-to-br w-full from-blue-200 via-blue-300 to-purple-500 dark:from-blue-500 dark:via-blue-800 dark:to-purple-900 py-4 px-2 sm:px-6 rounded-md">
@@ -154,8 +87,7 @@ const CreateTripForm = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
             <span className="text-xl">✈️</span>
           </div>
-          <div className="">
-
+          <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Plan Your Dream Trip
             </h1>
@@ -166,80 +98,44 @@ const CreateTripForm = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Basic Information */}
+          {/* ── Basic Information ── */}
           <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-xl">📝</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Basic Information
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Tell us about your trip
-                </p>
-              </div>
-            </div>
+            <SectionHeader icon="📝" color="bg-blue-500" title="Basic Information" subtitle="Tell us about your trip" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Trip Title <span className="text-red-500">*</span>
-                </label>
+                <FieldLabel label="Trip Title" required />
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.title
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
+                  className={inputClass(errors.title)}
                   placeholder="e.g., Amazing Weekend in Paris"
                 />
-                {errors.title && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.title}
-                  </p>
-                )}
+                <FieldError msg={errors.title} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Category <span className="text-red-500">*</span>
-                </label>
-
+                <FieldLabel label="Category" required />
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 cursor-pointer dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.category
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
+                  className={selectClass(errors.category, "focus:ring-blue-500")}
                 >
                   <option value="">Select Category</option>
-
                   {categories.map((cat) => (
                     <option key={cat.label} value={cat.label}>
                       {t(cat.translationKey)}
                     </option>
                   ))}
                 </select>
-
-                {errors.category && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.category}
-                  </p>
-                )}
+                <FieldError msg={errors.category} />
               </div>
+
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Description
-                </label>
+                <FieldLabel label="Description" />
                 <textarea
                   name="description"
                   value={formData.description}
@@ -252,31 +148,13 @@ const CreateTripForm = () => {
             </div>
           </Card>
 
-          {/* Location Information */}
+          {/* ── Location ── */}
           <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-xl">📍</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Location Details
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Where are you going?
-                </p>
-              </div>
-            </div>
+            <SectionHeader icon="📍" color="bg-green-500" title="Location Details" subtitle="Where are you going?" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Starting From <span className="text-red-500">*</span>
-                </label>
-
-
+                <FieldLabel label="Starting From" required />
                 <LocationComplete
                   name="source"
                   value={formData.source}
@@ -284,38 +162,9 @@ const CreateTripForm = () => {
                   placeholder="e.g., New York, USA"
                   error={errors.source}
                 />
-                {/* <input
-                  type="text"
-                  name="source"
-                  value={formData.source}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.source
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
-                  placeholder="e.g., New York, USA"
-                />
-                {errors.source && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.source}
-                  </p>
-                )} */}
               </div>
-
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Destination <span className="text-red-500">*</span>
-                </label>
-                {/* <AutoCompletion
-                  onPlaceSelect={(place) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      destination: place.formattedAddress,
-                    }))
-                  }
-                /> */}
-
+                <FieldLabel label="Destination" required />
                 <LocationComplete
                   name="destination"
                   value={formData.destination}
@@ -323,60 +172,21 @@ const CreateTripForm = () => {
                   placeholder="e.g., Paris, France"
                   error={errors.destination}
                 />
-
-                {/* <input
-                  type="text"
-                  name="destination"
-                  value={formData.destination}
-                  onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-blue-500 ${errors.destination
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
-                  placeholder="e.g., Paris, France"
-                /> */}
-                {/* {errors.destination && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.destination}
-                  </p>
-                )} */}
               </div>
             </div>
           </Card>
 
-          {/* Trip Details */}
+          {/* ── Trip Details ── */}
           <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-xl">📅</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Trip Details
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Budget, dates, and travelers
-                </p>
-              </div>
-            </div>
+            <SectionHeader icon="📅" color="bg-purple-500" title="Trip Details" subtitle="Budget, dates, and travelers" />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Budget */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Budget <span className="text-red-500">*</span>
-                </label>
+                <FieldLabel label="Budget" required />
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
-                    {formData.currency === "INR"
-                      ? "₹"
-                      : formData.currency === "EUR"
-                        ? "€"
-                        : formData.currency === "GBP"
-                          ? "£"
-                          : formData.currency === "JPY"
-                            ? "¥"
-                            : "$"}
+                    {getCurrencySymbol(formData.currency)}
                   </span>
                   <input
                     type="number"
@@ -385,44 +195,33 @@ const CreateTripForm = () => {
                     onChange={handleInputChange}
                     min="0"
                     step="0.01"
-                    className={`w-full pl-8 pr-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.budget
-                      ? "border-red-500"
-                      : "border-gray-200 dark:border-gray-700"
-                      }`}
+                    className={`w-full pl-8 pr-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${
+                      errors.budget ? "border-red-500" : "border-gray-200 dark:border-gray-700"
+                    }`}
                     placeholder="50000"
                   />
                 </div>
-                {errors.budget && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.budget}
-                  </p>
-                )}
+                <FieldError msg={errors.budget} />
               </div>
 
-              {/* Currency selector */}
+              {/* Currency */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Currency
-                </label>
+                <FieldLabel label="Currency" />
                 <select
                   name="currency"
                   value={formData.currency}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 border-gray-200 dark:border-gray-700 cursor-pointer"
+                  className={selectClass(null, "focus:ring-purple-500")}
                 >
-                  {currencyOptions.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.label}
-                    </option>
+                  {CURRENCY_OPTIONS.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
                   ))}
                 </select>
               </div>
 
+              {/* Duration */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Duration (days) <span className="text-red-500">*</span>
-                </label>
+                <FieldLabel label="Duration (days)" required />
                 <input
                   type="number"
                   name="days"
@@ -430,24 +229,15 @@ const CreateTripForm = () => {
                   onChange={handleInputChange}
                   min={1}
                   max={7}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.days
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
+                  className={inputClass(errors.days, "focus:ring-purple-500")}
                   placeholder="3"
                 />
-                {errors.days && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.days}
-                  </p>
-                )}
+                <FieldError msg={errors.days} />
               </div>
 
+              {/* Travelers */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Travelers <span className="text-red-500">*</span>
-                </label>
+                <FieldLabel label="Travelers" required />
                 <input
                   type="number"
                   name="persons"
@@ -455,191 +245,99 @@ const CreateTripForm = () => {
                   onChange={handleInputChange}
                   min="1"
                   max={10}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.persons
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
+                  className={inputClass(errors.persons, "focus:ring-purple-500")}
                   placeholder="2"
                 />
-                {errors.persons && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.persons}
-                  </p>
-                )}
+                <FieldError msg={errors.persons} />
               </div>
 
+              {/* Start Date */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
+                <FieldLabel label="Start Date" required />
                 <input
                   type="date"
                   name="startDate"
                   value={formData.startDate}
                   onChange={handleInputChange}
-                  className={`w-full px-4 py-3 border-2 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all focus:ring-2 focus:ring-purple-500 ${errors.startDate
-                    ? "border-red-500"
-                    : "border-gray-200 dark:border-gray-700"
-                    }`}
+                  className={inputClass(errors.startDate, "focus:ring-purple-500")}
                 />
-                {errors.startDate && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <span className="mr-1">⚠️</span>
-                    {errors.startDate}
-                  </p>
-                )}
+                <FieldError msg={errors.startDate} />
               </div>
             </div>
           </Card>
 
-          {/* Interests */}
+          {/* ── Interests ── */}
           <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-xl">❤️</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Interests & Preferences
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  What do you enjoy?
-                </p>
-              </div>
-            </div>
+            <SectionHeader icon="❤️" color="bg-orange-500" title="Interests & Preferences" subtitle="What do you enjoy?" />
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-              {interests.map((interest) => (
-                <label
-                  key={interest.label}
-                  className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${formData.interests.includes(interest.label)
-                    ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
-                    : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
+              {interests.map((interest) => {
+                const active = formData.interests.includes(interest.label);
+                return (
+                  <label
+                    key={interest.label}
+                    className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${
+                      active
+                        ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
+                        : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300"
                     }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.interests.includes(interest.label)}
-                    onChange={() => handleInterestToggle(interest.label)}
-                    className="sr-only"
-                  />
+                  >
+                    <input
+                      type="checkbox"
+                      checked={active}
+                      onChange={() => handleInterestToggle(interest.label)}
+                      className="sr-only"
+                    />
+                    <span className="text-sm font-medium text-center">
+                      {t(interest.translationKey)}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          </Card>
 
-                  <span className="text-sm font-medium text-center">
-                    {t(interest.translationKey)}
-                  </span>
-                </label>
+          {/* ── Additional Information ── */}
+          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
+            <SectionHeader icon="ℹ️" color="bg-teal-500" title="Additional Information" subtitle="Optional details for a better experience" />
+
+            <div className="space-y-3 text-sm">
+              {createTripData.map(({ name, label, placeholder, ring, rows = 1 }) => (
+                <div key={name}>
+                  <FieldLabel label={label} />
+                  <textarea
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleInputChange}
+                    rows={rows}
+                    className={`w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 ${ring} transition-all`}
+                    placeholder={placeholder}
+                  />
+                </div>
               ))}
             </div>
           </Card>
 
-          {/* Additional Information */}
-          <Card className="p-4 shadow-lg border-2 border-gray-100 dark:border-gray-700">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-teal-500 rounded-lg flex items-center justify-center mr-3">
-                <span className="text-white text-xl">ℹ️</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Additional Information
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Optional details for a better experience
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-3 text-sm">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Accommodation Preferences
-                </label>
-                <textarea
-                  name="accommodation"
-                  value={formData.accommodation}
-                  onChange={handleInputChange}
-                  rows={1}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
-                  placeholder="e.g., Hotel near city center, Airbnb with kitchen, Budget hostel..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Transportation
-                </label>
-                <textarea
-                  name="transportation"
-                  value={formData.transportation}
-                  onChange={handleInputChange}
-                  rows={1}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
-                  placeholder="e.g., Round-trip flight, Train passes, Rental car..."
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Specific Activities
-                </label>
-                <textarea
-                  name="activities"
-                  value={formData.activities}
-                  onChange={handleInputChange}
-                  rows={1}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-teal-500 transition-all"
-                  placeholder="e.g., Visit Eiffel Tower, Wine tasting tour, Cooking class..."
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Dietary Restrictions
-                </label>
-                <textarea
-                  name="dietaryRestrictions"
-                  value={formData.dietaryRestrictions}
-                  onChange={handleInputChange}
-                  rows={1}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 transition-all"
-                  placeholder="e.g., Vegetarian, Gluten-free, Nut allergy..."
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Special Requests
-                </label>
-                <textarea
-                  name="specialRequests"
-                  value={formData.specialRequests}
-                  onChange={handleInputChange}
-                  rows={3}
-                  className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 transition-all"
-                  placeholder="Any other special requests or notes for your trip..."
-                />
-              </div>
-            </div>
-          </Card>
-
-          {/* Form Actions */}
+          {/* ── Actions ── */}
           <div className="flex flex-row justify-start md:justify-end gap-4 pt-4">
             <Button
               type="button"
               variant="destructive"
-              disabled={isSubmitting}
+              disabled={loading}
               className="sm:min-w-[140px] h-12 text-base font-medium"
-              onClick={() => setFormData(initialForm)}
+              onClick={handleReset}
             >
               Cancel
             </Button>
+
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={loading} // ✅ uses hook's loading state
               className="sm:min-w-[180px] h-12 text-base font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all"
             >
-              {isSubmitting ? (
+              {loading ? (
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-5 h-5 border-3 border-white border-t-transparent rounded-full animate-spin" />
                   <span>Creating Trip...</span>
                 </div>
               ) : (
@@ -657,3 +355,9 @@ const CreateTripForm = () => {
 };
 
 export default CreateTripForm;
+
+
+
+
+
+
