@@ -9,9 +9,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
 import { useAuth } from "@/providers/useAuth";
 
-import { getRecentActivities } from "@/lib/services/getActivities";
-import { getActivityColor } from "@/lib/services/logActivity";
-import { formatActivity } from "@/lib/services/formatActivity";
+import { formatActivity, getActivityColor } from "@/lib/services/activity";
+import { getRecentActivities } from "@/lib/services/firestore";
+
+
 
 
 export const Notification = ({ children }) => {

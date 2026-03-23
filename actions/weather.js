@@ -1,15 +1,9 @@
 "use server";
 
-/**
- * Server Action: Weather Data
- * Uses WEATHER_API_KEY (server-only env var — remove NEXT_PUBLIC_ prefix)
- */
+
 
 const API_KEY = process.env.WEATHER_API_KEY;
 
-// ---------------------------------------------------------------------------
-// Icon mapping (shared between current & forecast transforms)
-// ---------------------------------------------------------------------------
 
 const WEATHER_ICON_MAP = {
   "01d": "☀️",

@@ -8,9 +8,11 @@ import {
     Activity as ActivityIcon
 } from "lucide-react";
 
-import { formatActivity } from "@/lib/services/formatActivity";
-import { getRecentActivities } from "@/lib/services/getActivities";
-import { getActivityColor, getActivityIcon } from "@/lib/services/logActivity";
+
+import { getRecentActivities } from "@/lib/services/firestore";
+import { formatActivity, getActivityColor, getActivityIcon } from "@/lib/services/activity";
+
+
 
 
 

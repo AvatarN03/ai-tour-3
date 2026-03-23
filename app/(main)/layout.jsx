@@ -18,6 +18,7 @@ const layout = ({ children }) => {
   const pathname = usePathname();
   const { user, profile, loading } = useAuth();
 
+
   const [isTranslateShow, setTranslateShow] = useState(false);
 
   const toggleSidebar = () => {
@@ -29,15 +30,16 @@ const layout = ({ children }) => {
   };
 
 
-useEffect(() => {
-  if (loading) return;
+
+  useEffect(() => {
+    if (loading) return;
 
     if (!user) {
       router.push(`/auth?continueTo=${encodeURIComponent(pathname)}`);
       return;
     }
 
-}, [user, loading, router, pathname]);
+  }, [user, loading, router, pathname]);
 
 
   useEffect(() => {
@@ -50,11 +52,15 @@ useEffect(() => {
     return (
       <>
         <WeatherProvider>
-          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed top-4 right-4 p-2 w-16 min-h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-3 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
-            <div className={isTranslateShow ? "block" : "hidden"}>
-              <GoogleTranslate />
-            </div>
-            <Languages />
+          <div
+            role="button"
+            onClick={() => setTranslateShow(prev => !prev)}
+            className="fixed top-[100px] right-4 p-2 w-12 h-12 rounded-full z-30 bg-blue-200 dark:bg-blue-900 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
+          >
+            {isTranslateShow ?
+              <GoogleTranslate /> :
+              <Languages />
+            }
           </div>
           <div className="p-2 bg-slate-200 dark:bg-card rounded-md ">
             <div className="flex gap-2 ">
