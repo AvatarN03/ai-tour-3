@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Linkedin, Github, Mail } from "lucide-react";
 
-import { teamMembers } from "@/lib/utils/constant";
+import { teamMembers } from "@/lib/constants";
 
 const AboutSection = () => {
 
@@ -113,14 +113,14 @@ const AboutSection = () => {
                 <motion.div
                   key={index}
                   variants={circleVariants}
-                  className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-indigo-950 w-full max-w-3xl  justify-between even:flex-row-reverse gap-2 rounded-lg p-4  shadow-lg relative z-30 group"
+                  className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-gray-950 w-full max-w-3xl  justify-between even:flex-row-reverse overflow-hidden gap-2 rounded-lg p-4  shadow-lg relative z-30 group"
                 >
 
-                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[100px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-14 z-0" />
+                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[80px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-20 z-0" />
                   {/* Circle Image */}
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
-                    className="relative w-24 h-24 md:w-32 md:h-32 lg:w-36 lg:h-36 hover:rounded-sm rounded-full overflow-hidden shadow-2xl ring-4 ring-white dark:ring-gray-800 mb-4 z-20"
+                    className="relative w-24 h-24 md:w-32 md:h-32 lg:w-36 lg:h-36 hover:rounded-sm rounded-full overflow-hidden shadow-2xl ring-4 ring-purple-800 mb-4 z-20"
                   >
                     <img
                       src={member.image}

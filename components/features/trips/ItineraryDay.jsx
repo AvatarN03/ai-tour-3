@@ -12,7 +12,7 @@ import {
 
 import PlaceImage from "./PlaceImage";
 
-import { getRatingStars } from "@/lib/utils/utils";
+import { getRatingStars } from "@/lib/utils";
 
 
 

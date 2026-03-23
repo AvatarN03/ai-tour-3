@@ -3,7 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 
-import { services } from "@/lib/utils/constant";
+import { services } from "@/lib/constants";
 
 const staggerContainer = {
   animate: {
@@ -30,10 +30,10 @@ const Features = () => {
 
   return (
     <section
-      className="py-20 px-6     bg-indigo-200 dark:bg-gray-900 relative"
-      id="services"
+      className="py-10 px-3 lg:px-6 overflow-hidden    bg-indigo-200 dark:bg-gray-900 relative"
+      id="services "
     >
-      <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-24 min-h-auto my-20 pb-20">
+      <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-12 md:gap-24 min-h-auto my-20 md:pb-20 ">
         <div className="hidden md:block absolute bg-indigo-600 blur-[265px] bottom-0  -right-10 w-150 h-150 z-0" />
 
         <motion.div
@@ -41,7 +41,7 @@ const Features = () => {
           whileInView="animate"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="text-center mb-16 z-20 relative"
+          className="text-center mb-8 md:mb-16 z-20 relative"
         >
           <motion.h2
             variants={fadeInUp}
@@ -62,7 +62,7 @@ const Features = () => {
           whileInView="animate"
           viewport={{ once: true }}
           variants={staggerContainer}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-8  z-20 relative"
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 xl:gap-8  z-20 relative"
         >
           {services.map((feature, index) => (
             <motion.div
@@ -70,7 +70,7 @@ const Features = () => {
               variants={scaleIn}
               initial={{ opacity: 0, scale: 0.8, y: index * 30 }}
               whileHover={{ y: -10, transition: { duration: 0.2 } }}
-              className="bg-gradient-to-br from-indigo-400 to-indigo-600 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-shadow"
+              className="bg-gradient-to-br from-indigo-400 to-indigo-600 dark:from-gray-700 dark:to-gray-800 rounded-2xl  p-4 shadow-lg hover:shadow-2xl transition-shadow"
             >
               <div
                 className={`w-16 h-16 bg-${feature.color}-100 dark:bg-${feature.color}-900/30 rounded-xl flex items-center justify-center mb-6`}
@@ -79,12 +79,13 @@ const Features = () => {
                   className={`w-8 h-8 text-${feature.color}-600 dark:text-${feature.color}-400`}
                 />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-gray-300 dark:text-gray-400">
-                {feature.description}
-              </p>
+             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+  {t(`features.services.${index}.title`)}
+</h3>
+
+<p className="text-gray-300 dark:text-gray-400">
+  {t(`features.services.${index}.desc`)}
+</p>
             </motion.div>
           ))}
         </motion.div>

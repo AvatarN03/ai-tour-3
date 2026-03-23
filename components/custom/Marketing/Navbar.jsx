@@ -15,9 +15,9 @@ import { Button } from '@/components/ui/button'
 
 import { useAuth } from '@/providers/useAuth'
 
-import { landingPageMenus } from '@/lib/utils/constant'
+import { landingPageMenus } from '@/lib/constants'
 import { getUserInitials } from '@/lib/utils/nameInitial'
-import { cn } from '@/lib/utils/utils'
+import { cn } from '@/lib/utils'
 
 
 

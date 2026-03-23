@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-import { revalidate12 } from "@/lib/utils/constant";
+import { revalidate12 } from "@/lib/constants";
 
 export const revalidate = 43200;
 

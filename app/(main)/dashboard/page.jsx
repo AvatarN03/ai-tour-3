@@ -19,7 +19,7 @@ import RecentActivity from "@/components/features/dashboard/RecentActivity";
 
 import LocationAccess from "@/hooks/LocationAccess";
 
-import { dashboardQuickstarts } from "@/lib/utils/constant";
+import { dashboardQuickstarts } from "@/lib/constants";
 
 import { useAuth } from "@/providers/useAuth";
 

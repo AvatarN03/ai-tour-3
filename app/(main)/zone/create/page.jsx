@@ -14,7 +14,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 import { useAuth } from '@/providers/useAuth'
 
-import { categories } from '@/lib/utils/constant'
+import { categories } from '@/lib/constants'
 import { db } from '@/lib/config/firebase'
 import { logActivity } from '@/lib/services/logActivity'
 import { useBlog } from '@/hooks/useBlog';

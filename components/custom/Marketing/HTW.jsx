@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 
-import { planSteps } from "@/lib/utils/constant";
+import { planSteps } from "@/lib/constants";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -15,7 +15,7 @@ const HTW = () => {
   const { t } = useTranslation();
   return (
    <section className="py-20 px-6 relative overflow-hidden " id="htw">
-        <div className="max-w-7xl mx-auto px-4 min-h-auto my-20 flex flex-col gap-24">
+        <div className="max-w-7xl mx-auto px-4 min-h-auto my-20 flex flex-col gap-12 md:gap-24">
           <motion.div
             initial="initial"
             whileInView="animate"

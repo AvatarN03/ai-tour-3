@@ -50,7 +50,7 @@ useEffect(() => {
     return (
       <>
         <WeatherProvider>
-          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed bottom-4 right-4 p-2 w-16 min-h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-3 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
+          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed top-4 right-4 p-2 w-16 min-h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-3 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
             <div className={isTranslateShow ? "block" : "hidden"}>
               <GoogleTranslate />
             </div>

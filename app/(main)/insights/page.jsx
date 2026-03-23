@@ -25,8 +25,8 @@ import { Card } from '@/components/ui/card'
 import { useAuth } from '@/providers/useAuth'
 
 import { db } from '@/lib/config/firebase'
-import { getLastMonths, getMonthKey } from '@/lib/utils/utils'
-import { MONTHS_TO_SHOW } from '@/lib/utils/constant'
+import { getLastMonths, getMonthKey } from '@/lib/utils'
+import { MONTHS_TO_SHOW } from '@/lib/constants'
 
 
 

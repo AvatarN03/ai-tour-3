@@ -10,7 +10,7 @@ import {
   Shield,
 } from "lucide-react";
 
-import { emergencyContacts } from "@/lib/utils/constant";
+import { emergencyContacts } from "@/lib/constants";
 
 const getTypeIcon = (type) => {
   switch (type) {

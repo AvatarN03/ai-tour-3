@@ -361,3 +361,36 @@ body {
 .dark .recharts-default-tooltip{
   background: #233 !important;
 }
+
+
+.animated-gradient {
+  background: linear-gradient(
+    270deg,
+    #a78bfa,  
+    #8b5cf6, 
+    #7c3aed,  
+    #6d28d9   
+  );
+  background-size: 200% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+.dark .animated-gradient {
+  background: linear-gradient(
+    270deg,
+    #111827, 
+    #4c1d95,  
+    #5b21b6   
+  );
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

@@ -1,7 +1,7 @@
 import { doc, increment, setDoc, updateDoc } from "firebase/firestore";
 
 import { db } from "@/lib/config/firebase";
-import { generateTravelPlan } from "@/lib/api/AI_Model";
+import { generateTravelPlan } from "@/actions/trip/ai";
 import { logActivity } from "@/lib/services/logActivity";
 
 export const createTripAction = async ({ formData, profile }) => {

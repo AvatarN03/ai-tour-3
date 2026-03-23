@@ -1,11 +1,15 @@
+"use server";
+
+/**
+ * Server Action: AI Travel Plan Generation
+ * Uses GOOGLE_GEMINI_APIKEY (server-only env var — remove NEXT_PUBLIC_ prefix)
+ */
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const apiKey = process.env.NEXT_PUBLIC_GOOGLE_GEMINI_APIKEY;
-const genAI = new GoogleGenerativeAI(apiKey);
+import { CURRENCY_OPTIONS } from "@/lib/constants";
 
-const model = genAI.getGenerativeModel({
-  model: "gemini-2.5-flash",
-});
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_APIKEY);
 
 const generationConfig = {
   temperature: 1,
@@ -15,24 +19,12 @@ const generationConfig = {
   responseMimeType: "application/json",
 };
 
-// Currency symbols mapping
-const CURRENCY_SYMBOLS = {
-  USD: "$",
-  INR: "₹",
-  EUR: "€",
-  GBP: "£",
-  AUD: "A$",
-  JPY: "¥",
-};
-
-export const chatSession = model.startChat({
-  generationConfig,
-  history: [
-    {
-      role: "user",
-      parts: [
-        {
-          text: `You are an expert travel planner AI. Generate comprehensive travel plans based on user requirements.
+const SYSTEM_HISTORY = [
+  {
+    role: "user",
+    parts: [
+      {
+        text: `You are an expert travel planner AI. Generate comprehensive travel plans based on user requirements.
 
 When given a travel request with Location, Duration (in days), Travel Type (Solo/Couple/Family/Friends), Budget, and Currency, provide:
 
@@ -121,15 +113,15 @@ Format the response as valid JSON with the following structure:
   "packing_suggestions": []
 }
 
-Ensure all recommendations match the budget category, travel type, and use the correct currency. Prioritize realistic, accessible locations and accurate pricing information.`,
-        },
-      ],
-    },
-    {
-      role: "model",
-      parts: [
-        {
-          text: `Understood! I'm ready to generate comprehensive travel plans with currency-specific pricing. I will:
+Ensure all recommendations match the budget category, travel type, and use the correct currency.`,
+      },
+    ],
+  },
+  {
+    role: "model",
+    parts: [
+      {
+        text: `Understood! I'm ready to generate comprehensive travel plans with currency-specific pricing. I will:
 
 1. Provide 3-5 hotel options with prices in the specified currency
 2. Create detailed day-by-day itineraries with 3-4 activities per day
@@ -140,13 +132,49 @@ Ensure all recommendations match the budget category, travel type, and use the c
 7. Format everything as valid JSON
 
 Please provide the travel requirements: Location, Duration, Travel Type, Budget, and Currency.`,
-        },
-      ],
-    },
-  ],
-});
+      },
+    ],
+  },
+];
 
-// Function to generate travel plan based on form data
+/** Resolve currency symbol from shared CURRENCY_OPTIONS constant */
+function getCurrencySymbol(currency) {
+  return CURRENCY_OPTIONS.find((c) => c.value === currency)?.symbol ?? currency;
+}
+
+/** Determine budget category based on per-person spend and currency */
+function resolveBudgetCategory(budgetPerPerson, currency) {
+  const thresholds = {
+    INR: { luxury: 300000, moderate: 80000 },
+    USD: { luxury: 4000, moderate: 1500 },
+    EUR: { luxury: 3500, moderate: 1300 },
+    GBP: { luxury: 3500, moderate: 1300 },
+    JPY: { luxury: 500000, moderate: 180000 },
+    AUD: { luxury: 5500, moderate: 2000 },
+  };
+  const t = thresholds[currency] ?? thresholds.USD;
+  if (budgetPerPerson > t.luxury) return "Luxury";
+  if (budgetPerPerson > t.moderate) return "Moderate";
+  return "Cheap";
+}
+
+/** Determine travel type from headcount */
+function resolveTravelType(persons) {
+  if (persons === 1) return "Solo";
+  if (persons === 2) return "Couple";
+  if (persons <= 4) return "Family";
+  return "Friends";
+}
+
+/** Create a fresh chat session per request (stateless server action) */
+function createChatSession() {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-2.5-flash",
+    generationConfig,
+  });
+  return model.startChat({ history: SYSTEM_HISTORY });
+}
+
 export async function generateTravelPlan(formData) {
   const {
     title,
@@ -155,7 +183,7 @@ export async function generateTravelPlan(formData) {
     destination,
     source,
     budget,
-    currency = "USD", // Default to USD if not specified
+    currency = "USD",
     days,
     persons,
     startDate,
@@ -167,36 +195,9 @@ export async function generateTravelPlan(formData) {
     specialRequests,
   } = formData;
 
-  // Get currency symbol
-  const currencySymbol = CURRENCY_SYMBOLS[currency] || currency;
-
-  // Determine budget category based on amount and persons
-  const budgetPerPerson = budget / persons;
-  let budgetCategory = "Cheap";
-
-  // Adjust budget thresholds based on currency
-  if (currency === "INR") {
-    if (budgetPerPerson > 300000) budgetCategory = "Luxury";
-    else if (budgetPerPerson > 80000) budgetCategory = "Moderate";
-  } else if (currency === "USD") {
-    if (budgetPerPerson > 4000) budgetCategory = "Luxury";
-    else if (budgetPerPerson > 1500) budgetCategory = "Moderate";
-  } else if (currency === "EUR" || currency === "GBP") {
-    if (budgetPerPerson > 3500) budgetCategory = "Luxury";
-    else if (budgetPerPerson > 1300) budgetCategory = "Moderate";
-  } else if (currency === "JPY") {
-    if (budgetPerPerson > 500000) budgetCategory = "Luxury";
-    else if (budgetPerPerson > 180000) budgetCategory = "Moderate";
-  } else if (currency === "AUD") {
-    if (budgetPerPerson > 5500) budgetCategory = "Luxury";
-    else if (budgetPerPerson > 2000) budgetCategory = "Moderate";
-  }
-
-  // Determine travel type based on persons
-  let travelType = "Solo";
-  if (persons === 2) travelType = "Couple";
-  else if (persons > 2 && persons <= 4) travelType = "Family";
-  else if (persons > 4) travelType = "Friends";
+  const currencySymbol = getCurrencySymbol(currency);
+  const budgetCategory = resolveBudgetCategory(budget / persons, currency);
+  const travelType = resolveTravelType(persons);
 
   const prompt = `Generate a comprehensive travel plan with the following details:
 
@@ -215,7 +216,7 @@ export async function generateTravelPlan(formData) {
 - Currency: ${currency}
 
 **Preferences:**
-- Interests: ${interests.length > 0 ? interests.join(", ") : "General sightseeing"}
+- Interests: ${interests?.length > 0 ? interests.join(", ") : "General sightseeing"}
 - Accommodation Preferences: ${accommodation || "Standard hotels"}
 - Transportation: ${transportation || "Local transport and taxis"}
 - Specific Activities: ${activities || "Popular tourist attractions"}
@@ -223,24 +224,24 @@ export async function generateTravelPlan(formData) {
 - Special Requests: ${specialRequests || "None"}
 
 **Requirements:**
-1. Provide 3-5 hotel options that match the budget category (${budgetCategory}) and accommodation preferences
+1. Provide 3-5 hotel options matching the ${budgetCategory} budget category
 2. ALL PRICES MUST BE IN ${currency} (${currencySymbol}). Use realistic local prices for ${destination}.
 3. Create a detailed ${days}-day itinerary with 3-4 activities per day
-4. Include activities that align with these interests: ${interests.join(", ") || "general tourism"}
-5. Consider the dietary restrictions: ${dietaryRestrictions || "None"}
-6. Factor in the starting location (${source}) for transportation planning
-7. Ensure the total estimated cost stays within or near the budget of ${currencySymbol}${budget} ${currency}
-8. If specific activities were mentioned (${activities}), try to include them in the itinerary
+4. Include activities aligned with: ${interests?.join(", ") || "general tourism"}
+5. Consider dietary restrictions: ${dietaryRestrictions || "None"}
+6. Factor in starting location (${source}) for transportation planning
+7. Keep total estimated cost within ${currencySymbol}${budget} ${currency}
+8. Include specific activities if mentioned: ${activities || "None"}
 9. Consider special requests: ${specialRequests || "None"}
-10. CRITICAL: All monetary values (hotel prices, ticket prices, food costs, transportation costs) must be realistic amounts in ${currency}
+10. CRITICAL: All monetary values must be realistic amounts in ${currency}
 
-Provide everything in the specified JSON format with complete details including geo-coordinates, pricing in ${currency}, ratings, and travel times.`;
+Provide everything in the specified JSON format with geo-coordinates, ${currency} pricing, ratings, and travel times.`;
 
   try {
+    const chatSession = createChatSession();
     const result = await chatSession.sendMessage(prompt);
     const response = result.response;
 
-    // Some SDKs return a Response-like object; others return a plain string.
     const responseText =
       typeof response === "string"
         ? response
@@ -250,10 +251,9 @@ Provide everything in the specified JSON format with complete details including 
 
     const travelPlan = JSON.parse(responseText);
 
-    // Add the original form data to the response
     return {
       ...travelPlan,
-      currency: currency, // Ensure currency is included in response
+      currency,
       tripDetails: {
         title,
         category,

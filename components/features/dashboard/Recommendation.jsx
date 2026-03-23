@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
-import { getTripCategoryEmoji } from "@/lib/utils/utils";
+import { getTripCategoryEmoji } from "@/lib/utils";
 import { logActivity } from "@/lib/services/logActivity";
 
 export default function TripRecommendations() {

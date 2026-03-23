@@ -17,9 +17,9 @@ import { useAuth } from "@/providers/useAuth";
 
 import { useTrip } from "@/hooks/useTrip";
 
-import { categories, createTripData, CURRENCY_OPTIONS, initialForm, interests } from "@/lib/utils/constant";
-import { validateForm } from "@/lib/form/validation";
-import { getCurrencySymbol, inputClass, selectClass } from "@/lib/utils/utils";
+import { categories, createTripData, CURRENCY_OPTIONS, initialForm, interests } from "@/lib/constants";
+import { validateForm } from "@/lib/validation/validation";
+import { getCurrencySymbol, inputClass, selectClass } from "@/lib/utils";
 
 
 const CreateTripForm = () => {

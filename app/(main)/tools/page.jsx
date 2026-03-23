@@ -9,7 +9,7 @@ import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
 import ExpenseTracker from "@/components/features/tools/ExpenseTracker";
 
 
-import { TABS } from "@/lib/utils/constant";
+import { TABS } from "@/lib/constants";
 
 
 export default function TravelTools() {

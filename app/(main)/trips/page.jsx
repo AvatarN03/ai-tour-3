@@ -19,11 +19,11 @@ import { Card } from "@/components/ui/card";
 
 import { db } from "@/lib/config/firebase";
 import { formatDate } from "@/lib/utils/blogHelpers";
-import { PAGE_SIZE } from "@/lib/utils/constant";
+import { PAGE_SIZE } from "@/lib/constants";
 
 import { useAuth } from "@/providers/useAuth";
 import { useTrip } from "@/hooks/useTrip";
-import { toDate } from "@/lib/utils/utils";
+import { toDate } from "@/lib/utils";
 
 
 

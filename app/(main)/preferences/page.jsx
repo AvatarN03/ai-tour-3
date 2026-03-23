@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
-import { categories, USERNAME_REGEX } from "@/lib/utils/constant";
+import { categories, USERNAME_REGEX } from "@/lib/constants";
  
 
 export default function PreferencesPage() {

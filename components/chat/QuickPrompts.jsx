@@ -1,4 +1,4 @@
-import { defaultPrompts, icons } from "@/lib/utils/constant";
+import { defaultPrompts, icons } from "@/lib/constants";
 
 
 export const QuickPrompts = ({ prompts = defaultPrompts, onSelect }) => (

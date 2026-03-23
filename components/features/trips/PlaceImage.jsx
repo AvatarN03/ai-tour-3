@@ -6,8 +6,8 @@ import React, { useState, useEffect } from "react";
 import {
   getCoordinatesCached,
   getOSMMapImage,
-} from "@/lib/services/OpenStreetMap";
-import { getWikiImage } from "@/lib/services/WikiImage";
+} from "@/lib/services/openStreetMap";
+import { getWikiImage } from "@/lib/services/wikiImage";
 
 
 const PlaceImage = ({ object }) => {

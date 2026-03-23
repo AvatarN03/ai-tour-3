@@ -35,10 +35,11 @@ import PaymentButton from "../payment/PaymentButton";
 import { useAuth } from "@/providers/useAuth";
 
 import { getUserInitials } from "@/lib/utils/nameInitial";
-import { preferenceColors } from "@/lib/utils/constant";
-import { formatDate } from "@/lib/utils/utils";
+import { preferenceColors } from "@/lib/constants";
+import { formatDate } from "@/lib/utils";
 import { db } from "@/lib/config/firebase";
-import { logActivity } from "@/lib/services/logActivity";
+import { logActivity } from "@/lib/services/firestore";
+
 
 const ProfileCard = ({ modal, setModal }) => {
   const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();

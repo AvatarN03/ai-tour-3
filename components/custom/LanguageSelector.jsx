@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useLanguage } from "@/context/LanguageContext";
 
-import { languages } from "@/lib/utils/constant";
+import { languages } from "@/lib/constants";
 
 
 

@@ -32,7 +32,7 @@ import { Label } from "@/components/ui/label";
 import ThemeToggle from "@/components/custom/ThemeToggle";
 import LanguageSelector from "@/components/custom/LanguageSelector";
 
-import { availablePreferences } from "@/lib/utils/constant";
+import { availablePreferences } from "@/lib/constants";
 import { auth, db } from "@/lib/config/firebase";
 
 export default function Auth() {
@@ -307,7 +307,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-400 to-purple-500 dark:from-gray-900 dark:via-purple-900/20 dark:to-violet-900/20 flex items-center justify-center p-4">
+    <div className="min-h-screen animated-gradient flex items-center justify-center p-4">
       <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
         <LanguageSelector />
         <ThemeToggle />
@@ -322,7 +322,7 @@ export default function Auth() {
               href="/"
               className="w-24 h-24 bg-white/20 rounded-3xl mx-auto mb-8 flex items-center justify-center backdrop-blur-md shadow-lg rotate-3 hover:rotate-6 transition-transform"
             >
-              <Sparkles className="w-12 h-12" />
+              <Image src="/logo.png" alt="logo" width={34} height={34} />
             </Link>
             <h1 className="text-4xl font-bold mb-4">
               {isLogin ? "Welcome Back!" : "Join Our Community"}
@@ -741,9 +741,7 @@ export default function Auth() {
             </Link>
           </div>
         </div>
-        <p className="text-center mt-6 text-sm text-gray-600 dark:text-gray-400">
-          By continuing, you agree to our Terms of Service and Privacy Policy
-        </p>
+        
       </div>
     </div>
   );

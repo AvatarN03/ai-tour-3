@@ -28,7 +28,25 @@
     },
     "features": {
         "sectionTitle": "Why Choose AI Tour?",
-        "sectionSubtitle": "Everything you need for the perfect trip, powered by AI"
+        "sectionSubtitle": "Everything you need for the perfect trip, powered by AI",
+        "services": [
+            {
+                "title": "AI-Powered Planning",
+                "desc": "Get personalized trip recommendations based on your preferences and budget"
+            },
+            {
+                "title": "Smart Discovery",
+                "desc": "Explore destinations with interactive maps and local insights"
+            },
+            {
+                "title": "Save Time",
+                "desc": "Optimize your itinerary automatically with intelligent scheduling"
+            },
+            {
+                "title": "Budget Tracking",
+                "desc": "Track expenses and find the best deals in real-time"
+            }
+        ]
     },
     "htw": {
         "sectionTitle": "Plan Your Trip in 3 Easy Steps",
@@ -75,109 +93,5 @@
         "signingIn": "Signing in...",
         "creatingAccount": "Creating account...",
         "continueWith": "Or continue with"
-    },
-    "dashboard": {
-        "welcomeTitle": "Welcome back, Traveler!",
-        "welcomeDesc": " Ready to plan your next adventure? Let's make it unforgettable.",
-        "createTrip": "Create New Trip",
-        "badge": "AI Powered Assistant",
-        "quickActions": "Quick Actions",
-        "quickOptions": [
-            {
-                "title": "Plan Trip",
-                "desc": "Create a new itinerary with AI assistance"
-            },
-            {
-                "title": "Saved Trips",
-                "desc": "View and manage your saved itineraries"
-            },
-            {
-                "title": "AI Assistant",
-                "desc": "Get personalized travel recommendations"
-            }
-        ],
-        "recommendations": {
-            "title": "Recommendation for You",
-            "desc":"Handpicked trips based on your interests",
-            "noRecommendations": "No Recommendations Yet"
-        },
-        "activity": {
-            "recentActivityTitle": "Recent Activity",
-            "loadingActivities": "Loading activities...",
-            "noRecentActivity": "No recent activity",
-            "noActivityDesc": "Your activity will appear here once you start creating content"
-        }
-    },
-    "trips": {
-        "myTrips": "My Trips",
-        "searchPlaceholder": "Search trips...",
-        "createdBy": "Created by",
-        "savedTrips": "Saved Trips"
-    },
-    "buttons": {
-        "save": "Save",
-        "create": "Create",
-        "edit": "Edit",
-        "delete": "Delete",
-        "cancel": "Cancel",
-        "submit": "Submit",
-        "saveTripButton": "Save Trip"
-    },
-    "forms": {
-        "title": "Title",
-        "description": "Description",
-        "destination": "Destination",
-        "source": "Source",
-        "category": "Category",
-        "currency": "Currency",
-        "budget": "Budget",
-        "days": "Days",
-        "persons": "Persons",
-        "startDate": "Start Date",
-        "interests": "Interests",
-        "accommodation": "Accommodation",
-        "transportation": "Transportation",
-        "activities": "Activities",
-        "dietaryRestrictions": "Dietary Restrictions",
-        "specialRequests": "Special Requests"
-    },
-    "categories": {
-        "cityBreak": "City Break",
-        "beach": "Beach",
-        "mountain": "Mountain",
-        "adventure": "Adventure",
-        "cultural": "Cultural",
-        "relaxation": "Relaxation",
-        "business": "Business",
-        "family": "Family",
-        "romantic": "Romantic",
-        "soloTravel": "Solo Travel"
-    },
-    "interests": {
-        "historyCulture": "History & Culture",
-        "natureOutdoors": "Nature & Outdoors",
-        "foodDining": "Food & Dining",
-        "nightlife": "Nightlife",
-        "shopping": "Shopping",
-        "artMuseums": "Art & Museums",
-        "adventureSports": "Adventure Sports",
-        "photography": "Photography",
-        "beaches": "Beaches",
-        "mountains": "Mountains",
-        "architecture": "Architecture",
-        "musicFestivals": "Music & Festivals",
-        "wellnessSpa": "Wellness & Spa"
-    },
-    "messages": {
-        "loading": "Loading...",
-        "success": "Success!",
-        "error": "Error",
-        "welcome": "Welcome",
-        "logout": "Logout"
-    },
-    "tools": {
-        "expenseTracker": "Expense Tracker",
-        "currencyConverter": "Currency Converter",
-        "emergencyContacts": "Emergency Contacts"
     }
 }

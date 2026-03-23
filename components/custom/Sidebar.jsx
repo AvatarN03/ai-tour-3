@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 import { useAuth } from "@/providers/useAuth";
 
-import { sidebarMenus } from "@/lib/utils/constant";
+import { sidebarMenus } from "@/lib/constants";
 import { getUserInitials } from "@/lib/utils/nameInitial";
 
 export default function Sidebar({ isOpen, onClose }) {
