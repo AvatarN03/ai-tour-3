@@ -36,7 +36,7 @@ import { useAuth } from "@/providers/useAuth";
 
 import { getUserInitials } from "@/lib/utils/nameInitial";
 import { preferenceColors } from "@/lib/constants";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatFirestoreDate } from "@/lib/utils";
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
 
@@ -476,7 +476,7 @@ const ProfileCard = ({ modal, setModal }) => {
                   Member Since
                 </Label>
                 <Input
-                  value={formatDate(profile?.createdAt)}
+                  value={formatFirestoreDate(profile?.createdAt)}
                   readOnly
                   className="bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                 />

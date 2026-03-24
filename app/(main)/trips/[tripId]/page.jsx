@@ -32,7 +32,6 @@ import ItineraryDay from "@/components/features/trips/ItineraryDay";
 import { useAuth } from "@/providers/useAuth";
 
 import { db } from "@/lib/config/firebase";
-import { logActivity } from "@/lib/services/logActivity";
 import { useTrip } from "@/hooks/useTrip";
 
 

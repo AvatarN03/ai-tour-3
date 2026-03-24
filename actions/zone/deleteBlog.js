@@ -1,7 +1,7 @@
 import { deleteDoc, doc } from "firebase/firestore";
 
 import { db } from "@/lib/config/firebase";
-import { logActivity } from "@/lib/services/logActivity";
+import { logActivity } from "@/lib/services/firestore";
 
 export const deletePostAction = async ({ postId, profile }) => {
   try {

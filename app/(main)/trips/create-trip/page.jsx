@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { toast } from "sonner";
-import { useTranslation } from "react-i18next";
 
 import { GenPlanLoading } from "@/components/custom/Loading";
 import { Button } from "@/components/ui/button";
@@ -18,7 +17,7 @@ import { useAuth } from "@/providers/useAuth";
 import { useTrip } from "@/hooks/useTrip";
 
 import { categories, createTripData, CURRENCY_OPTIONS, initialForm, interests } from "@/lib/constants";
-import { validateForm } from "@/lib/validation/validation";
+import { validateForm } from "@/lib/validation/tripForm.js";
 import { getCurrencySymbol, inputClass, selectClass } from "@/lib/utils";
 
 
@@ -29,7 +28,6 @@ const CreateTripForm = () => {
   const { profile } = useAuth();
   const { createTrip, loading, generating } = useTrip(); 
   const router = useRouter();
-  const { t } = useTranslation();
 
 
 
@@ -40,12 +38,12 @@ const CreateTripForm = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
-  const handleInterestToggle = (label) => {
+  const handleInterestToggle = (interest) => {
     setFormData((prev) => ({
       ...prev,
-      interests: prev.interests.includes(label)
-        ? prev.interests.filter((i) => i !== label)
-        : [...prev.interests, label],
+      interests: prev.interests.includes(interest)
+        ? prev.interests.filter((i) => i !== interest)
+        : [...prev.interests, interest],
     }));
   };
 
@@ -126,8 +124,8 @@ const CreateTripForm = () => {
                 >
                   <option value="">Select Category</option>
                   {categories.map((cat) => (
-                    <option key={cat.label} value={cat.label}>
-                      {t(cat.translationKey)}
+                    <option key={cat} value={cat}>
+                      {cat}
                     </option>
                   ))}
                 </select>
@@ -272,10 +270,10 @@ const CreateTripForm = () => {
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {interests.map((interest) => {
-                const active = formData.interests.includes(interest.label);
+                const active = formData.interests.includes(interest);
                 return (
                   <label
-                    key={interest.label}
+                    key={interest}
                     className={`flex items-center justify-center p-3 border-2 rounded-xl cursor-pointer transition-all hover:scale-105 ${
                       active
                         ? "bg-orange-50 dark:bg-orange-900/20 border-orange-500 text-orange-700 dark:text-orange-300"
@@ -285,11 +283,11 @@ const CreateTripForm = () => {
                     <input
                       type="checkbox"
                       checked={active}
-                      onChange={() => handleInterestToggle(interest.label)}
+                      onChange={() => handleInterestToggle(interest)}
                       className="sr-only"
                     />
                     <span className="text-sm font-medium text-center">
-                      {t(interest.translationKey)}
+                      {interest}
                     </span>
                   </label>
                 );

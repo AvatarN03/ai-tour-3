@@ -31,7 +31,7 @@ const Features = () => {
   return (
     <section
       className="py-10 px-3 lg:px-6 overflow-hidden    bg-indigo-200 dark:bg-gray-900 relative"
-      id="services "
+      id="services"
     >
       <div className=" relative z-10 flex flex-col max-w-7xl mx-auto gap-12 md:gap-24 min-h-auto my-20 md:pb-20 ">
         <div className="hidden md:block absolute bg-indigo-600 blur-[265px] bottom-0  -right-10 w-150 h-150 z-0" />

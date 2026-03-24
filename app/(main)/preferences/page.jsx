@@ -105,7 +105,7 @@ export default function PreferencesPage() {
   }, [profile, router, continueTo]);
 
   return (
-    <div className="min-h-screen flex items-start mt-12 justify-center px-4">
+    <div className="min-h-auto flex items-start mt-12 justify-center px-4">
       <div className="max-w-xl w-full">
         <h1 className="text-2xl font-semibold mb-2">Set up your profile</h1>
         <p className="text-gray-500 mb-6">
@@ -150,15 +150,15 @@ export default function PreferencesPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {categories.map((pref) => (
             <button
-              key={pref.label}
-              onClick={() => togglePreference(pref.label)}
+              key={pref}
+              onClick={() => togglePreference(pref)}
               className={`border rounded-lg p-4 text-md transition cursor-pointer
-                ${selected.includes(pref.label)
+                ${selected.includes(pref)
                   ? "bg-accent dark:text-white border-purple-700 border-4"
                   : "hover:border-slate-500"
                 }`}
             >
-              {pref.label}
+              {pref}
             </button>
           ))}
         </div>

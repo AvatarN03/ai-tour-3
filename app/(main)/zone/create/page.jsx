@@ -4,7 +4,6 @@ import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { X, Bold, Italic, Link, ArrowLeft, Upload } from 'lucide-react';
-import { doc, setDoc, Timestamp } from 'firebase/firestore'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -15,8 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/providers/useAuth'
 
 import { categories } from '@/lib/constants'
-import { db } from '@/lib/config/firebase'
-import { logActivity } from '@/lib/services/logActivity'
 import { useBlog } from '@/hooks/useBlog';
 
 export default function CreatePostPage() {
@@ -32,7 +29,6 @@ export default function CreatePostPage() {
         imageFile: null,
         imagePreview: null,
     })
-    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const handleImageChange = (e) => {
         const file = e.target.files[0]
@@ -135,7 +131,7 @@ export default function CreatePostPage() {
                                     >
                                         <option value="">Select a category</option>
                                         {categories.map((cat) => (
-                                            <option key={cat.label} value={cat.label}>{cat.label}</option>
+                                            <option key={cat} value={cat}>{cat}</option>
                                         ))}
                                     </select>
                                 </div>
@@ -246,7 +242,6 @@ export default function CreatePostPage() {
                                         type="button"
                                         variant="outline"
                                         onClick={() => router.push('/zone')}
-                                        disabled={isSubmitting}
                                         className="w-full"
                                     >
                                         Cancel

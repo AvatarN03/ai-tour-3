@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 
-import { useTranslation } from "react-i18next";
-
 import Emergency from "@/components/features/tools/Emergency";
 import CurrencyConverter from "@/components/features/tools/CurrencyConvertor";
 import ExpenseTracker from "@/components/features/tools/ExpenseTracker";
@@ -14,7 +12,6 @@ import { TABS } from "@/lib/constants";
 
 export default function TravelTools() {
   const [activeTab, setActiveTab] = useState("expense");
-  const { t } = useTranslation();
 
 
   return (
@@ -29,7 +26,7 @@ export default function TravelTools() {
 
         {/* Tool Tabs */}
         <div className="flex gap-2 md:gap-4 mb-8 flex-wrap border-b-2 border-slate-700 pb-4">
-          {TABS.map(({ id, labelKey, icon: Icon, activeColor }) => (
+          {TABS.map(({ id, label, icon: Icon, activeColor }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -40,7 +37,7 @@ export default function TravelTools() {
               }`}
             >
               <Icon size={20} />
-              {t(labelKey)}
+              {label}
             </button>
           ))}
         </div>

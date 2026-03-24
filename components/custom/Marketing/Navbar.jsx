@@ -15,9 +15,10 @@ import { Button } from '@/components/ui/button'
 
 import { useAuth } from '@/providers/useAuth'
 
-import { landingPageMenus } from '@/lib/constants'
+
 import { getUserInitials } from '@/lib/utils/nameInitial'
 import { cn } from '@/lib/utils'
+import { landingPageMenus } from '@/lib/constants';
 
 
 
@@ -55,7 +56,7 @@ const Navbar = () => {
                                         <li className="text-sm tracking-wider transition-all hover:font-bold 
                                         hover:text-slate-700
                                         dark:hover:text-slate-100">
-                                           {t(menu.translationKey)}
+                                           {t(menu.name)}
                                         </li>
                                     </Link>
                                 ))

@@ -52,15 +52,13 @@ const layout = ({ children }) => {
     return (
       <>
         <WeatherProvider>
-          <div
-            role="button"
-            onClick={() => setTranslateShow(prev => !prev)}
-            className="fixed top-[100px] right-4 p-2 w-12 h-12 rounded-full z-30 bg-blue-200 dark:bg-blue-900 flex items-center justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow"
-          >
-            {isTranslateShow ?
-              <GoogleTranslate /> :
+          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed top-[100px] right-4 p-2 w-16 min-h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-3 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
+            <div className={isTranslateShow ? "block" : "hidden"}>
+              <GoogleTranslate />
+            </div>
+            <div className={ !isTranslateShow? "block": "hidden" }>
               <Languages />
-            }
+            </div>
           </div>
           <div className="p-2 bg-slate-200 dark:bg-card rounded-md ">
             <div className="flex gap-2 ">

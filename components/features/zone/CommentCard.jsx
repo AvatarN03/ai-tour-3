@@ -10,7 +10,7 @@ import { Avatar, AvatarImage } from "@/components/ui/avatar"
 
 import { CommentMenu } from "./CommentMenu"
 
-import { formatDate } from "@/lib/utils/blogHelpers"
+import { formatRelativeDate } from "@/lib/utils/blogHelpers"
 
 
 export function CommentCard({ comment, canDelete, canEdit, onDelete, onEdit }) {
@@ -46,7 +46,7 @@ export function CommentCard({ comment, canDelete, canEdit, onDelete, onEdit }) {
                     </Avatar>
                     <div>
                         <p className="font-semibold text-white text-sm leading-tight">{comment.author}</p>
-                        <p className="text-xs text-gray-400 mt-0.5">{formatDate(comment.createdAt)}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{formatRelativeDate(comment.createdAt)}</p>
                     </div>
                 </div>
 

@@ -14,20 +14,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/providers/useAuth'
 
 import { categories } from '@/lib/constants'
-import { db } from '@/lib/config/firebase'
-import { logActivity } from '@/lib/services/logActivity'
 import { useBlog } from '@/hooks/useBlog';
 
 export default function EditPostPage() {
     const router = useRouter()
     const { id } = useParams()
-    const { profile } = useAuth()
     const inputRef = useRef(null)
 
     const [post, setPost] = useState(null)
     const [imagePreview, setImagePreview] = useState(null)
     const [newImageFile, setNewImageFile] = useState(null)
-    const [isSubmitting, setIsSubmitting] = useState(false)
 
     const { getPost, updatePost, loading } = useBlog();
 
@@ -38,7 +34,7 @@ export default function EditPostPage() {
 
             if (!res.success) {
                 alert(res.error);
-                router.push("/zone");
+                router.push(`/zone/${id}/view`);
                 return;
             }
 
@@ -181,8 +177,8 @@ export default function EditPostPage() {
                                     >
                                         <option value="" className="bg-gray-900">Select a category</option>
                                         {categories.map((cat) => (
-                                            <option key={cat.label} value={cat.label} className="bg-gray-900">
-                                                {cat.label}
+                                            <option key={cat} value={cat} className="bg-gray-900">
+                                                {cat}
                                             </option>
                                         ))}
                                     </select>
@@ -288,16 +284,14 @@ export default function EditPostPage() {
                                 <div className="flex flex-col gap-3">
                                     <Button
                                         type="submit"
-                                        disabled={isSubmitting}
                                         className="bg-blue-600 hover:bg-blue-700 w-full"
                                     >
-                                        {isSubmitting ? 'Updating...' : 'Update Post'}
+                                        Update Post
                                     </Button>
                                     <Button
                                         type="button"
                                         variant="outline"
                                         onClick={() => router.push(`/zone/${id}/view`)}
-                                        disabled={isSubmitting}
                                         className="w-full"
                                     >
                                         Cancel

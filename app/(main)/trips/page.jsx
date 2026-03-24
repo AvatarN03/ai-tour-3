@@ -3,22 +3,12 @@
 import { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-  startAfter,
-} from "firebase/firestore";
+
 import { Calendar, Clock, DollarSign, MapPin, Plus, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import { db } from "@/lib/config/firebase";
-import { formatDate } from "@/lib/utils/blogHelpers";
 import { PAGE_SIZE } from "@/lib/constants";
 
 import { useAuth } from "@/providers/useAuth";

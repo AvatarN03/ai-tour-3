@@ -26,8 +26,8 @@ import { useAuth } from '@/providers/useAuth';
 import { useBlog } from '@/hooks/useBlog';
 
 import { db } from '@/lib/config/firebase'
-import { logActivity } from '@/lib/services/logActivity'
-import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
+import { logActivity } from "@/lib/services/firestore"
+import { formatRelativeDate, renderContent } from '@/lib/utils/blogHelpers'
 
 
 
@@ -41,10 +41,8 @@ export default function ViewPostPage() {
     const [newComment, setNewComment] = useState('')
     const [isExpanded, setIsExpanded] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const [isSubmittingComment, setIsSubmittingComment] = useState(false)
     const { getPost, getComments, updateComment, addComment, deleteComment } = useBlog();
-    const [editingCommentId, setEditingCommentId] = useState(null);
-    const [editText, setEditText] = useState("");
+
 
     useEffect(() => { fetchData() }, [id])
 
@@ -67,10 +65,7 @@ export default function ViewPostPage() {
         setIsLoading(false);
     };
 
-    const handleEditClick = (comment) => {
-        setEditingCommentId(comment.id);
-        setEditText(comment.text);
-    };
+
 
     const handleDelete = async () => {
         if (!confirm('Are you sure you want to delete this post?')) return
@@ -230,8 +225,8 @@ export default function ViewPostPage() {
                                     <span className="font-medium text-gray-200 group-hover:text-indigo-200">{post.author}</span>
                                 </Link>
                                 <div className="flex flex-col items-end gap-1 text-sm text-gray-400">
-                                    <span>📅 {formatDate(post.createdAt)}</span>
-                                    {post.updatedAt && <span>✏️ {formatDate(post.updatedAt)}</span>}
+                                    <span>📅 {formatRelativeDate(post.createdAt)}</span>
+                                    {post.updatedAt && <span>✏️ {formatRelativeDate(post.updatedAt)}</span>}
                                 </div>
                             </div>
 
@@ -280,14 +275,13 @@ export default function ViewPostPage() {
                                         onChange={(e) => setNewComment(e.target.value)}
                                         rows={2}
                                         className="resize-none bg-white/10 border-white/20 text-white placeholder:text-gray-400 text-sm"
-                                        disabled={isSubmittingComment}
                                     />
                                     <Button
                                         type="submit"
-                                        disabled={isSubmittingComment || !newComment.trim()}
+                                        
 
                                     >
-                                        {isSubmittingComment ? 'Posting…' : 'Post Comment'}
+                                        Post Comment
                                     </Button>
                                 </div>
                             </form>

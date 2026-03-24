@@ -13,7 +13,8 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
 import { db } from '@/lib/config/firebase'
-import { formatDate, renderContent } from '@/lib/utils/blogHelpers'
+import { formatRelativeDate, renderContent } from '@/lib/utils/blogHelpers';
+
 
 const BlogListPage = () => {
   const router = useRouter()
@@ -180,7 +181,7 @@ const BlogListPage = () => {
                       </h3>
                       <div className="grid grid-cols-2 gap-2 text-sm text-gray-500 dark:text-gray-400">
                         <span>✍️ {post.author}</span>
-                        <span className='text-right'>📅 {formatDate(post.createdAt)}</span>
+                        <span className='text-right'>📅 {formatRelativeDate(post.createdAt)}</span>
                         <span className="px-2 py-0.5 bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 rounded-3xl w-fit text-xs font-medium">
                           {post.category}
                         </span>

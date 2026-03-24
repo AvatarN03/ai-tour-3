@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Bookmark, Loader, Loader2, MapPin, Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateDoc, doc, arrayUnion } from "firebase/firestore";
-import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/providers/useAuth";
 

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 
-import { useTranslation } from "react-i18next";
 import {
     Clock,
     Activity as ActivityIcon
@@ -19,7 +18,6 @@ import { formatActivity, getActivityColor, getActivityIcon } from "@/lib/service
 export default function RecentActivity({ userId }) {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const { t } = useTranslation();
 
     useEffect(() => {
         if (!userId) return;
@@ -39,12 +37,12 @@ export default function RecentActivity({ userId }) {
 
             {/* Loading State */}
             {loading && (
-                <div className="flex flex-col items-center justify-center py-12 space-y-4">
+                 <div className="flex flex-col items-center justify-center py-12 space-y-4">
                     <div className="relative">
                         <div className="w-16 h-16 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div>
                         <ActivityIcon className="w-6 h-6 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
                     </div>
-                    <p className="text-gray-500 font-medium">{t('dashboard.activity.loadingActivities')}</p>
+                    <p className="text-gray-500 font-medium">Loading activities...</p>
                 </div>
             )}
 
@@ -55,10 +53,10 @@ export default function RecentActivity({ userId }) {
                         <ActivityIcon className="w-8 h-8 text-gray-400" />
                     </div>
                     <h3 className="text-lg font-semibold text-gray-700 mb-1">
-                        {t('dashboard.activity.noRecentActivity')}
+                        No recent activity
                     </h3>
                     <p className="text-sm text-gray-500">
-                        {t('dashboard.activity.noRecentActivitDesc')}
+                        Your activity will appear here once you start creating content
                     </p>
                 </div>
             )}

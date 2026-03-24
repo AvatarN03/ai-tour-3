@@ -1,6 +1,6 @@
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/config/firebase";
-import { logActivity } from "@/lib/services/logActivity";
+import { logActivity } from "@/lib/services/firestore";
 
 export const deleteCommentAction = async ({
   postId,

@@ -4,29 +4,45 @@ import { Loader2 } from "lucide-react";
 
 const Loading = () => {
   return (
-    <div className="fixed inset-0 w-screen h-screen flex justify-center items-center bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200  overflow-hidden">
-      <div className="absolute bg-purple-600 blur-[125px] top-10 left-10 w-96 h-96 z-0" />
-      <div className="absolute bg-purple-600 blur-[125px] bottom-30 right-10 w-[550px] h-86 z-0" />
-      <div className="absolute z-0 bottom-0 inset-0">
-        <Image
-        src={"/loading-banner.png"}
-        alt="loading banner"
-        fill
-        className="object-cover opacity-20 select-none"
-      />
-      </div>
-      <div className="flex-col gap-4 z-50 flex items-center justify-center relative">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br    from-neutral-700 via-neutral-800 to-neutral-950 transition-colors">
+      <div className="flex flex-col items-center gap-6 p-8">
         <Image
           src="/logo.png"
           alt="logo"
-          width={150}
-          height={150}
+          width={120}
+          height={120}
           className="animate-pulse"
         />
-        <h3 className="text-2xl lg:text-5xl font-semibold">AI Tour</h3>
-        <p className="text-xs xl:text-2xl">Loading...</p>
+
+        
+        {/* Loading text with subtle animation */}
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold  text-neutral-100 tracking-tight">
+            Loading Your Experience
+          </h2>
+          <p className="text-sm text-neutral-400 max-w-xs">
+            Preparing everything for you. This will only take a moment.
+          </p>
+        </div>
+
+        {/* Progress bar */}
+        <div className="w-48 h-1 bg-neutral-800 rounded-full overflow-hidden">
+          <div className="h-full bg-gradient-to-r  from-blue-400 to-blue-500 animate-[loading_1.5s_ease-in-out_infinite]"></div>
+        </div>
       </div>
+
+      <style jsx>{`
+      @keyframes loading {
+        0%, 100% {
+          transform: translateX(-100%);
+        }
+        50% {
+          transform: translateX(100%);
+        }
+      }
+    `}</style>
     </div>
+
   );
 };
 
@@ -54,7 +70,7 @@ export const ViewTripLoading = () => {
   );
 };
 
-export const  GenPlanLoading = () => {
+export const GenPlanLoading = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen ">
       <div className="flex items-center space-x-4">

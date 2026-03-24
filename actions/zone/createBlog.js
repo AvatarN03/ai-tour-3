@@ -1,7 +1,8 @@
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 
 import { db } from "@/lib/config/firebase";
-import { logActivity } from "@/lib/services/logActivity";
+import { logActivity } from "@/lib/services/firestore";
+import axios from "axios";
 
 export const createPostAction = async ({ post, profile }) => {
   try {
@@ -12,8 +13,8 @@ export const createPostAction = async ({ post, profile }) => {
       const formData = new FormData();
       formData.append("file", post.imageFile);
 
-      const res = await fetch("/api/media/upload", {
-        method: "POST",
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/media/upload`, {
+        method:"POST",
         body: formData,
       });
 
