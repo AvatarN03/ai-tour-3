@@ -1,8 +1,8 @@
 
 "use client";
 
-import { getCoordinatesCached, getOSMMapImage } from "@/lib/services/openStreetMap";
-import { getWikiImage } from "@/lib/services/wikiImage";
+import { getCoordinatesCached } from "@/lib/services/OpenStreetMap";
+import { getWikiImage } from "@/lib/services/WikiImage";
 import React, { useState, useEffect } from "react";
 
 
