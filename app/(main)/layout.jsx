@@ -9,8 +9,8 @@ import Header from "@/components/custom/Header";
 import Sidebar from "@/components/custom/Sidebar";
 import GoogleTranslate from "@/components/features/GoogleTranslation";
 
-import { useAuth } from "@/providers/useAuth";
-import { WeatherProvider } from "@/providers/useWeather";
+import { useAuth } from "@/context/useAuth";
+import { WeatherProvider } from "@/context/useWeather";
 
 const layout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -52,14 +52,7 @@ const layout = ({ children }) => {
     return (
       <>
         <WeatherProvider>
-          <div role="button" onClick={() => setTranslateShow(prev => !prev)} className="fixed top-[100px] right-4 p-2 w-16 min-h-16 rounded-full z-30 bg-slate-200 dark:bg-card flex items-center flex-col gap-3 justify-center cursor-pointer shadow-lg hover:shadow-xl transition-shadow">
-            <div className={isTranslateShow ? "block" : "hidden"}>
-              <GoogleTranslate />
-            </div>
-            <div className={!isTranslateShow ? "block" : "hidden"}>
-              <Languages />
-            </div>
-          </div>
+         
           <div className="p-2 bg-slate-200 dark:bg-card rounded-md ">
             <div className="flex gap-2 ">
               <Sidebar isOpen={sidebarOpen} onClose={closeSidebar} />

@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea';
 
-import { useAuth } from '@/providers/useAuth'
+import { useAuth } from '@/context/useAuth'
 
 import { categories } from '@/lib/constants'
 import { useBlog } from '@/hooks/useBlog';

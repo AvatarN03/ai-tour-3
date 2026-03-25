@@ -32,18 +32,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 import PaymentButton from "../payment/PaymentButton";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { getUserInitials } from "@/lib/utils/nameInitial";
 import { preferenceColors } from "@/lib/constants";
 import { formatFirestoreDate } from "@/lib/utils";
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
+import axios from "axios";
 
 
 const ProfileCard = ({ modal, setModal }) => {
   const { profile, logout, updateProfilePicture, updatePreferences, user } = useAuth();
-  const displayName = profile?.name || profile?.displayName || "";
+  const displayName = profile?.name || user?.displayName || "";
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileRef = useRef(null);
@@ -145,18 +146,13 @@ const ProfileCard = ({ modal, setModal }) => {
       const formData = new FormData();
       formData.append("file", file);
 
+
       try {
         setIsUploadingImage(true);
-        const res = await fetch("/api/media/upload", {
-          method: "POST",
-          body: formData,
-        });
 
-        if (!res.ok) {
-          throw new Error("Upload failed");
-        }
+        const res = await axios.post("/api/media/upload", formData);
 
-        const data = await res.json();
+        const data = res.data;
 
         // Use context function to update profile picture
         await updateProfilePicture(data.url);
@@ -166,7 +162,7 @@ const ProfileCard = ({ modal, setModal }) => {
           entity: "FILE",
           entityId: profile?.uid,
           metadata: {
-            imageUrl: downloadURL,
+            imageUrl: data.url,
           },
         });
 

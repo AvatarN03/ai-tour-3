@@ -116,7 +116,7 @@ const AboutSection = () => {
                   className="flex items-center bg-indigo-300 hover:shadow-2xl  dark:bg-gray-950 w-full max-w-3xl  justify-between even:flex-row-reverse overflow-hidden gap-2 rounded-lg p-4  shadow-lg relative z-30 group"
                 >
 
-                  <div className=" absolute top-0 left-0 group-even:left-100 bg-purple-600 blur-[80px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-md h-20 z-0" />
+                  <div className=" absolute group-even:top-0 group-odd:bottom-0 left-0 group-even:left-28 bg-purple-600 blur-[80px] transition-opacity duration-300 ease-in-out opacity-0 group-hover:opacity-100 w-[80%] h-20 z-0" />
                   {/* Circle Image */}
                   <motion.div
                     whileHover={{ scale: 1.1, rotate: 5 }}
@@ -132,7 +132,7 @@ const AboutSection = () => {
                   {/* Name and Role */}
                   <motion.div
                     variants={nameVariants}
-                    className="flex-col gap-2 flex"
+                    className="flex-col gap-2 flex z-30"
                   >
                     <h3 className="text-base md:text-2xl xl:text-4xl font-bold xl:font-light text-gray-900 dark:text-white">
                       {member.name}

@@ -17,6 +17,9 @@ import { motion } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
 import PageSearch from "./PageSearch";
 import { Notification } from "./Notification";
+import HeaderWeather from "./HeaderWeather";
+import LanguageSelector from "./LanguageSelector";
+import { Accessibility } from "./Accessibility";
 
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const pathname = usePathname();
@@ -93,11 +96,11 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
               </button>
             </Notification>
 
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* Accessibility  */}
+            <Accessibility />
 
-            {/* Language Selector Component */}
-            {/* <LanguageSelector /> */}
+           
+            <HeaderWeather />
           </div>
         </div>
       </motion.div>

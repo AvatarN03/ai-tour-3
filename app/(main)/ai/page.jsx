@@ -18,7 +18,8 @@ import { QuickPrompts } from "@/components/chat/QuickPrompts";
 import { ChatInput } from "@/components/chat/ChatInput";
 
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
+import axios from "axios";
 
 
 export default function Index() {
@@ -173,21 +174,18 @@ export default function Index() {
     setIsTyping(true);
     setGeneratedTrip(null);
 
+
+
     try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...currentMessages.slice(-9)].map(m => ({
-            role: m.type === 'user' ? 'user' : 'assistant',
-            content: m.content
-          })),
-          userPreferences: profile?.preferences || []
-        })
+      const res = await axios.post('/api/ai/chat', {
+        messages: [...currentMessages.slice(-9)].map(m => ({
+          role: m.type === 'user' ? 'user' : 'assistant',
+          content: m.content
+        })),
+        userPreferences: profile?.preferences || []
       });
 
-      if (!res.ok) throw new Error('Network response was not ok');
-      const data = await res.json();
+      const data = res.data;
 
       const tripData = parseTripFromResponse(data.reply);
 

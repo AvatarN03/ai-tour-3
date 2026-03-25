@@ -3,11 +3,11 @@
 
 import { useEffect, useState } from "react";
 
-import { ActivityIcon, Clock, Loader } from "lucide-react";
+import { ActivityIcon, Clock, Loader, Loader2 } from "lucide-react";
 
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { formatActivity, getActivityColor } from "@/lib/services/activity";
 import { getRecentActivities } from "@/lib/services/firestore";
@@ -45,8 +45,8 @@ export const Notification = ({ children }) => {
                 className="w-auto md:w-64 h-104 overflow-y-auto p-2 rounded-md bg-slate-50 dark:bg-card scrollbar-gradient"
             >
                 {loading ? (
-                    <div className="flex justify-center items-center w-16 h-16">
-                        <Loader className="w-6 h-6 animate-spin" />
+                    <div className="flex justify-center items-center  h-full w-full">
+                        <Loader2 className="w-12 h-12 animate-spin" />
                     </div>
                 ) : activities.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-300">

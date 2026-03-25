@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from "react";
 
 import { ArrowRightLeft } from "lucide-react";
+import axios from "axios";
+import { currencyMeta } from "@/lib/constants";
 
 function CurrencyConverter() {
   const [amount, setAmount] = useState(1);
@@ -14,9 +16,11 @@ function CurrencyConverter() {
   useEffect(() => {
     async function fetchRates() {
       try {
-        const res = await fetch("/api/tools", { cache: "force-cache" });
-        const data = await res.json();
+        const res = await axios.get("/api/tools");
+
+        const data = res.data;
         setRates(data);
+
       } catch (error) {
         console.error("Error fetching rates:", error);
         setResult("Error fetching rates");
@@ -114,21 +118,24 @@ function CurrencyConverter() {
               Equivalent Amounts in Other Currencies
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 ">
-              {currencyList.filter(cur => cur !== to).map((cur) => 
-                {
+              {currencyList.filter(cur => cur !== to).map((cur) => {
                 const convertedAmount = amount * (rates[cur] / rates[from]);
 
                 return (<div
-                    key={cur}
-                    className="bg-gray-50 group  dark:bg-gray-700 rounded-lg shadow cursor-pointer p-3 flex w-full  justify-around items-center font-bold relative text-lg from-blue-300 dark:from-blue-600 to-cyan-600 hover:bg-gradient-to-tr hover:flex-row"
-                  >
-                    <span className="text-gray-600 dark:text-gray-200">{cur}</span>
-                    <span className="transition-all duration-75 ease-in-out  text-gray-600 dark:text-gray-200">
-                      {Number.isFinite(convertedAmount)
-                        ? convertedAmount.toFixed(4)
-                        : "N/A"}
-                    </span>
+                  key={cur}
+                  className="bg-gray-50 group  dark:bg-gray-700 rounded-lg shadow cursor-pointer p-3 flex w-full  justify-around items-center font-bold relative text-lg from-blue-300 dark:from-blue-600 to-cyan-600 hover:bg-gradient-to-tr hover:flex-row"
+                >
+                  <div className="text-gray-600 flex flex-col items-center justify-center dark:text-gray-200">
+                    <span>{cur}</span>
+                    <span className="font-serif text-xs">{currencyMeta[cur]?.country}</span>
+
                   </div>
+                  <span className="transition-all duration-75 ease-in-out  text-gray-600 dark:text-gray-200">
+                    {Number.isFinite(convertedAmount)
+                      ? convertedAmount.toFixed(4)
+                      : "N/A"}
+                  </span>
+                </div>
                 );
               })}
             </div>

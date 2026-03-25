@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Avatar, AvatarImage } from '@/components/ui/avatar'
 import { CommentCard } from '@/components/features/zone/CommentCard'
 
-import { useAuth } from '@/providers/useAuth';
+import { useAuth } from '@/context/useAuth';
 
 import { useBlog } from '@/hooks/useBlog';
 

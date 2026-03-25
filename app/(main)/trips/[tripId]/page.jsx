@@ -22,7 +22,7 @@ import Hotels from "@/components/features/trips/Hotels";
 import ItineraryDay from "@/components/features/trips/ItineraryDay";
 
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { useTrip } from "@/hooks/useTrip";
 

@@ -12,7 +12,7 @@ import { SectionHeader } from "@/components/features/trips/SectionHeader";
 import { FieldError } from "@/components/features/trips/FieldError";
 
 import LocationComplete from "./LocationComplete";
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { useTrip } from "@/hooks/useTrip";
 

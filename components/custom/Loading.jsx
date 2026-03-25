@@ -4,17 +4,21 @@ import { Loader2 } from "lucide-react";
 
 const Loading = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br    from-neutral-700 via-neutral-800 to-neutral-950 transition-colors">
-      <div className="flex flex-col items-center gap-6 p-8">
-        <Image
-          src="/logo.png"
-          alt="logo"
-          width={120}
-          height={120}
-          className="animate-pulse"
-        />
+    <div className="min-h-screen flex items-start  justify-center bg-gradient-to-br    from-neutral-700 via-neutral-800 to-neutral-950 transition-colors">
+      <div className="flex flex-col items-center gap-6 p-8 pt-32 space-y-6">
+        <div className="flex items-end gap-2">
 
-        
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={80}
+            height={80}
+            className="animate-pulse"
+          />
+          <h3 className="text-4xl font-bold text-gray-300">AI Tour</h3>
+        </div>
+
+
         {/* Loading text with subtle animation */}
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-bold  text-neutral-100 tracking-tight">

@@ -1,5 +1,4 @@
 import { doc, setDoc, Timestamp } from "firebase/firestore";
-
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
 import axios from "axios";
@@ -13,17 +12,27 @@ export const createPostAction = async ({ post, profile }) => {
       const formData = new FormData();
       formData.append("file", post.imageFile);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/media/upload`, {
-        method:"POST",
-        body: formData,
-      });
+      try {
+        const res = await axios.post(
+          `${process.env.NEXT_PUBLIC_BASE_URL}/api/media/upload`,
+          formData
+        );
 
-      if (!res.ok) throw new Error("Image upload failed");
+        uploadedImageUrl = res.data?.url || "";
 
-      const data = await res.json();
-      uploadedImageUrl = data?.url || "";
+        // Optional logical check
+        if (!uploadedImageUrl) {
+          throw new Error("Image uploaded but URL missing");
+        }
+
+      } catch (error) {
+        throw new Error(
+          error.response?.data?.message || "Image upload failed"
+        );
+      }
     }
 
+    // ✅ Moved OUTSIDE if block (important)
     const postId = `post_${Date.now()}_${Math.random()
       .toString(36)
       .substr(2, 9)}`;
@@ -52,6 +61,7 @@ export const createPostAction = async ({ post, profile }) => {
     });
 
     return { success: true, data: postId };
+
   } catch (error) {
     return { success: false, error: error.message };
   }

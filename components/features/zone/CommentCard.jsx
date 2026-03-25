@@ -39,7 +39,7 @@ export function CommentCard({ comment, canDelete, canEdit, onDelete, onEdit }) {
                 <div className="flex items-center gap-3">
                     <Avatar className="relative w-11 h-11 ring-2 ring-white dark:ring-gray-800">
                         <AvatarImage
-                            src={comment?.authorImage}
+                            src={comment?.authorImage || "/profile.png"}
                             alt={comment?.author || "Profile"}
                         />
 
@@ -75,7 +75,7 @@ export function CommentCard({ comment, canDelete, canEdit, onDelete, onEdit }) {
                                 size="sm"
                                 onClick={handleSave}
                                 disabled={saving || !draft.trim()}
-                                className="bg-indigo-600 hover:bg-indigo-700 flex items-center gap-1.5"
+                               
                             >
                                 <Check className="w-3.5 h-3.5" />
                                 {saving ? 'Saving…' : 'Save'}

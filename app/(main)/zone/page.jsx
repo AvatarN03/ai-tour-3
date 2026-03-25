@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 import { Search, X, MessageCircle, Plus, Edit2 } from 'lucide-react'
 
-import { useAuth } from '@/providers/useAuth'
+import { useAuth } from '@/context/useAuth'
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -123,7 +123,7 @@ const BlogListPage = () => {
               {!searchQuery && (
                 <Button
                   onClick={() => router.push('/zone/create')}
-                  
+
                 >
                   Write First Post
                 </Button>
@@ -133,7 +133,7 @@ const BlogListPage = () => {
             filteredPosts.map((post) => (
               <div
                 key={post.id}
-                className="overflow-hidden md:h-60 hover:shadow-lg transition-shadow cursor-pointer rounded-lg bg-gray-800 h-full"
+                className="overflow-hidden md:h-64 hover:shadow-lg transition-shadow cursor-pointer rounded-lg bg-gray-100 dark:bg-gray-800 h-full"
                 onClick={() => router.push(`/zone/${post.id}/view`)}
               >
                 <div className="flex flex-col md:flex-row h-full">
