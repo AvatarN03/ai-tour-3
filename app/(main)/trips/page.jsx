@@ -132,7 +132,7 @@ export default function SavedTripsPage() {
 
       {/* Trips List */}
       <div>
-        <div className="grid gap-6 border-b-2 rounded-md md:p-8">
+        <div className="grid gap-6 border-b-2 rounded-md md:p-8 max-w-4xl mx-auto">
           {isLoading ? (
             <p className="text-gray-500 dark:text-gray-400">Loading trips...</p>
           ) : myTrips.length > 0 ? (

@@ -4,32 +4,13 @@ import React, { useState } from "react";
 import { Star } from "lucide-react";
 
 import PlaceImage from "./PlaceImage";
+import { getRatingStars } from "@/lib/utils";
 
 // 2. Accept 'destination' as a prop
 const Hotels = ({ hotel_options, destination }) => {
   const [selectedHotel, setSelectedHotel] = useState(0);
 
-  const getRatingStars = (rating) => {
-    const numRating = parseFloat(rating);
-    return (
-      <div className="flex items-center gap-1 flex-shrink-0">
-        {[...Array(5)].map((_, i) => (
-          <Star
-            key={i}
-            size={14}
-            className={
-              i < Math.floor(numRating)
-                ? "fill-yellow-400 text-yellow-400"
-                : "text-gray-300 dark:text-gray-600"
-            }
-          />
-        ))}
-        <span className="text-sm ml-1 text-gray-600 dark:text-gray-400 whitespace-nowrap">
-          {rating}
-        </span>
-      </div>
-    );
-  };
+ 
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

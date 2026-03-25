@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 
 import PlaceImage from "./PlaceImage";
-
 import { getRatingStars } from "@/lib/utils";
+
 
 
 
