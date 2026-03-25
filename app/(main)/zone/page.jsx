@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 
 import { Search, X, MessageCircle, Plus, Edit2 } from 'lucide-react'
-import { collection, getDocs } from 'firebase/firestore'
 
 import { useAuth } from '@/providers/useAuth'
 
@@ -12,19 +11,19 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-import { db } from '@/lib/config/firebase'
+import { useBlog } from '@/hooks/useBlog';
 import { formatRelativeDate, renderContent } from '@/lib/utils/blogHelpers';
 
 
 const BlogListPage = () => {
   const router = useRouter()
   const { profile } = useAuth()
+  const { getPosts, loading } = useBlog();
 
   const [posts, setPosts] = useState([])
   const [filteredPosts, setFilteredPosts] = useState([])
   const [comments, setComments] = useState({})
   const [searchQuery, setSearchQuery] = useState('')
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => { loadData() }, [])
 
@@ -43,39 +42,14 @@ const BlogListPage = () => {
   }, [searchQuery, posts])
 
   const loadData = async () => {
-    setLoading(true)
-    try {
-      const postsSnap = await getDocs(collection(db, 'blog_posts'))
-      const postsData = postsSnap.docs
-        .map((d) => {
-          const data = d.data()
-          return {
-            id: d.id,
-            ...data,
-            createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
-            updatedAt: data.updatedAt?.toDate?.() || (data.updatedAt ? new Date(data.updatedAt) : null),
-          }
-        })
-        .sort((a, b) => b.createdAt - a.createdAt)
-
-      setPosts(postsData)
-      setFilteredPosts(postsData)
-
-      const commentsSnap = await getDocs(collection(db, 'blog_comments'))
-      const commentsMap = {}
-      commentsSnap.docs.forEach((d) => {
-        commentsMap[d.id] = (d.data().comments || []).map((c) => ({
-          ...c,
-          createdAt: c.createdAt?.toDate?.() || new Date(c.createdAt),
-        }))
-      })
-      setComments(commentsMap)
-    } catch (error) {
-      console.error('Error loading data:', error)
-      alert('Failed to load blog posts.')
-    } finally {
-      setLoading(false)
+    const res = await getPosts();
+    if (!res.success) {
+      console.error('Error loading data:', res.error);
+      return;
     }
+    setPosts(res.data.posts);
+    setFilteredPosts(res.data.posts);
+    setComments(res.data.commentsMap);
   }
 
 

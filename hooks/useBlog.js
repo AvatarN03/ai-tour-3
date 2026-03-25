@@ -5,6 +5,7 @@ import { createPostAction } from "@/actions/zone/createBlog";
 import { deletePostAction } from "@/actions/zone/deleteBlog";
 import { deleteCommentAction } from "@/actions/zone/deleteComment";
 import { getPostAction } from "@/actions/zone/getBlog";
+import { getPostsAction } from "@/actions/zone/getPosts";
 import { getCommentsAction } from "@/actions/zone/getComment";
 import { updatePostAction } from "@/actions/zone/updateBlog";
 import { updateCommentAction } from "@/actions/zone/updateComment";
@@ -42,6 +43,12 @@ export const useBlog = () => {
   const deletePost = async ({ postId, profile }) => {
     setLoading(true);
     return handleAsync(() => deletePostAction({ postId, profile }));
+  };
+
+  // ✅ GET ALL POSTS
+  const getPosts = async () => {
+    setLoading(true);
+    return handleAsync(() => getPostsAction());
   };
 
   // ✅ GET POST
@@ -94,6 +101,7 @@ const updateComment = async ({ postId, commentId, text }) => {
   return {
   createPost,
   deletePost,
+  getPosts,
   getPost,
   updatePost,
   getComments,

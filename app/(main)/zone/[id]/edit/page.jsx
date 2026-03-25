@@ -3,15 +3,13 @@
 import { useRef, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
-import { X, Bold, Italic, Link, ArrowLeft, Upload, Trash2 } from 'lucide-react';
-import { doc, getDoc, updateDoc, Timestamp } from 'firebase/firestore'
+import { X, Bold, Italic, Link, ArrowLeft, Upload } from 'lucide-react';
+
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-
-import { useAuth } from '@/providers/useAuth'
 
 import { categories } from '@/lib/constants'
 import { useBlog } from '@/hooks/useBlog';
@@ -40,7 +38,7 @@ export default function EditPostPage() {
 
             setPost(res.data);
             setImagePreview(res.data.imageUrl || null);
-            
+
         };
 
         fetchPost();

@@ -22,30 +22,8 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
   const pathname = usePathname();
   const [showPageSearch, setShowPageSearch] = useState(false);
 
-  // Generate breadcrumb from pathname
-  const generateBreadcrumbs = () => {
-    const paths = pathname.split("/").filter(Boolean);
-    const breadcrumbs = [];
-    let currentPath = "";
 
-    paths.forEach((path, index) => {
-      currentPath += `/${path}`;
-      const label = path
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
 
-      breadcrumbs.push({
-        label,
-        href: currentPath,
-        isLast: index === paths.length - 1,
-      });
-    });
-
-    return breadcrumbs;
-  };
-
-  const breadcrumbs = generateBreadcrumbs();
 
   // Keyboard shortcut for Ctrl+F
   useEffect(() => {
@@ -90,33 +68,6 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
               </motion.div>
             </motion.button>
 
-            {/* Breadcrumb Navigation */}
-            <nav className="hidden sm:flex items-center gap-2 overflow-x-auto scrollbar-hide">
-              {breadcrumbs.map((crumb, index) => (
-                <motion.div
-                  key={crumb.href}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-2 flex-shrink-0"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-600 flex-shrink-0" />
-                  {crumb.isLast ? (
-                    <span className="px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-sm font-semibold text-blue-700 dark:text-blue-400 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      {crumb.label}
-                    </span>
-                  ) : (
-                    <Link
-                      href={crumb.href}
-                      className="px-3 py-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                    >
-                      {crumb.label}
-                    </Link>
-                  )}
-                </motion.div>
-              ))}
-            </nav>
           </div>
 
           {/* Right Section: Search + Actions */}

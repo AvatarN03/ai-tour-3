@@ -8,10 +8,6 @@ import {
     Trash2, Edit2, MessageCircle, ArrowLeft,
     SquareArrowOutUpRight,
 } from 'lucide-react';
-import {
-    doc, getDoc, deleteDoc,
-    updateDoc, setDoc, arrayUnion, Timestamp,
-} from 'firebase/firestore'
 import { toast } from 'sonner'
 
 
@@ -25,8 +21,6 @@ import { useAuth } from '@/providers/useAuth';
 
 import { useBlog } from '@/hooks/useBlog';
 
-import { db } from '@/lib/config/firebase'
-import { logActivity } from "@/lib/services/firestore"
 import { formatRelativeDate, renderContent } from '@/lib/utils/blogHelpers'
 
 
@@ -41,7 +35,7 @@ export default function ViewPostPage() {
     const [newComment, setNewComment] = useState('')
     const [isExpanded, setIsExpanded] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
-    const { getPost, getComments, updateComment, addComment, deleteComment } = useBlog();
+    const { getPost, getComments, updateComment, addComment, deleteComment, deletePost } = useBlog();
 
 
     useEffect(() => { fetchData() }, [id])
@@ -68,16 +62,15 @@ export default function ViewPostPage() {
 
 
     const handleDelete = async () => {
-        if (!confirm('Are you sure you want to delete this post?')) return
-        try {
-            await deleteDoc(doc(db, 'blog_posts', id))
-            await deleteDoc(doc(db, 'blog_comments', id))
-            await logActivity({ userId: profile?.uid, action: 'DELETE', entity: 'BLOG', entityId: id, metadata: { postId: id } })
-            toast.success('Post deleted successfully!')
-            router.push('/zone')
-        } catch (error) {
-            console.error(error)
-            toast.error('Failed to delete post.')
+        if (!confirm('Are you sure you want to delete this post?')) return;
+
+        const res = await deletePost({ postId: id, profile });
+
+        if (res.success) {
+            toast.success('Post deleted successfully!');
+            router.push('/zone');
+        } else {
+            toast.error(res.error || 'Failed to delete post.');
         }
     }
 

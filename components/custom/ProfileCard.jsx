@@ -36,7 +36,7 @@ import { useAuth } from "@/providers/useAuth";
 
 import { getUserInitials } from "@/lib/utils/nameInitial";
 import { preferenceColors } from "@/lib/constants";
-import { formatDate, formatFirestoreDate } from "@/lib/utils";
+import { formatFirestoreDate } from "@/lib/utils";
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
 

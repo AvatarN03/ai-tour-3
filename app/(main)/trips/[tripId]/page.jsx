@@ -16,13 +16,6 @@ import {
   Trash,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  deleteDoc,
-  doc,
-  getDoc,
-  increment,
-  updateDoc,
-} from "firebase/firestore";
 
 import { ViewTripLoading } from "@/components/custom/Loading";
 import Hotels from "@/components/features/trips/Hotels";
@@ -31,7 +24,6 @@ import ItineraryDay from "@/components/features/trips/ItineraryDay";
 
 import { useAuth } from "@/providers/useAuth";
 
-import { db } from "@/lib/config/firebase";
 import { useTrip } from "@/hooks/useTrip";
 
 
@@ -41,30 +33,22 @@ const TripViewCard = () => {
   const { tripId } = useParams();
   const { profile, user, setProfile } = useAuth();
   const router = useRouter();
-  const { deleteTrip, loading } = useTrip();
+  const { deleteTrip, getTrip, loading } = useTrip();
 
   useEffect(() => {
     if (profile?.uid && tripId) fetchPlanData();
   }, [tripId, profile?.uid]);
 
   const fetchPlanData = async () => {
-    try {
-      const docRef = doc(db, "users", profile.uid, "trips", String(tripId));
-      const docSnap = await getDoc(docRef);
+    const res = await getTrip({ userId: profile.uid, tripId });
 
-      if (!docSnap.exists()) {
-        toast.error("❌ No such document!");
-        router.replace("/trips");
-        return;
-      }
-
-      const data = docSnap.data();
-
-      setPlanData(data.GeneratedPlan);
-
-    } catch (error) {
-      toast.error("🔥 Error fetching trip: " + error.message);
+    if (!res.success) {
+      toast.error("❌ " + res.error);
+      router.replace("/trips");
+      return;
     }
+
+    setPlanData(res.data.GeneratedPlan);
   };
 
   const handleDelete = async () => {

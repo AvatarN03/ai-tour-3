@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { createTripAction } from "@/actions/trip/createTrip";
 import { deleteTripAction } from "@/actions/trip/deleteTrip";
+import { getTripAction } from "@/actions/trip/getTrip";
 import { getTripsAction } from "@/actions/trip/getTrips";
 
 export const useTrip = () => {
@@ -44,6 +45,12 @@ export const useTrip = () => {
     return handleAsync(() => deleteTripAction({ profile, tripId, plan }));
   };
 
+  // ✅ GET SINGLE TRIP
+  const getTrip = async ({ userId, tripId }) => {
+    setLoading(true);
+    return handleAsync(() => getTripAction({ userId, tripId }));
+  };
+
   // ✅ GET ALL TRIPS
   const getTrips = async ({ userId, pageSize, cursor, searchQuery }) => {
     setLoading(true);
@@ -72,6 +79,7 @@ export const useTrip = () => {
   return {
     createTrip,
     deleteTrip,
+    getTrip,
     getTrips,
     loading,
     generating,

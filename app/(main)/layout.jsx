@@ -34,7 +34,7 @@ const layout = ({ children }) => {
   useEffect(() => {
     if (loading) return;
 
-    if (!user) {
+    if (!user && !profile) {
       router.push(`/auth?continueTo=${encodeURIComponent(pathname)}`);
       return;
     }
@@ -56,7 +56,7 @@ const layout = ({ children }) => {
             <div className={isTranslateShow ? "block" : "hidden"}>
               <GoogleTranslate />
             </div>
-            <div className={ !isTranslateShow? "block": "hidden" }>
+            <div className={!isTranslateShow ? "block" : "hidden"}>
               <Languages />
             </div>
           </div>
