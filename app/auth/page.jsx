@@ -7,9 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { toast } from "sonner";
 import {
-  Mail, Lock, Eye, EyeOff, User, ChevronDown, AtSign,
+  Lock, Eye, EyeOff, User, ChevronDown, AtSign,
 } from "lucide-react";
-import { useTranslation } from "react-i18next";
 
 import { useAuth } from "@/context/useAuth";
 import { useAuthActions } from "@/hooks/useAuthActions";
@@ -37,7 +36,6 @@ export default function Auth() {
   const router = useRouter();
   const continueTo = useSearchParams().get("continueTo");
   const { user, setProfile } = useAuth();
-  const { t } = useTranslation();
   const { googleLogin, emailSignIn, emailRegister, checkUsername, loading, error, setError } = useAuthActions();
 
   useEffect(() => {
@@ -292,7 +290,7 @@ export default function Auth() {
           <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
           {isLogin ? "Signing in..." : "Creating account..."}
         </div>
-      ) : isLogin ? t("auth.signInTitle") : t("auth.createAccountTitle")}
+      ) : isLogin ? "Sign In" : "Create Account" }
     </button>
   );
 
@@ -365,10 +363,12 @@ export default function Auth() {
           <ErrorBanner />
           <div className="text-center mb-8">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              {isLogin ? t("auth.signInTitle") : t("auth.createAccountTitle")}
+              {isLogin ? "Sign In" : "Create Account"}
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
-              {isLogin ? t("auth.signInSubtitle") : t("auth.createAccountSubtitle")}
+              {isLogin
+                ? "Enter your credentials to access your account"
+                : "Fill in your details to get started"}
             </p>
           </div>
 

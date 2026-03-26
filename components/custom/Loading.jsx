@@ -60,11 +60,7 @@ export const ViewTripLoading = () => {
       <div className="flex flex-col items-center gap-4">
         <div className="relative">
           <div className="absolute inset-0 blur-xl bg-indigo-500/20 dark:bg-indigo-400/10 rounded-full animate-pulse"></div>
-          <Loader2
-            className="relative animate-spin text-indigo-600 dark:text-indigo-400"
-            size={48}
-            strokeWidth={2.5}
-          />
+          <Image src="/aiLoading.gif" alt="loading" width={250} height={250} unoptimized    />
         </div>
         <span className="text-xl font-semibold dark:text-white text-gray-800">
           Loading Trip Details...
@@ -76,13 +72,49 @@ export const ViewTripLoading = () => {
 
 export const GenPlanLoading = () => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen ">
-      <div className="flex items-center space-x-4">
-        <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-lg font-semibold text-gray-700">
-          Generating your perfect trip...
-        </p>
+    <div className="flex flex-col items-center justify-center h-dvh md:h-[80vh] gap-4">
+      <div className="flex items-center -gap-x-4">
+
+        <Image src="/genLoading.gif" alt="loading" width={250} height={250} className="-mr-8" unoptimized     />
+
+        {/* Stroke Text Animation */}
+        <svg viewBox="0 0 400 80" width="400" height="80" className="-ml-8">
+          <text
+            x="50%"
+            y="65"
+            textAnchor="middle"
+            fontFamily="inherit"
+            fontSize="52"
+            fontWeight="bold"
+            fill="none"
+            stroke="#3b82f6"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{
+              strokeDasharray: 1200,
+              strokeDashoffset: 1200,
+              animation: "drawText 2.5s ease-in-out infinite alternate",
+            }}
+          >
+            Generating
+          </text>
+        </svg>
       </div>
+
+      <p className="text-base text-gray-500 dark:text-gray-400 tracking-widest uppercase">
+        your perfect trip...
+      </p>
+
+      <style>{`
+        @keyframes drawText {
+          0%   { stroke-dashoffset: 1200; opacity: 1; }
+          70%  { stroke-dashoffset: 0;    opacity: 1; }
+          85%  { stroke-dashoffset: 0;    opacity: 0.2; }
+          100% { stroke-dashoffset: 1200; opacity: 0.2; }
+        }
+      `}</style>
+
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 import {
@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Package,
   Trash,
+  Printer,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -25,6 +26,9 @@ import ItineraryDay from "@/components/features/trips/ItineraryDay";
 import { useAuth } from "@/context/useAuth";
 
 import { useTrip } from "@/hooks/useTrip";
+import { useReactToPrint } from "react-to-print";
+import PrintHeader from "@/components/features/trips/PrintHeader";
+import { Button } from "@/components/ui/button";
 
 
 const TripViewCard = () => {
@@ -34,6 +38,25 @@ const TripViewCard = () => {
   const { profile, user, setProfile } = useAuth();
   const router = useRouter();
   const { deleteTrip, getTrip, loading } = useTrip();
+
+  const printRef = useRef(null);
+
+ const handlePrint = useReactToPrint({
+  contentRef: printRef,
+  documentTitle: plan?.tripDetails?.title || `Trip to ${plan?.destination}`,
+  pageStyle: `
+    @page { 
+      size: A4; 
+      margin: 15mm 20mm;
+    }
+    @media print {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  `,
+});
 
   useEffect(() => {
     if (profile?.uid && tripId) fetchPlanData();
@@ -95,19 +118,31 @@ const TripViewCard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
-      <div className="max-w-5xl mx-auto p-0 md:p-6 relative">
+      <div className="max-w-5xl mx-auto px-4 pt-4 flex justify-end gap-2 dark-print">
+        <Button
+          onClick={handlePrint}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer"
+        >
+          <Printer size={16} />
+          Print / Save PDF
+        </Button>
+      </div>
+      <div ref={printRef} className="max-w-5xl mx-auto p-0 md:p-6 relative">
+        <PrintHeader
+          tripName={plan?.tripDetails?.title || `Trip to ${plan?.destination}`}
+        />
 
 
         {/* Header Section */}
         <div className="rounded-md md:rounded-2xl p-6 md:p-8 mb-6 shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 text-white overflow-hidden relative">
-        {/* Delete Button */}
-        <button
-          onClick={handleDelete}
-          disabled={loading}
-          className="px-4 py-2 absolute top-5 right-5 rounded-full bg-red-600 text-white cursor-pointer hover:bg-red-500"
-        >
-          {loading ? "Deleting..." : "Delete Trip"}
-        </button>
+          {/* Delete Button */}
+          <button
+            onClick={handleDelete}
+            disabled={loading}
+            className="px-4 py-2 absolute top-5 right-5 rounded-full bg-red-600 text-white cursor-pointer hover:bg-red-500"
+          >
+            {loading ? "Deleting..." : "Delete Trip"}
+          </button>
           <h1 className="text-2xl md:text-4xl font-bold mb-4 break-words">
             {plan?.tripDetails?.title || `Trip to ${plan?.destination}`}
           </h1>

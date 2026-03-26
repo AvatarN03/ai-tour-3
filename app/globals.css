@@ -279,3 +279,16 @@ body {
 .dark .recharts-default-tooltip {
   background: #233 !important;
 }
+
+
+@media print {
+  /* Show the header only during print */
+  .print-header {
+    display: flex !important;
+  }
+
+  /* Optional: repeat header on every page */
+  .print-header {
+    position: running(header);
+  }
+}

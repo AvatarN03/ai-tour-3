@@ -2,23 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 
 import {
   PanelLeftClose,
   PanelRightClose,
-  ChevronRight,
-  Sparkles,
-  Bell,
   Search,
+  ClockFading,
 } from "lucide-react";
 import { motion } from "framer-motion";
 
-import ThemeToggle from "./ThemeToggle";
 import PageSearch from "./PageSearch";
 import { Notification } from "./Notification";
 import HeaderWeather from "./HeaderWeather";
-import LanguageSelector from "./LanguageSelector";
 import { Accessibility } from "./Accessibility";
 
 const Header = ({ toggleSidebar, isSidebarOpen }) => {
@@ -91,8 +86,8 @@ const Header = ({ toggleSidebar, isSidebarOpen }) => {
               <button
                 className="relative p-2 rounded-lg bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors text-gray-700 dark:text-gray-300 cursor-pointer"
               >
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white dark:ring-gray-900"></span>
+                <ClockFading className="w-5 h-5" />
+                
               </button>
             </Notification>
 
