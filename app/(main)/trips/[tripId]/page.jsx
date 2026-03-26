@@ -2,34 +2,23 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
-
 import {
-  MapPin,
-  Calendar,
-  Users,
-  DollarSign,
-  Navigation,
-  Hotel,
-  Utensils,
-  AlertCircle,
-  Package,
+  MapPin, Calendar, Users, DollarSign, Navigation,
+  Hotel, Utensils, Printer, ChevronLeft, ChevronRight,
+  Compass, Sun, Shield, Briefcase, Bus, Star,
   Trash,
-  Printer,
+  Tag,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import { ViewTripLoading } from "@/components/custom/Loading";
 import Hotels from "@/components/features/trips/Hotels";
 import ItineraryDay from "@/components/features/trips/ItineraryDay";
-
-
 import { useAuth } from "@/context/useAuth";
-
 import { useTrip } from "@/hooks/useTrip";
 import { useReactToPrint } from "react-to-print";
 import PrintHeader from "@/components/features/trips/PrintHeader";
 import { Button } from "@/components/ui/button";
-
 
 const TripViewCard = () => {
   const [activeDay, setActiveDay] = useState(0);
@@ -38,25 +27,20 @@ const TripViewCard = () => {
   const { profile, user, setProfile } = useAuth();
   const router = useRouter();
   const { deleteTrip, getTrip, loading } = useTrip();
-
   const printRef = useRef(null);
 
- const handlePrint = useReactToPrint({
-  contentRef: printRef,
-  documentTitle: plan?.tripDetails?.title || `Trip to ${plan?.destination}`,
-  pageStyle: `
-    @page { 
-      size: A4; 
-      margin: 15mm 20mm;
-    }
-    @media print {
-      * {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+    documentTitle: plan?.tripDetails?.title || `Trip to ${plan?.destination}`,
+    pageStyle: `
+      @page { size: A4; margin: 15mm 20mm; }
+      @media print { 
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        .no-print { display: none !important; }
+        .print-break-inside-avoid { break-inside: avoid; }
       }
-    }
-  `,
-});
+    `,
+  });
 
   useEffect(() => {
     if (profile?.uid && tripId) fetchPlanData();
@@ -64,271 +48,299 @@ const TripViewCard = () => {
 
   const fetchPlanData = async () => {
     const res = await getTrip({ userId: profile.uid, tripId });
-
-    if (!res.success) {
-      toast.error("❌ " + res.error);
-      router.replace("/trips");
-      return;
-    }
-
+    if (!res.success) { toast.error("❌ " + res.error); router.replace("/trips"); return; }
     setPlanData(res.data.GeneratedPlan);
   };
 
   const handleDelete = async () => {
-    if (!user) {
-      toast.error("You must be logged in");
-      return;
-    }
-
+    if (!user) { toast.error("You must be logged in"); return; }
     if (!confirm("Are you sure you want to delete this trip?")) return;
-
-    const res = await deleteTrip({
-      profile,
-      tripId,
-      plan,
-    });
-
+    const res = await deleteTrip({ profile, tripId, plan });
     if (res.success) {
-      setProfile((prev) => ({
-        ...prev,
-        tripCount: prev.tripCount - 1,
-      }));
-
+      setProfile((prev) => ({ ...prev, tripCount: prev.tripCount - 1 }));
       toast.success("Trip deleted successfully!");
       router.push("/trips");
-    } else {
-      toast.error(res.error);
-    }
+    } else { toast.error(res.error); }
   };
 
-  if (!plan) {
-    return <ViewTripLoading />;
-  }
+  if (!plan) return <ViewTripLoading />;
 
-  const getCurrencySymbol = (currency) => {
-    const symbols = {
-      USD: "$", INR: "₹", EUR: "€",
-      GBP: "£", AUD: "A$", JPY: "¥",
-    };
-    return symbols[currency] || currency;
-  };
-
+  const CURRENCY_SYMBOLS = { USD: "$", INR: "₹", EUR: "€", GBP: "£", AUD: "A$", JPY: "¥" };
   const currency = plan?.currency || "INR";
-  const currencySymbol = getCurrencySymbol(currency);
+  const sym = CURRENCY_SYMBOLS[currency] || currency;
+  const title = plan?.tripDetails?.title || `Trip to ${plan?.destination}`;
+  const itinerary = plan?.itinerary || [];
+
+  const prevDay = () => setActiveDay((d) => Math.max(0, d - 1));
+  const nextDay = () => setActiveDay((d) => Math.min(itinerary.length - 1, d + 1));
+
+  const HERO_STATS = [
+    {
+      icon: <MapPin size={16} />,
+      label: "Destination",
+      value: plan?.destination,
+      span: "col-span-full md:col-span-2",
+    },
+    {
+      icon: <Navigation size={16} />,
+      label: "Source",
+      value: plan?.tripDetails?.source || plan?.source,
+      span: "col-span-full md:col-span-2",
+    },
+    {
+      icon: <Users size={16} />,
+      label: "Travel Type",
+      value: plan?.travel_type,
+    },
+    {
+      icon: <Tag size={16} />,
+      label: "Category",
+      value: plan?.tripDetails?.category || plan?.category,
+    },
+    {
+      icon: <Calendar size={16} />,
+      label: "Duration",
+      value: plan?.duration,
+    },
+    {
+      icon: <DollarSign size={16} />,
+      label: `Budget (${currency})`,
+      value: `${sym} ${plan?.total_estimated_cost}`,
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 overflow-x-hidden">
-      <div className="max-w-5xl mx-auto px-4 pt-4 flex justify-end gap-2 dark-print">
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-900 text-gray-700 dark:text-slate-300 transition-colors">
+      {/* Top action bar (hidden on print) */}
+      <div className="no-print bg-amber-50/50 dark:bg-slate-800/50 border-b border-stone-200 dark:border-slate-700 px-5 py-3 flex justify-end gap-2.5 print:hidden">
         <Button
           onClick={handlePrint}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl cursor-pointer"
+          className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all border border-amber-300/40 dark:border-amber-500/30 bg-amber-100/50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 hover:bg-amber-200/50 dark:hover:bg-amber-900/40 cursor-pointer"
         >
-          <Printer size={16} />
-          Print / Save PDF
+          <Printer size={18} />
+          <span className="hidden md:block">Print / Save PDF</span>
+        </Button>
+        <Button
+          onClick={handleDelete}
+          disabled={loading}
+          className="flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold transition-all border border-red-300/40 dark:border-red-500/30 bg-red-100/50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-200/50 dark:hover:bg-red-900/40 disabled:opacity-45 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <Trash size={18} />
+          <span className="hidden md:block">{loading ? "Deleting…" : "Delete Trip"}</span>
         </Button>
       </div>
-      <div ref={printRef} className="max-w-5xl mx-auto p-0 md:p-6 relative">
-        <PrintHeader
-          tripName={plan?.tripDetails?.title || `Trip to ${plan?.destination}`}
-        />
 
+      {/* Printable area */}
+      <div ref={printRef}>
+        <PrintHeader tripName={title} />
 
-        {/* Header Section */}
-        <div className="rounded-md md:rounded-2xl p-6 md:p-8 mb-6 shadow-lg bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-900 dark:to-purple-900 text-white overflow-hidden relative">
-          {/* Delete Button */}
-          <button
-            onClick={handleDelete}
-            disabled={loading}
-            className="px-4 py-2 absolute top-5 right-5 rounded-full bg-red-600 text-white cursor-pointer hover:bg-red-500"
-          >
-            {loading ? "Deleting..." : "Delete Trip"}
-          </button>
-          <h1 className="text-2xl md:text-4xl font-bold mb-4 break-words">
-            {plan?.tripDetails?.title || `Trip to ${plan?.destination}`}
-          </h1>
-          <div className="grid grid-cols-2 md:flex md:flex-wrap md:justify-between gap-4">
-            <div className="flex items-center gap-2 min-w-0">
-              <MapPin size={18} className="flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs opacity-80">Destination</p>
-                <p className="font-semibold text-sm md:text-base truncate">
-                  {plan?.destination}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 min-w-0">
-              <Calendar size={18} className="flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs opacity-80">Duration</p>
-                <p className="font-semibold text-sm md:text-base truncate">
-                  {plan?.duration}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 min-w-0">
-              <Users size={18} className="flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs opacity-80">Travel Type</p>
-                <p className="font-semibold text-sm md:text-base truncate">
-                  {plan?.travel_type}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 min-w-0">
-              <DollarSign size={18} className="flex-shrink-0" />
-              <div className="min-w-0">
-                <p className="text-xs opacity-80">Total Budget ({currency})</p>
-                <p className="font-light md:font-semibold text-xs md:text-base max-w-xs line-clamp-2">
-                  {currencySymbol} {plan?.total_estimated_cost}
-                </p>
-              </div>
-            </div>
+        {/* Hero Section */}
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white px-6 md:px-8 py-12 md:py-14 print:break-inside-avoid">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(212,130,10,0.22)_0%,transparent_58%),radial-gradient(circle_at_12%_82%,rgba(45,125,168,0.22)_0%,transparent_52%)]" />
+            <div className="absolute inset-[-50%] bg-[radial-gradient(circle,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[length:28px_28px] -rotate-6" />
           </div>
-        </div>
 
-        {/* Hotel Options Section */}
-        <div className="rounded-xl md:rounded-2xl md:p-6 mb-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-          <div className="flex items-center gap-2 mb-4 p-2">
-            <Hotel className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-              Accommodation Options
-            </h2>
-          </div>
-          {plan?.hotel_options?.length === 0 ? (
-            <p className="text-gray-700 dark:text-gray-300">
-              No hotel options available for the selected preferences.
-            </p>
-          ) : (
-            <Hotels
-              hotel_options={plan?.hotel_options}
-              destination={plan?.destination}
-            />
-          )}
-        </div>
+          <div className="relative max-w-5xl mx-auto">
+            <p className="text-gray-500 font-semibold text-sm">Trip Name:</p>
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight mb-6">
+              {title}
+            </h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
-        {/* Itinerary Section */}
-        <div className="rounded-xl md:rounded-2xl p-3 md:p-6 mb-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-          <div className="flex items-center gap-2 mb-4 px-1">
-            <Navigation className="text-blue-600 dark:text-blue-400 flex-shrink-0" size={24} />
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-              Day-by-Day Itinerary
-            </h2>
-          </div>
-          <div className="mb-6">
-            <select
-              value={activeDay}
-              onChange={(e) => setActiveDay(Number(e.target.value))}
-              className="w-full px-4 py-3 rounded-lg font-semibold text-base transition-all outline-none cursor-pointer bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-400 focus:border-blue-500"
-            >
-              {plan?.itinerary?.map((day, idx) => (
-                <option key={idx} value={idx}>
-                  {day.day} - {day.theme || day.Theme}
-                </option>
-              ))}
-            </select>
-          </div>
-          <ItineraryDay dayData={plan?.itinerary?.[activeDay]} />
-        </div>
-
-        {/* Budget Breakdown + Local Cuisine */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
-          <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <DollarSign className="text-green-600 dark:text-green-400 flex-shrink-0" size={24} />
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Budget Breakdown ({currency})
-              </h2>
-            </div>
-            <div className="space-y-3">
-              {Object.entries(plan?.budget_breakdown || {}).map(([key, value]) => (
+              {HERO_STATS.map(({ icon, label, value, span }) => (
                 <div
-                  key={key}
-                  className="flex flex-col pb-2 border-b border-gray-200 dark:border-gray-700 gap-1"
+                  key={label}
+                  className={`flex items-center gap-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-3 transition-all hover:bg-white/20 ${span || ""}`}
                 >
-                  <span className="capitalize font-medium text-gray-700 dark:text-gray-300 break-words">
-                    {key}
-                  </span>
-                  <span className="font-bold text-gray-900 dark:text-white">
-                    {value}
-                  </span>
+                  <span className="opacity-65 flex-shrink-0">{icon}</span>
+                  <div>
+                    <div className="text-[10px] opacity-60 tracking-wider uppercase">{label}</div>
+                    <div className="text-sm font-semibold mt-0.5">{value}</div>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
-
-          <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <Utensils className="text-orange-600 dark:text-orange-400 flex-shrink-0" size={24} />
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Local Cuisine
-              </h2>
-            </div>
-            <ul className="space-y-2">
-              {plan?.local_cuisine?.map((food, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="w-2 h-2 bg-orange-600 dark:bg-orange-400 rounded-full mt-2 flex-shrink-0" />
-                  <span className="break-words">{food}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
 
-        {/* Safety Tips + Packing */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <AlertCircle className="text-red-600 dark:text-red-400 flex-shrink-0" size={24} />
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Safety Tips
-              </h2>
+        {/* Page body */}
+        <div className="px-2 md:px-6 py-6 md:py-10 space-y-6">
+
+          {/* Accommodation */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+            <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                <Hotel size={20} />
+              </div>
+              <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Accommodation Options</h2>
             </div>
-            <ul className="space-y-2">
-              {plan?.safety_tips?.map((tip, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="w-2 h-2 bg-red-600 dark:bg-red-400 rounded-full mt-2 flex-shrink-0" />
-                  <span className="break-words">{tip}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="p-3 md:p-6 pt-2">
+              {!plan?.hotel_options?.length
+                ? <p className="text-sm text-stone-500 dark:text-slate-400">No hotel options available for the selected preferences.</p>
+                : <Hotels hotel_options={plan.hotel_options} destination={plan?.destination} />
+              }
+            </div>
           </div>
 
-          <div className="rounded-xl md:rounded-2xl p-4 md:p-6 shadow-md bg-white dark:bg-gray-800 overflow-hidden">
-            <div className="flex items-center gap-2 mb-4">
-              <Package className="text-purple-600 dark:text-purple-400 flex-shrink-0" size={24} />
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                Packing Suggestions
-              </h2>
+          {/* Itinerary */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+            <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+              <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center text-blue-600 dark:text-blue-400 flex-shrink-0">
+                <Navigation size={20} />
+              </div>
+              <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Day-by-Day Itinerary</h2>
             </div>
-            <ul className="space-y-2">
-              {plan?.packing_suggestions?.map((item, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                  <span className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full mt-2 flex-shrink-0" />
-                  <span className="break-words">{item}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="p-3 md:p-6 pt-2">
+              {/* Day pill navigator */}
+              <div className="flex items-center gap-2 mb-5">
+                <button
+                  onClick={prevDay}
+                  disabled={activeDay === 0}
+                  className="w-9 h-9 rounded-lg border border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Previous day"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+                <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hide" role="tablist">
+                  {itinerary.map((day, idx) => (
+                    <button
+                      key={idx}
+                      role="tab"
+                      aria-selected={activeDay === idx}
+                      onClick={() => setActiveDay(idx)}
+                      className={`flex-shrink-0 px-4 py-2 rounded-full border text-xs font-semibold whitespace-nowrap transition-all ${activeDay === idx
+                        ? "bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500 shadow-md"
+                        : "bg-stone-50 dark:bg-slate-700 border-stone-200 dark:border-slate-600 text-stone-500 dark:text-slate-400 hover:border-blue-400 dark:hover:border-blue-400"
+                        }`}
+                    >
+                      {day.day}
+                    </button>
+                  ))}
+                </div>
+                <button
+                  onClick={nextDay}
+                  disabled={activeDay === itinerary.length - 1}
+                  className="w-9 h-9 rounded-lg border border-stone-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 flex items-center justify-center transition-all hover:bg-blue-600 hover:text-white dark:hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed"
+                  aria-label="Next day"
+                >
+                  <ChevronRight size={16} />
+                </button>
+              </div>
+
+              {/* Day theme badge */}
+              {itinerary[activeDay] && (
+                <div className="bg-gradient-to-r from-blue-50 via-purple-50 to-blue-50 dark:from-blue-950/20 dark:via-purple-950/20 rounded-lg px-4 py-2.5 mb-4 flex items-center gap-2">
+                  <Star size={14} className="text-amber-500 dark:text-amber-400 flex-shrink-0" />
+                  <span className="font-serif text-base font-semibold text-blue-800 dark:text-blue-300">
+                    {itinerary[activeDay].theme || itinerary[activeDay].Theme}
+                  </span>
+                </div>
+              )}
+
+              <ItineraryDay dayData={itinerary[activeDay]} destination={plan?.destination} />
+            </div>
           </div>
-        </div>
 
-        {/* Transportation Tips */}
-        <div className="rounded-xl md:rounded-2xl p-4 md:p-6 mt-6 border-l-4 bg-blue-50 dark:bg-blue-900/30 border-blue-600 dark:border-blue-400 overflow-hidden">
-          <h3 className="font-bold text-lg mb-2 text-blue-900 dark:text-blue-200">
-            Transportation Tips
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 break-words">
-            {plan?.transportation_tips}
-          </p>
-        </div>
+          {/* Budget + Cuisine 2-column grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+              <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+                <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center text-amber-600 dark:text-amber-400 flex-shrink-0">
+                  <DollarSign size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Budget Breakdown</h2>
+              </div>
+              <div className="p-6 pt-2">
+                <div className="text-[11px] tracking-wider uppercase text-stone-400 dark:text-slate-500 mb-2.5 font-semibold">
+                  All amounts in {currency}
+                </div>
+                {Object.entries(plan?.budget_breakdown || {}).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-baseline py-3 border-b border-stone-100 dark:border-slate-700 last:border-b-0 gap-3">
+                    <span className="text-xs font-medium text-stone-500 dark:text-slate-400 capitalize">{key}</span>
+                    <span className="text-sm font-bold text-stone-800 dark:text-slate-200 text-right">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-        {/* Best Season */}
-        <div className="rounded-xl md:rounded-2xl p-4 md:p-6 mt-6 mb-10 border-l-4 bg-green-50 dark:bg-green-900/30 border-green-600 dark:border-green-400 overflow-hidden">
-          <h3 className="font-bold text-lg mb-2 text-green-900 dark:text-green-200">
-            Best Season to Visit
-          </h3>
-          <p className="text-gray-700 dark:text-gray-300 break-words">
-            {plan?.best_season}
-          </p>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+              <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+                <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center text-orange-600 dark:text-orange-400 flex-shrink-0">
+                  <Utensils size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Local Cuisine</h2>
+              </div>
+              <div className="p-6 pt-2">
+                {plan?.local_cuisine?.map((food, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 py-2 border-b border-stone-100 dark:border-slate-700 last:border-b-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-orange-500 dark:bg-orange-400 flex-shrink-0 mt-2" />
+                    <span className="text-sm text-stone-600 dark:text-slate-300">{food}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Safety + Packing 2-column grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+              <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+                <div className="w-10 h-10 rounded-lg bg-red-100 dark:bg-red-900/20 flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
+                  <Shield size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Safety Tips</h2>
+              </div>
+              <div className="p-6 pt-2">
+                {plan?.safety_tips?.map((tip, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 py-2 border-b border-stone-100 dark:border-slate-700 last:border-b-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 dark:bg-red-400 flex-shrink-0 mt-2" />
+                    <span className="text-sm text-stone-600 dark:text-slate-300">{tip}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-stone-200 dark:border-slate-700 shadow-md dark:shadow-slate-900/30 overflow-hidden transition-colors print:shadow-none print:break-inside-avoid">
+              <div className="flex items-center gap-2.5 px-6 pt-5 pb-2">
+                <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center text-purple-600 dark:text-purple-400 flex-shrink-0">
+                  <Briefcase size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-stone-800 dark:text-slate-100">Packing Suggestions</h2>
+              </div>
+              <div className="p-6 pt-2">
+                {plan?.packing_suggestions?.map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-2.5 py-2 border-b border-stone-100 dark:border-slate-700 last:border-b-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500 dark:bg-purple-400 flex-shrink-0 mt-2" />
+                    <span className="text-sm text-stone-600 dark:text-slate-300">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Info banners */}
+          <div className="space-y-4">
+            <div className="bg-blue-50 dark:bg-blue-950/20 rounded-xl p-5 border-l-4 border-blue-500 dark:border-blue-400 flex gap-3.5 items-start">
+              <div className="flex-shrink-0 text-blue-600 dark:text-blue-400 mt-0.5">
+                <Bus size={18} />
+              </div>
+              <div>
+                <div className="text-xs font-bold tracking-wider uppercase mb-1.5 text-blue-700 dark:text-blue-400">Transportation Tips</div>
+                <p className="text-sm text-stone-700 dark:text-slate-300 leading-relaxed">{plan?.transportation_tips}</p>
+              </div>
+            </div>
+            <div className="bg-green-50 dark:bg-green-950/20 rounded-xl p-5 border-l-4 border-green-500 dark:border-green-400 flex gap-3.5 items-start">
+              <div className="flex-shrink-0 text-green-600 dark:text-green-400 mt-0.5">
+                <Sun size={18} />
+              </div>
+              <div>
+                <div className="text-xs font-bold tracking-wider uppercase mb-1.5 text-green-700 dark:text-green-400">Best Season to Visit</div>
+                <p className="text-sm text-stone-700 dark:text-slate-300 leading-relaxed">{plan?.best_season}</p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
