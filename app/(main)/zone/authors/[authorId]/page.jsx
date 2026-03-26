@@ -13,7 +13,7 @@ import { db } from '@/lib/config/firebase'
 import { formatRelativeDate
 , renderContent } from '@/lib/utils/blogHelpers';
 
-import { useAuth } from '@/providers/useAuth'
+import { useAuth } from '@/context/useAuth'
 
 export default function AuthorPostsPage() {
     const router = useRouter()

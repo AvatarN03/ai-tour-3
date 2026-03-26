@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 import { useAuthActions } from "@/hooks/useAuthActions";
 
 import { Input } from "@/components/ui/input";
@@ -217,29 +217,31 @@ export default function Auth() {
   const FormFields = ({ idSuffix = "" }) => (
     <div className="space-y-5">
       {/* Email */}
-      <div className="space-y-2">
-        <Label htmlFor={`email${idSuffix}`} className="text-sm font-semibold">
-          {t("auth.emailLabel")} <span className="text-red-500">*</span>
-        </Label>
-        <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <Input id={`email${idSuffix}`} type="email" value={formData.email}
-            onChange={(e) => updateForm("email", e.target.value)}
-            placeholder={t("auth.emailPlaceholder")} required className="pl-10 h-12" />
-        </div>
-      </div>
+      <Label htmlFor={`email${idSuffix}`} className="text-sm font-semibold">
+        Email Address <span className="text-red-500">*</span>
+      </Label>
+
+      <Input
+        id={`email${idSuffix}`}
+        type="email"
+        value={formData.email}
+        onChange={(e) => updateForm("email", e.target.value)}
+        placeholder="you@example.com"
+        required
+        className="pl-10 h-12"
+      />
 
       {/* Password */}
       <div className="space-y-2">
         <Label htmlFor={`password${idSuffix}`} className="text-sm font-semibold">
-          {t("auth.passwordLabel")}<span className="text-red-500">*</span>
+          Password<span className="text-red-500">*</span>
         </Label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
           <Input id={`password${idSuffix}`} type={showPassword ? "text" : "password"}
             value={formData.password}
             onChange={(e) => updateForm("password", e.target.value)}
-            placeholder={t("auth.passwordPlaceholder")} required className="pl-10 pr-10 h-12" />
+            placeholder={"Create a strong password"} required className="pl-10 pr-10 h-12" />
           <button type="button" onClick={() => setShowPassword(!showPassword)}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
             {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -252,26 +254,26 @@ export default function Auth() {
         <>
           <div className="space-y-2">
             <Label htmlFor={`name${idSuffix}`} className="text-sm font-semibold">
-              {t("auth.fullNameLabel")} <span className="text-red-500">*</span>
+              FullName <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input id={`name${idSuffix}`} type="text" value={formData.name}
                 onChange={(e) => updateForm("name", e.target.value)}
-                placeholder={t("auth.fullNamePlaceholder")} required className="pl-10 h-12" />
+                placeholder={"John Doe"} required className="pl-10 h-12" />
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor={`username${idSuffix}`} className="text-sm font-semibold">
-              {t("auth.usernameLabel")}<span className="text-red-500">*</span>
+              UserName<span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <AtSign className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input id={`username${idSuffix}`} type="text" value={formData.username}
                 onBlur={handleCheckUsername}
                 onChange={(e) => updateForm("username", e.target.value)}
-                placeholder={t("auth.usernamePlaceholder")} required className="pl-10 h-12" />
+                placeholder={"@xyz123"} required className="pl-10 h-12" />
             </div>
           </div>
 

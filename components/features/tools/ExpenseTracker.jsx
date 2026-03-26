@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 
 import { DollarSign, Plus, Trash2, Globe } from "lucide-react";
+import axios from "axios";
 
 export default function ExpenseTracker() {
   const [expenses, setExpenses] = useState([]);
@@ -27,35 +28,35 @@ export default function ExpenseTracker() {
     CHF: "Fr",
   };
 
-  // ✅ Fetch exchange rates from API route
   useEffect(() => {
-   const fetchRates = async () => {
-  const res = await fetch("/api/tools");
-  const data = await res.json();
-  console.log(data)
-  setExchangeRates(data); 
-  setLoadingRates(false)
-};
+    const fetchRates = async () => {
+      const res = await axios.get("/api/tools");
+      const data = res.data;
+
+      console.log(data);
+      setExchangeRates(data);
+      setLoadingRates(false);
+    };
 
     fetchRates();
   }, []);
 
-const convertCurrency = (amount, fromCurrency, toCurrency) => {
-  if (
-    !exchangeRates ||
-    Object.keys(exchangeRates).length === 0 ||
-    !exchangeRates[fromCurrency] ||
-    !exchangeRates[toCurrency]
-  ) {
-    return amount; // fallback if rates not ready
-  } 
+  const convertCurrency = (amount, fromCurrency, toCurrency) => {
+    if (
+      !exchangeRates ||
+      Object.keys(exchangeRates).length === 0 ||
+      !exchangeRates[fromCurrency] ||
+      !exchangeRates[toCurrency]
+    ) {
+      return amount; // fallback if rates not ready
+    }
 
-  // All rates are relative to EUR
-  // Convert `fromCurrency -> EUR -> toCurrency`
-  const amountInEUR = amount / exchangeRates[fromCurrency]; // convert to EUR first
-  const converted = amountInEUR * exchangeRates[toCurrency]; // then to target
-  return converted;
-};
+    // All rates are relative to EUR
+    // Convert `fromCurrency -> EUR -> toCurrency`
+    const amountInEUR = amount / exchangeRates[fromCurrency]; // convert to EUR first
+    const converted = amountInEUR * exchangeRates[toCurrency]; // then to target
+    return converted;
+  };
 
 
   const addExpense = () => {

@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
+import axios from "axios";
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
 
-    const response = await fetch(
+    const response = await axios.get(
       `https://sandbox.cashfree.com/pg/orders/${orderId}/payments`,
       {
-        method: "GET",
         headers: {
           "x-client-id": process.env.CASHFREE_CLIENT_ID,
           "x-client-secret": process.env.CASHFREE_SECRET_KEY,
@@ -17,7 +17,7 @@ export async function GET(req) {
       }
     );
 
-    const data = await response.json();
+    const data = response.data;
 
     // payments array
     const payment = data?.[0];
@@ -30,7 +30,7 @@ export async function GET(req) {
 
   } catch (error) {
     return NextResponse.json(
-      { error: error.message },
+      { error: error.response?.data || error.message },
       { status: 500 }
     );
   }

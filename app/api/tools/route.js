@@ -15,6 +15,7 @@ export async function GET() {
     }
 
     const data = await res.json();
+    console.log(data)
 
     const topCurrencies = [
       "USD", "EUR", "JPY", "GBP", "AUD", "CAD", "CHF", "CNY",

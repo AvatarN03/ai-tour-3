@@ -7,12 +7,13 @@ import { Bookmark, Loader, Loader2, MapPin, Sparkles, Wand2 } from "lucide-react
 import { toast } from "sonner";
 import { updateDoc, doc, arrayUnion } from "firebase/firestore";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { db } from "@/lib/config/firebase";
 
 import { getTripCategoryEmoji } from "@/lib/utils";
 import { logActivity } from "@/lib/services/firestore";
+import axios from "axios";
 
 
 export default function TripRecommendations() {
@@ -29,19 +30,18 @@ export default function TripRecommendations() {
   }, [user, profile]);
 
   const fetchRecommendations = async () => {
+
+
     setLoading(true);
     try {
-      const response = await fetch("/api/recommendation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.uid,
-          userPreferences: profile.preferences || [],
-        }),
+      const response = await axios.post("/api/recommendation", {
+        userId: user.uid,
+        userPreferences: profile.preferences || [],
       });
 
-      const data = await response.json();
+      const data = response.data;
       setRecommendations(data.recommendations || []);
+
     } catch (error) {
       console.error("Error fetching recommendations:", error);
       toast.error("Failed to fetch recommendations");
@@ -88,7 +88,7 @@ export default function TripRecommendations() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-     <div className="mb-8">
+      <div className="mb-8">
         <h2 className="text-2xl font-bold mb-2 flex justify-start items-center gap-2">
           <Wand2 /> Recommended for You
         </h2>

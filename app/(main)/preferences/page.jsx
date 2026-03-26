@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { doc, getDoc, serverTimestamp, setDoc, writeBatch } from "firebase/firestore";
 import { toast } from "sonner";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { db } from "@/lib/config/firebase";
 import { categories, USERNAME_REGEX } from "@/lib/constants";

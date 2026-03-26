@@ -1,5 +1,6 @@
 import { doc, updateDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/config/firebase";
+import axios from "axios";
 
 export const updatePostAction = async ({ id, post, newImageFile }) => {
   try {
@@ -10,14 +11,9 @@ export const updatePostAction = async ({ id, post, newImageFile }) => {
       const formData = new FormData();
       formData.append("file", newImageFile);
 
-      const res = await fetch("/api/media/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await axios.post("/api/media/upload", formData);
 
-      if (!res.ok) throw new Error("Image upload failed");
-
-      const data = await res.json();
+      const data = res.data;
       finalImageUrl = data?.url || "";
     }
 

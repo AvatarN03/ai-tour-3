@@ -19,7 +19,7 @@ import LocationAccess from "@/hooks/LocationAccess";
 
 import { dashboardQuickstarts } from "@/lib/constants";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 export default function DashboardPage() {
   const { profile, user } = useAuth();

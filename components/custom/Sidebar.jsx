@@ -13,7 +13,7 @@ import Logo from "./Logo";
 
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 
 import { sidebarMenus } from "@/lib/constants";
 import { getUserInitials } from "@/lib/utils/nameInitial";

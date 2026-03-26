@@ -11,7 +11,7 @@ import { Card } from "@/components/ui/card";
 
 import { PAGE_SIZE } from "@/lib/constants";
 
-import { useAuth } from "@/providers/useAuth";
+import { useAuth } from "@/context/useAuth";
 import { useTrip } from "@/hooks/useTrip";
 import { toDate } from "@/lib/utils";
 
@@ -99,7 +99,7 @@ export default function SavedTripsPage() {
         </div>
         <Link href="/trips/create-trip">
           <Button className="w-full sm:w-auto cursor-pointer p-2">
-            <Plus className="w-3 h-3 mr-2" /> Create New Trip
+            <Plus className="w-3 h-3" /> Create New Trip
           </Button>
         </Link>
       </div>

@@ -1,5 +1,7 @@
 "use server";
 
+import axios from "axios";
+
 
 
 const API_KEY = process.env.WEATHER_API_KEY;
@@ -30,9 +32,6 @@ function getWeatherIcon(iconCode) {
   return WEATHER_ICON_MAP[iconCode] ?? "🌡️";
 }
 
-// ---------------------------------------------------------------------------
-// Shared response transformers (eliminates duplication across by-coord / by-city)
-// ---------------------------------------------------------------------------
 
 function transformCurrentWeather(data) {
   return {
@@ -63,22 +62,34 @@ function transformForecast(data) {
   return { name: data.city.name, forecast };
 }
 
-// ---------------------------------------------------------------------------
-// Shared fetch helpers
-// ---------------------------------------------------------------------------
 
 async function fetchWeather(endpoint, params) {
-  const query = new URLSearchParams({ ...params, units: "metric", appid: API_KEY });
-  const res = await fetch(
-    `https://api.openweathermap.org/data/2.5/${endpoint}?${query}`
-  );
-  if (!res.ok) throw new Error(`Weather API error: ${res.status}`);
-  return res.json();
+  try {
+    const res = await axios.get(
+      `https://api.openweathermap.org/data/2.5/${endpoint}`,
+      {
+        params: {
+          ...params,
+          units: "metric",
+          appid: API_KEY,
+        },
+      }
+    );
+
+    return res.data;
+
+  } catch (error) {
+    
+
+    if (error.response) {
+      throw new Error(`Weather API error: ${error.response.status}`);
+    } else {
+
+      throw new Error(`Network error: ${error.message}`);
+    }
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Exported server actions
-// ---------------------------------------------------------------------------
 
 export async function getWeatherByCoords(lat, lon) {
   const data = await fetchWeather("weather", { lat, lon });
