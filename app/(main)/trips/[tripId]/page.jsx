@@ -135,7 +135,7 @@ const TripViewCard = () => {
         <PrintHeader tripName={title} />
 
         {/* Hero Section */}
-        <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white px-6 md:px-8 py-12 md:py-14 print:break-inside-avoid">
+        <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 text-white px-6 md:px-8 py-6 md:py-8 print:break-inside-avoid">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_18%,rgba(212,130,10,0.22)_0%,transparent_58%),radial-gradient(circle_at_12%_82%,rgba(45,125,168,0.22)_0%,transparent_52%)]" />
             <div className="absolute inset-[-50%] bg-[radial-gradient(circle,rgba(255,255,255,0.055)_1px,transparent_1px)] bg-[length:28px_28px] -rotate-6" />

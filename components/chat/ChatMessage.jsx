@@ -22,7 +22,7 @@ export const ChatMessage = ({ type, content, timestamp }) => {
               ? "bg-white/90 backdrop-blur-sm text-gray-800 border border-white/60 rounded-tl-sm font-medium"
               : "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white rounded-tr-sm"
             }`}>
-            <p className=" text-xs md:text-[15px] leading-relaxed whitespace-pre-wrap">{content}</p>
+            <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{content}</p>
           </div>
 
           <span className={`text-[11px] text-gray-500 mt-1.5 px-2 font-medium ${isAi ? "text-left" : "text-right"}`}>

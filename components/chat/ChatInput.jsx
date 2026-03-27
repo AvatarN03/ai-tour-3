@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 
 import { Mic, Send, MicOff } from "lucide-react";
@@ -14,11 +13,19 @@ export const ChatInput = ({ onSend, disabled }) => {
   const finalTranscriptRef = useRef("");
   const valRef = useRef("");
   const isListeningRef = useRef(false);
-  const startTimeRef = useRef(null);      // ← when the session began
-  const LISTEN_TIMEOUT_MS = 10_000;       // ← 10 seconds
+  const startTimeRef = useRef(null);
+  const LISTEN_TIMEOUT_MS = 10_000;
   const textareaRef = useRef(null);
 
   valRef.current = val;
+
+  const prevDisabledRef = useRef(disabled);
+  useEffect(() => {
+    if (prevDisabledRef.current === true && disabled === false) {
+      textareaRef.current?.focus();
+    }
+    prevDisabledRef.current = disabled;
+  }, [disabled]); 
 
   const handleChange = (e) => {
     setVal(e.target.value);
@@ -47,7 +54,7 @@ export const ChatInput = ({ onSend, disabled }) => {
 
     const rec = new SpeechRecognition();
     rec.lang = "en-US";
-    rec.continuous = false;   // avoid Chrome's continuous network bug
+    rec.continuous = false;
     rec.interimResults = true;
     rec.maxAlternatives = 1;
 
@@ -71,7 +78,6 @@ export const ChatInput = ({ onSend, disabled }) => {
     rec.onstart = () => {
       setIsListening(true);
       isListeningRef.current = true;
-      // Record start time only on the very first start, not restarts
       if (!startTimeRef.current) {
         startTimeRef.current = Date.now();
       }
@@ -86,14 +92,12 @@ export const ChatInput = ({ onSend, disabled }) => {
       const elapsed = Date.now() - (startTimeRef.current ?? Date.now());
 
       if (elapsed < LISTEN_TIMEOUT_MS) {
-        // ✅ Still within the 10s window — restart seamlessly
         try { rec.start(); } catch (_) {
           setIsListening(false);
           isListeningRef.current = false;
           startTimeRef.current = null;
         }
       } else {
-        // ✅ 10 seconds elapsed — auto-stop
         setIsListening(false);
         isListeningRef.current = false;
         startTimeRef.current = null;
@@ -102,11 +106,7 @@ export const ChatInput = ({ onSend, disabled }) => {
 
     rec.onerror = (e) => {
       console.error("Speech error:", e.error);
-      if (e.error === "no-speech" || e.error === "network") {
-        // These are recoverable — onend will handle the restart logic
-        return;
-      }
-      // Non-recoverable errors (e.g. not-allowed, aborted)
+      if (e.error === "no-speech" || e.error === "network") return;
       setIsListening(false);
       isListeningRef.current = false;
       startTimeRef.current = null;
@@ -129,7 +129,7 @@ export const ChatInput = ({ onSend, disabled }) => {
       stopListening();
     } else {
       finalTranscriptRef.current = valRef.current;
-      startTimeRef.current = null; // reset so onstart sets a fresh timestamp
+      startTimeRef.current = null;
       isListeningRef.current = true;
       try { recognitionRef.current?.start(); } catch (e) {
         console.error("Speech recognition start error:", e);
@@ -143,7 +143,12 @@ export const ChatInput = ({ onSend, disabled }) => {
     onSend(val);
     setVal("");
     finalTranscriptRef.current = "";
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+    // Re-focus the textarea so the user can type the next message immediately
+    // Use a short timeout to let React flush the state update first
+    setTimeout(() => textareaRef.current?.focus(), 0);
   };
 
   return (
@@ -153,8 +158,8 @@ export const ChatInput = ({ onSend, disabled }) => {
         variant="ghost"
         size="icon"
         className={`rounded-full bg-purple-500 hover:bg-gray-100/50 w-11 h-11 shrink-0 transition-all ${isListening
-            ? "text-red-500 bg-red-100/80 animate-pulse shadow-inner"
-            : "text-gray-200 hover:text-purple-600"
+          ? "text-red-500 bg-red-100/80 animate-pulse shadow-inner"
+          : "text-gray-200 hover:text-purple-600"
           }`}
         type="button"
       >
@@ -174,7 +179,7 @@ export const ChatInput = ({ onSend, disabled }) => {
         placeholder={
           isListening ? "Listening... (Speak now)" : "Ask me to plan your next adventure..."
         }
-        className="flex-1 resize-none  max-h-[150px] dark:bg-gray-100 border-none focus:outline-none focus:ring-0 text-xs md:text-[15.5px] placeholder:text-gray-400 py-2 md:py-3 text-gray-800 font-medium overflow-y-auto"
+        className="flex-1 resize-none max-h-[150px] dark:bg-gray-100 border-none focus:outline-none focus:ring-0 text-xs md:text-[15.5px] placeholder:text-gray-400 py-2 md:py-3 text-gray-800 font-medium overflow-y-auto"
         disabled={disabled}
       />
 
