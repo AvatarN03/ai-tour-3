@@ -283,6 +283,7 @@ export default function AiPage() {
 
       {/* ── Main Chat Area ──────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col relative w-full overflow-hidden">
+        <p className="text-xs bg-red-500 p-1 capitalize text-center tracking-wider text-gray-200">Note: provide info within 2 prompts and if failed try later(after 6hrs)</p>
 
         {/* Mobile top bar – shows toggle button */}
         <div className="flex items-center justify-between px-3 pt-2 pb-0 md:hidden">
@@ -294,7 +295,7 @@ export default function AiPage() {
             <PanelRightOpen className="w-5 h-5" />
           </button>
           <span className="text-xs text-muted-foreground/60 select-none">
-            Swipe right for chats
+            Swipe left for chats
           </span>
         </div>
 

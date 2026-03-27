@@ -9,7 +9,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 import { CURRENCY_OPTIONS } from "@/lib/constants";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_APIKEY);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_TEXT_APIKEY);
 
 const generationConfig = {
   temperature: 1,

@@ -3,13 +3,13 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generateTravelPlan } from "@/actions/trip/ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_APIKEY);
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GEMINI_CHAT_APIKEY);
 
 const generationConfig = {
   temperature: 0.8,
   topP: 0.95,
   topK: 64,
-  maxOutputTokens: 2048,
+  maxOutputTokens: 512
 };
 
 /**
@@ -20,12 +20,29 @@ const generationConfig = {
  * - Gemini emits __FIELDS_JSON__{...}__READY_TO_GENERATE__ when all fields are known
  * - We parse that JSON directly (no regex on conversation) then call generateTravelPlan
  */
+
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
+async function sendWithRetry(chat, msg, retries = 3) {
+  try {
+    return await chat.sendMessage(msg);
+  } catch (err) {
+    if (err.status === 429 && retries > 0) {
+      console.log("Retrying due to rate limit...");
+      await delay(2000);
+      return sendWithRetry(chat, msg, retries - 1);
+    }
+    throw err;
+  }
+}
+
+
 export async function POST(req) {
   try {
     const body = await req.json();
     const { messages = [], userPreferences = [] } = body;
 
-    const apiKey = process.env.GOOGLE_GEMINI_APIKEY;
+    const apiKey = process.env.GOOGLE_GEMINI_CHAT_APIKEY;
     if (!apiKey) {
       return NextResponse.json({ error: "Gemini API Key missing" }, { status: 500 });
     }
@@ -73,7 +90,7 @@ __FIELDS_JSON__{"destination":"Bali, Indonesia","source":"Mumbai, India","days":
     // ── Build Gemini chat history ─────────────────────────────────────────────
     // Gemini requires history to start with role 'user'.
     // Exclude the last message (sent via sendMessage) and drop leading model turns.
-    const rawHistory = messages.slice(0, -1).map((m) => ({
+    const rawHistory = messages.slice(-6, -1).map((m) => ({
       role: m.role === "user" ? "user" : "model",
       parts: [{ text: m.content || "" }],
     }));
@@ -90,7 +107,7 @@ __FIELDS_JSON__{"destination":"Bali, Indonesia","source":"Mumbai, India","days":
     const chat = model.startChat({ history });
 
     const lastUserMsg = messages[messages.length - 1]?.content || "";
-    const result = await chat.sendMessage(lastUserMsg);
+    const result = await sendWithRetry(chat, lastUserMsg);
     const rawReply =
       typeof result.response?.text === "function"
         ? await result.response.text()
