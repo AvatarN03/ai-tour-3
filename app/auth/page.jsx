@@ -10,13 +10,14 @@ import {
   Lock, Eye, EyeOff, User, ChevronDown, AtSign,
 } from "lucide-react";
 
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
+import { Accessibility } from "@/components/custom/Accessibility";
+
 import { useAuth } from "@/context/useAuth";
 import { useAuthActions } from "@/hooks/useAuthActions";
 
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import ThemeToggle from "@/components/custom/ThemeToggle";
-import LanguageSelector from "@/components/custom/LanguageSelector";
 
 import { availablePreferences } from "@/lib/constants";
 
@@ -329,8 +330,7 @@ export default function Auth() {
   return (
     <div className="min-h-screen animated-gradient flex items-center justify-center p-4">
       <div className="fixed top-4 right-4 z-50 flex items-center gap-3">
-        <LanguageSelector />
-        <ThemeToggle />
+        <Accessibility />
       </div>
 
       {/* ── Desktop ─────────────────────────────────────────────────────────── */}

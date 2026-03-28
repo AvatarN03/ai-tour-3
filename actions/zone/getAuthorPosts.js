@@ -1,4 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const getAuthorPostsAction = async ({ authorId }) => {

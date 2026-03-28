@@ -18,9 +18,9 @@ const HeaderWeather = () => {
         return (
             <button
                 onClick={getCurrentLocation}
-                className="flex items-center gap-1.5 bg-accent dark:bg-gray-700 hover:bg-muted border border-border rounded-md px-3 py-2.5 text-sm transition-colors cursor-pointer"
+                className="flex items-center bg-accent dark:bg-gray-700 hover:bg-muted border border-border rounded-md p-2 text-sm transition-colors cursor-pointer"
             >
-                <span className="text-base leading-none">📍</span>
+                <span className="text-xs leading-none">📍</span>
                 <span className="text-muted-foreground text-xs">Get weather</span>
             </button>
         );

@@ -9,10 +9,10 @@ import { Calendar, Clock, DollarSign, MapPin, Plus, ChevronLeft, ChevronRight } 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import { PAGE_SIZE } from "@/lib/constants";
-
 import { useAuth } from "@/context/useAuth";
 import { useTrip } from "@/hooks/useTrip";
+
+import { PAGE_SIZE } from "@/lib/constants";
 import { toDate } from "@/lib/utils";
 
 
@@ -27,7 +27,7 @@ export default function SavedTripsPage() {
   const [totalCount, setTotalCount] = useState(0);
   const { getTrips, loading } = useTrip();
 
-  // Stack of page cursors: index 0 = page 1 start (null), index 1 = page 2 start, etc.
+ 
   const pageCursors = useRef([null]);
 
   const fetchTrips = async (pageNum = 1, search = "") => {
@@ -54,7 +54,6 @@ export default function SavedTripsPage() {
       pageCursors.current[pageNum] = res.lastDoc;
     }
 
-    // Optional: total count (keep your existing logic or optimize later)
   };
 
   useEffect(() => {
@@ -77,7 +76,7 @@ export default function SavedTripsPage() {
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
   const isSearchMode = searchQuery.trim().length > 0;
 
-  const getCurrencySymbol = (currency = "USD") => {
+  const getCurrencySymbol = (currency = "INR") => {
     const map = {
       USD: "$", EUR: "€", INR: "₹", GBP: "£",
       JPY: "¥", AUD: "A$", CAD: "C$", SGD: "S$", CNY: "¥",

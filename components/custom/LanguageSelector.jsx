@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+
 import { Languages } from "lucide-react";
+
 import GoogleTranslate from "./GoogleTranslation";
 
 const LanguageSelector = () => {

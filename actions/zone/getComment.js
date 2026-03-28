@@ -1,4 +1,5 @@
 import { doc, getDoc } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const getCommentsAction = async ({ postId }) => {

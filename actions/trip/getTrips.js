@@ -7,6 +7,7 @@ import {
   limit,
   startAfter,
 } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const getTripsAction = async ({

@@ -1,6 +1,7 @@
 import { doc, updateDoc, Timestamp } from "firebase/firestore";
-import { db } from "@/lib/config/firebase";
 import axios from "axios";
+
+import { db } from "@/lib/config/firebase";
 
 export const updatePostAction = async ({ id, post, newImageFile }) => {
   try {

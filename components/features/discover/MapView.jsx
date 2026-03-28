@@ -1,10 +1,10 @@
 'use client'
 
+import { THUNDERFOREST_KEY } from '@/lib/constants'
 import { useEffect, useRef, useImperativeHandle, forwardRef, useState } from 'react'
 
-const THUNDERFOREST_KEY = '9f18e18bf6674e96abaefd4a73106e80'
 
-// ── Travel modes ──────────────────────────────────────────────────────────────
+
 const MODES = [
   { id: 'flight', icon: '✈️', label: 'Flight', color: '#7c3aed', weight: 3, dash: '10,7' },
   { id: 'drive',  icon: '🚗', label: 'Drive',  color: '#2563eb', weight: 5, dash: null   },
@@ -257,8 +257,8 @@ const MapView = forwardRef(function MapView({ className = '' }, ref) {
   const activeModeData = MODES.find(m => m.id === activeMode)
 
   return (
-    <div className={`relative rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 ${className}`}
-         style={{ minHeight: '520px' }}>
+    <div className={`relative rounded-xl h-[350px] md:h-[520px] overflow-hidden border border-gray-200 dark:border-gray-700 ${className}`}
+        >
 
       {/* Leaflet map container */}
       <div ref={containerRef} className="absolute inset-0" />

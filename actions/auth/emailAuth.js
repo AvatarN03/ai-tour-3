@@ -3,6 +3,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { doc, runTransaction, serverTimestamp } from "firebase/firestore";
+
 import { auth, db } from "@/lib/config/firebase";
 
 /**

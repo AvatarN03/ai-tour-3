@@ -1,7 +1,8 @@
 import { doc, setDoc, Timestamp } from "firebase/firestore";
+import axios from "axios";
+
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
-import axios from "axios";
 
 export const createPostAction = async ({ post, profile }) => {
   try {

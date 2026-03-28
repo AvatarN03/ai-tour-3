@@ -11,7 +11,7 @@ import clsx from "clsx";
 import ProfileCard from "./ProfileCard";
 import Logo from "./Logo";
 
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { useAuth } from "@/context/useAuth";
 

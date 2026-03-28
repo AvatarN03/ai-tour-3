@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Bookmark, Loader, Loader2, MapPin, Sparkles, Wand2 } from "lucide-react";
 import { toast } from "sonner";
 import { updateDoc, doc, arrayUnion } from "firebase/firestore";
+import axios from "axios";
 
 import { useAuth } from "@/context/useAuth";
 
@@ -13,7 +14,6 @@ import { db } from "@/lib/config/firebase";
 
 import { getTripCategoryEmoji } from "@/lib/utils";
 import { logActivity } from "@/lib/services/firestore";
-import axios from "axios";
 
 
 export default function TripRecommendations() {

@@ -4,11 +4,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Printer, Trash } from "lucide-react";
 import { toast } from "sonner";
-
-import { ViewTripLoading } from "@/components/custom/Loading";
-import { useAuth } from "@/context/useAuth";
-import { useTrip } from "@/hooks/useTrip";
 import { useReactToPrint } from "react-to-print";
+
+import { Button } from "@/components/ui/button";
+import { ViewTripLoading } from "@/components/custom/Loading";
+
 import PrintHeader from "@/components/features/trips/PrintHeader";
 import HeroSection from "@/components/features/trips/HeroSection";
 import AccommodationSection from "@/components/features/trips/AccommodationSection";
@@ -18,7 +18,11 @@ import CuisineSection from "@/components/features/trips/CuisineSection";
 import SafetySection from "@/components/features/trips/SafetySection";
 import PackingSection from "@/components/features/trips/PackingSection";
 import InfoBannersSection from "@/components/features/trips/InfoBannersSection";
-import { Button } from "@/components/ui/button";
+
+import { useAuth } from "@/context/useAuth";
+
+import { useTrip } from "@/hooks/useTrip";
+
 import { CURRENCY_SYMBOLS, buildHeroStats } from "@/lib/constants/tripView";
 
 const TripViewCard = () => {

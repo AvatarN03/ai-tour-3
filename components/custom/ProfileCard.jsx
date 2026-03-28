@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import axios from "axios";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import PaymentButton from "../payment/PaymentButton";
 
@@ -39,7 +40,6 @@ import { preferenceColors } from "@/lib/constants";
 import { formatFirestoreDate } from "@/lib/utils";
 import { db } from "@/lib/config/firebase";
 import { logActivity } from "@/lib/services/firestore";
-import axios from "axios";
 
 
 const ProfileCard = ({ modal, setModal }) => {

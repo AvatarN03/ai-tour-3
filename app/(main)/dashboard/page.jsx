@@ -12,14 +12,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
-import TripRecommendations from "@/components/features/dashboard/Recommendation";
+// import TripRecommendations from "@/components/features/dashboard/Recommendation";
 import RecentActivity from "@/components/features/dashboard/RecentActivity";
-
 import LocationAccess from "@/components/features/dashboard/LocationAccess";
 
-import { dashboardQuickstarts } from "@/lib/constants";
-
 import { useAuth } from "@/context/useAuth";
+
+import { dashboardQuickstarts } from "@/lib/constants";
 
 export default function DashboardPage() {
   const { profile, user } = useAuth();
@@ -111,11 +110,11 @@ export default function DashboardPage() {
       </div>
 
       {/* Recommendations */}
-      <TripRecommendations />
+      {/* <TripRecommendations /> */}
 
       {/* Recent Activity */}
       <div>
-        <div className="p-4 md:p-8 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-200 dark:border-gray-700">
+        <div className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 border-2 border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
               <Clock className="w-6 h-6 text-white" />

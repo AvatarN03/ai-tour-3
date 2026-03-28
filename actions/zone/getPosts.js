@@ -1,4 +1,5 @@
 import { collection, getDocs } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const getPostsAction = async () => {

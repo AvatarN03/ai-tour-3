@@ -1,4 +1,5 @@
 import { doc, serverTimestamp, writeBatch } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const savePreferencesAction = async ({ userId, username, preferences }) => {

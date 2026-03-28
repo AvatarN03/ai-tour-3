@@ -13,7 +13,6 @@ import {
   PanelRightOpen,
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { ChatMessage } from "@/components/chat/ChatMessage";
@@ -25,8 +24,7 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { useAuth } from "@/context/useAuth";
 import { useAiChat } from "@/hooks/useAiChat";
 
-// ─── Swipe threshold (px) to open/close the sidebar ────────────────────────
-const SWIPE_THRESHOLD = 60;
+import { SWIPE_THRESHOLD } from "@/lib/constants";
 
 export default function AiPage() {
   const { user, profile } = useAuth();
@@ -49,23 +47,22 @@ export default function AiPage() {
 
   const scrollRef = useRef(null);
 
-  // ── Mobile sidebar state ──────────────────────────────────────────────────
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
-  // Touch tracking refs (don't need re-renders)
+
   const touchStartX = useRef(null);
   const touchStartY = useRef(null);
 
-  // ── Inline rename state ───────────────────────────────────────────────────
+
   const [editingChatId, setEditingChatId] = useState(null);
   const [editingChatTitle, setEditingChatTitle] = useState("");
 
-  // ── Fetch recent chats ────────────────────────────────────────────────────
+
   useEffect(() => {
     fetchRecentChats();
   }, [user, currentChatId, fetchRecentChats]);
 
-  // ── Auto-scroll ───────────────────────────────────────────────────────────
+
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
@@ -93,11 +90,11 @@ export default function AiPage() {
         return;
       }
 
-      if (!mobileSidebarOpen && dx > SWIPE_THRESHOLD) {
-        // Swipe RIGHT → open
+      if (!mobileSidebarOpen && dx < -SWIPE_THRESHOLD) {
+        // Swipe LEFT → open
         setMobileSidebarOpen(true);
-      } else if (mobileSidebarOpen && dx < -SWIPE_THRESHOLD) {
-        // Swipe LEFT → close
+      } else if (mobileSidebarOpen && dx > SWIPE_THRESHOLD) {
+        // Swipe RIGHT → close
         setMobileSidebarOpen(false);
       }
 
@@ -107,7 +104,7 @@ export default function AiPage() {
     [mobileSidebarOpen]
   );
 
-  // ── Rename helpers ────────────────────────────────────────────────────────
+
   const startEditingChat = (chat, e) => {
     e.stopPropagation();
     setEditingChatId(chat.id);
@@ -131,13 +128,13 @@ export default function AiPage() {
     setEditingChatTitle("");
   };
 
-  // ── Delete helper ─────────────────────────────────────────────────────────
+
   const handleDeleteChat = async (e, chatId) => {
     e.stopPropagation();
     await deleteChat(chatId);
   };
 
-  // ── Load chat + close sidebar on mobile ───────────────────────────────────
+
   const handleLoadChat = (chat) => {
     if (editingChatId !== chat.id) {
       loadChat(chat);
@@ -145,10 +142,10 @@ export default function AiPage() {
     }
   };
 
-  // ── Shared sidebar content ────────────────────────────────────────────────
+
   const SidebarContent = () => (
     <>
-      {/* New Chat button */}
+
       <div className="p-4 border-b border-gray-200/50 dark:border-gray-800/50">
         <Button
           onClick={() => {
@@ -173,19 +170,17 @@ export default function AiPage() {
           <div
             key={chat.id}
             onClick={() => handleLoadChat(chat)}
-            className={`w-full text-left p-3 rounded-xl text-sm flex items-start gap-3 transition-all duration-200 group cursor-pointer ${
-              currentChatId === chat.id
+            className={`w-full text-left p-3 rounded-xl text-sm flex items-start gap-3 transition-all duration-200 group cursor-pointer ${currentChatId === chat.id
                 ? "bg-white dark:bg-gray-800 shadow-md border-transparent text-foreground relative"
                 : "hover:bg-white/60 dark:hover:bg-gray-800/60 text-muted-foreground hover:text-foreground border border-transparent hover:border-gray-200 dark:hover:border-gray-700 relative"
-            }`}
+              }`}
           >
             {/* Icon */}
             <div
-              className={`p-2 rounded-lg shrink-0 mt-0.5 ${
-                currentChatId === chat.id
+              className={`p-2 rounded-lg shrink-0 mt-0.5 ${currentChatId === chat.id
                   ? "bg-primary/10 text-primary"
                   : "bg-gray-100 dark:bg-gray-800 group-hover:bg-primary/5 group-hover:text-primary transition-colors"
-              }`}
+                }`}
             >
               <MessageSquare className="w-4 h-4" />
             </div>
@@ -273,10 +268,10 @@ export default function AiPage() {
     </>
   );
 
-  // ── Render ────────────────────────────────────────────────────────────────
+
   return (
     <div
-      className="flex h-[calc(100lvh-130px)] bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 font-sans rounded-sm overflow-hidden relative"
+      className="flex h-[calc(100dvh-80px)] md:h-screen bg-gradient-to-br dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 font-sans rounded-sm overflow-hidden relative"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >

@@ -1,10 +1,17 @@
 "use client";
 
-import React, { useRef } from 'react';
+import  { useRef } from 'react';
+
 import { useForm, ValidationError } from '@formspree/react';
 import { toast } from 'sonner';
-import { useAuth } from '@/context/useAuth';
 import { ArrowRight } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+import { useAuth } from '@/context/useAuth';
 
 const Contact = () => {
   const [state, handleSubmit] = useForm(process.env.NEXT_PUBLIC_FORMSPREE_ID);
@@ -34,9 +41,9 @@ const Contact = () => {
 
           <form ref={formRef} onSubmit={onSubmit} className='flex flex-col space-y-7 mt-12'>
 
-            <label className='space-y-2 md:space-y-3'>
+            <Label className='space-y-2 md:space-y-3'>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Full Name:</span>
-              <input
+              <Input
                 type="text"
                 name="name"
                 required
@@ -46,11 +53,11 @@ const Contact = () => {
               />
               <ValidationError prefix="Name" field="name" errors={state.errors}
                 className="text-red-400 text-sm" />
-            </label>
+            </Label>
 
-            <label className='space-y-3'>
+            <Label className='space-y-3'>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Email:</span>
-              <input
+              <Input
                 type="email"
                 name="email"
                 defaultValue={profile?.email}
@@ -60,11 +67,11 @@ const Contact = () => {
               />
               <ValidationError prefix="Email" field="email" errors={state.errors}
                 className="text-red-400 text-sm" />
-            </label>
+            </Label>
 
-            <label className='space-y-3'>
+            <Label className='space-y-3'>
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Your Message:</span>
-              <textarea
+              <Textarea
                 name="message"
                 id="message"
                 rows={5}
@@ -74,12 +81,12 @@ const Contact = () => {
               />
               <ValidationError prefix="Message" field="message" errors={state.errors}
                 className="text-red-400 text-sm" />
-            </label>
+            </Label>
 
-            <button className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={state.submitting}>
+            <Button className="w-full inline-flex items-center justify-center gap-2  disabled:opacity-50 disabled:cursor-not-allowed" type="submit" disabled={state.submitting}>
               {state.submitting ? "Sending..." : "Send Message"}
               <ArrowRight className='w-4 h-4' />
-            </button>
+            </Button>
 
           </form>
         </div>

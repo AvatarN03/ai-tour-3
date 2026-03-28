@@ -1,5 +1,5 @@
+
 import AboutSection from '@/components/Marketing/AboutSection'
-import React from 'react'
 
 const AboutUs = () => {
     return (

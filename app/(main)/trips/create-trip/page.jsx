@@ -5,15 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
 import { GenPlanLoading } from "@/components/custom/Loading";
-import { useAuth } from "@/context/useAuth";
-import { useTrip } from "@/hooks/useTrip";
-
 import BasicInfoSection from "@/components/features/trips/BasicInfoSection";
 import LocationSection from "@/components/features/trips/LocationSection";
 import TripDetailsSection from "@/components/features/trips/TripDetailsSection";
 import InterestsSection from "@/components/features/trips/InterestsSection";
 import AdditionalInfoSection from "@/components/features/trips/AdditionalInfoSection";
 import FormActions from "@/components/features/trips/FormActions";
+
+import { useAuth } from "@/context/useAuth";
+
+import { useTrip } from "@/hooks/useTrip";
 
 import { initialForm } from "@/lib/constants/trip";
 import { validateForm } from "@/lib/validation/tripForm.js";
@@ -31,8 +32,8 @@ const CreateTripForm = () => {
   // useMemo so this only runs once on mount, not on every render
   const prefilled = useMemo(
     () => buildInitialFormFromParams(searchParams),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [] // intentionally empty — we only want mount-time values
+    
+    [] 
   );
 
   const [formData, setFormData] = useState(prefilled);
@@ -42,7 +43,7 @@ const CreateTripForm = () => {
   const { createTrip, loading, generating } = useTrip();
   const router                  = useRouter();
 
-  // ── Handlers ───────────────────────────────────────────────────────────────
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -87,7 +88,7 @@ const CreateTripForm = () => {
 
   if (generating) return <GenPlanLoading />;
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+
   return (
     <div className="bg-gradient-to-br w-full from-blue-200 via-blue-300 to-purple-500 dark:from-blue-500 dark:via-blue-800 dark:to-purple-900 py-4 px-2 sm:px-6 rounded-md">
       <div className="max-w-7xl mx-auto overflow-y-auto">

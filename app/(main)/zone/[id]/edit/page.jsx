@@ -4,15 +4,16 @@ import { useRef, useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 
 import { X, Bold, Italic, Link, ArrowLeft, Upload } from 'lucide-react';
-
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 
-import { categories } from '@/lib/constants'
 import { useBlog } from '@/hooks/useBlog';
+
+import { categories } from '@/lib/constants'
+
 
 export default function EditPostPage() {
     const router = useRouter()

@@ -1,11 +1,11 @@
-// actions/updateComment.js
 
 import { doc, getDoc, updateDoc, Timestamp } from "firebase/firestore";
+
 import { db } from "@/lib/config/firebase";
 
 export const updateCommentAction = async ({ postId, commentId, text }) => {
   try {
-    const ref = doc(db, "blog_comments", postId);  // ✅ matches your app's structure
+    const ref = doc(db, "blog_comments", postId);  
     const snap = await getDoc(ref);
 
     if (!snap.exists()) return { success: false, error: "Comments doc not found" };
