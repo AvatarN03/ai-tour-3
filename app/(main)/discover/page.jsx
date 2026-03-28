@@ -1,228 +1,243 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
-import { useState } from 'react'
+import dynamic from 'next/dynamic'
+import { useRouter } from 'next/navigation'
+import { useState, useRef, useCallback } from 'react'
 
-// import MapStub from '../../../components/MapStub'
+import { Button }   from '@/components/ui/button'
+import { Card }     from '@/components/ui/card'
+import { FieldLabel } from '@/components/features/trips/FieldLabel'
+
+// Shared constants — same source as CreateTripForm, no duplication
+import { categories, initialForm } from '@/lib/constants'
+import LocationComplete from '@/components/features/trips/LocationComplete'
+
+
+
+// Leaflet must never SSR
+const MapView = dynamic(() => import('@/components/features/discover/MapView'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[520px] rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400 border border-gray-200 dark:border-gray-700 text-sm">
+      Loading map…
+    </div>
+  ),
+})
+
+// Only the fields relevant to discovery (subset of initialForm)
+const DISCOVER_FIELDS = {
+  source:      initialForm.source,
+  destination: initialForm.destination,
+  category:    initialForm.category,
+  budget:      initialForm.budget,
+  days:        initialForm.days,
+  persons:     initialForm.persons,
+}
 
 export default function DiscoverPage() {
-  const [searchFilters, setSearchFilters] = useState({
-    source: '',
-    destination: '',
-    category: '',
-    budget: '',
-    days: '',
-    persons: ''
-  })
+  const router = useRouter()
+  const mapRef = useRef(null)
 
-  const [searchResults] = useState([
-    {
-      id: 1,
-      title: 'Paris City Break',
-      destination: 'Paris, France',
-      category: 'City',
-      budget: '$800',
-      days: '3',
-      rating: 4.8,
-      image: '🗼'
-    },
-    {
-      id: 2,
-      title: 'Tropical Paradise',
-      destination: 'Bali, Indonesia',
-      category: 'Beach',
-      budget: '$1200',
-      days: '7',
-      rating: 4.9,
-      image: '🏖️'
-    },
-    {
-      id: 3,
-      title: 'Alpine Adventure',
-      destination: 'Swiss Alps',
-      category: 'Mountain',
-      budget: '$1500',
-      days: '5',
-      rating: 4.7,
-      image: '🏔️'
+  const [filters, setFilters]   = useState(DISCOVER_FIELDS)
+  const [loading, setLoading]   = useState(false)
+  const [searched, setSearched] = useState(false)
+  const [error, setError]       = useState('')
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+  // Works for both <input>/<select> onChange AND LocationComplete's synthetic event
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target
+    setFilters((prev) => ({ ...prev, [name]: value }))
+    if (error) setError('')
+  }, [error])
+
+  const handleSearch = useCallback(async () => {
+    const { source, destination } = filters
+    if (!source.trim() || !destination.trim()) {
+      setError('Please enter both a departure city and a destination.')
+      return
     }
-  ])
+    setError('')
+    setLoading(true)
+    setSearched(false)
+    try {
+      await mapRef.current?.showRoute(source.trim(), destination.trim())
+      setSearched(true)
+    } catch (err) {
+      console.error(err)
+      setError('Could not load the route. Please check the place names and try again.')
+    } finally {
+      setLoading(false)
+    }
+  }, [filters])
 
-  const handleFilterChange = (e) => {
-    setSearchFilters({
-      ...searchFilters,
-      [e.target.name]: e.target.value
-    })
+  const handleClear = () => {
+    setFilters(DISCOVER_FIELDS)
+    setSearched(false)
+    setError('')
+    mapRef.current?.clearRoute()
   }
 
+  // Passes all non-empty filters as query params — keys already match initialForm
+  const handleProceed = () => {
+    const params = new URLSearchParams()
+    Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, String(v)) })
+    router.push(`/trips/create-trip?${params.toString()}`)
+  }
+
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           Discover Destinations
         </h1>
         <p className="text-gray-600 dark:text-gray-400 mt-1">
-          Find your perfect destination with AI-powered recommendations
+          Enter your route and preferences — the map will show the way.
         </p>
       </div>
 
-      {/* Search Filters */}
-      <Card className="p-6">
+      {/* Filters */}
+      <Card className="p-6 shadow-lg border-2 border-gray-100 dark:border-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          Search Filters
+          Trip Filters
         </h3>
-        <div className="grid md:grid-cols-3 gap-4">
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* From — reuses LocationComplete exactly as in CreateTripForm */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              From
-            </label>
-            <input
-              type="text"
+            <FieldLabel label="From" required />
+            <LocationComplete
               name="source"
-              value={searchFilters.source}
-              onChange={handleFilterChange}
-              placeholder="Departure city"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={filters.source}
+              onChange={handleChange}
+              placeholder="e.g. Mumbai"
+              error={error && !filters.source ? 'Required' : ''}
             />
           </div>
+
+          {/* To */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              To
-            </label>
-            <input
-              type="text"
+            <FieldLabel label="To" required />
+            <LocationComplete
               name="destination"
-              value={searchFilters.destination}
-              onChange={handleFilterChange}
-              placeholder="Destination"
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={filters.destination}
+              onChange={handleChange}
+              placeholder="e.g. Paris"
+              error={error && !filters.destination ? 'Required' : ''}
             />
           </div>
+
+          {/* Category — same `categories` array as CreateTripForm */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Category
-            </label>
+            <FieldLabel label="Category" />
             <select
               name="category"
-              value={searchFilters.category}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={filters.category}
+              onChange={handleChange}
+              className="w-full px-3 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">All Categories</option>
-              <option value="beach">Beach</option>
-              <option value="city">City</option>
-              <option value="mountain">Mountain</option>
-              <option value="adventure">Adventure</option>
-              <option value="cultural">Cultural</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
           </div>
+
+          {/* Budget */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Budget
-            </label>
-            <select
+            <FieldLabel label="Budget (approx)" />
+            <input
+              type="number"
               name="budget"
-              value={searchFilters.budget}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="">Any Budget</option>
-              <option value="500">Under $500</option>
-              <option value="1000">Under $1000</option>
-              <option value="2000">Under $2000</option>
-              <option value="5000">Under $5000</option>
-            </select>
+              value={filters.budget}
+              onChange={handleChange}
+              min="0"
+              placeholder="e.g. 50000"
+              className="w-full px-3 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
+
+          {/* Duration */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Duration
-            </label>
-            <select
+            <FieldLabel label="Duration (days)" />
+            <input
+              type="number"
               name="days"
-              value={searchFilters.days}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="">Any Duration</option>
-              <option value="1">1-2 days</option>
-              <option value="3">3-5 days</option>
-              <option value="7">1 week</option>
-              <option value="14">2 weeks</option>
-            </select>
+              value={filters.days}
+              onChange={handleChange}
+              min="1"
+              max="7"
+              placeholder="e.g. 3"
+              className="w-full px-3 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
+
+          {/* Travelers */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Travelers
-            </label>
-            <select
+            <FieldLabel label="Travelers" />
+            <input
+              type="number"
               name="persons"
-              value={searchFilters.persons}
-              onChange={handleFilterChange}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="">Any Number</option>
-              <option value="1">1 person</option>
-              <option value="2">2 people</option>
-              <option value="4">3-4 people</option>
-              <option value="6">5+ people</option>
-            </select>
+              value={filters.persons}
+              onChange={handleChange}
+              min="1"
+              max="10"
+              placeholder="e.g. 2"
+              className="w-full px-3 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
         </div>
-        <div className="mt-4">
-          <Button className="mr-2">
-            Search Destinations
+
+        {error && (
+          <p className="mt-3 text-sm text-red-600 dark:text-red-400">{error}</p>
+        )}
+
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Button onClick={handleSearch} disabled={loading}>
+            {loading ? 'Searching…' : 'Search & Show Route'}
           </Button>
-          <Button variant="outline">
-            Clear Filters
+          <Button variant="outline" onClick={handleClear} disabled={loading}>
+            Clear
           </Button>
         </div>
       </Card>
 
-      {/* Map View */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Map View
-          </h3>
-          {/* <MapStub className="h-96" /> */}
-        </div>
-
-        {/* Search Results */}
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Search Results
-          </h3>
-          <div className="space-y-4">
-            {searchResults.map((result) => (
-              <Card key={result.id} className="p-4">
-                <div className="flex items-center space-x-4">
-                  <div className="text-3xl">{result.image}</div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-gray-900 dark:text-white">
-                      {result.title}
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm">
-                      {result.destination}
-                    </p>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500 dark:text-gray-400">
-                      <span>{result.category}</span>
-                      <span>{result.budget}</span>
-                      <span>{result.days} days</span>
-                      <span>⭐ {result.rating}</span>
-                    </div>
-                  </div>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+      {/* Full-width map */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+          Route Map
+        </h3>
+        <MapView ref={mapRef} className="w-full h-[520px]" />
       </div>
+
+      {/* Proceed CTA — only shown after a successful route search */}
+      {searched && (
+        <Card className="p-5 border-blue-300 dark:border-blue-600 bg-blue-50 dark:bg-blue-950">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white">
+                ✈️ &nbsp;{filters.source} → {filters.destination}
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                {[
+                  filters.category && `${filters.category}`,
+                  filters.days     && `${filters.days} days`,
+                  filters.budget   && `Budget: ${filters.budget}`,
+                  filters.persons  && `${filters.persons} traveler(s)`,
+                ].filter(Boolean).join(' · ') || 'Ready to plan your trip'}
+              </p>
+            </div>
+            <Button
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              onClick={handleProceed}
+            >
+              Plan this Trip →
+            </Button>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }
-

@@ -7,7 +7,7 @@ import { Languages, Loader2 } from "lucide-react";
 
 import Header from "@/components/custom/Header";
 import Sidebar from "@/components/custom/Sidebar";
-import GoogleTranslate from "@/components/features/GoogleTranslation";
+import GoogleTranslate from "@/components/custom/GoogleTranslation";
 
 import { useAuth } from "@/context/useAuth";
 import { WeatherProvider } from "@/context/useWeather";

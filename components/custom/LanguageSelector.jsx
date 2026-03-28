@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Languages } from "lucide-react";
-import GoogleTranslate from "../features/GoogleTranslation";
+import GoogleTranslate from "./GoogleTranslation";
 
 const LanguageSelector = () => {
   const [isTranslateShow, setTranslateShow] = useState(false);

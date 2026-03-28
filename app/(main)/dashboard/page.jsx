@@ -15,7 +15,7 @@ import { Card } from "@/components/ui/card";
 import TripRecommendations from "@/components/features/dashboard/Recommendation";
 import RecentActivity from "@/components/features/dashboard/RecentActivity";
 
-import LocationAccess from "@/hooks/LocationAccess";
+import LocationAccess from "@/components/features/dashboard/LocationAccess";
 
 import { dashboardQuickstarts } from "@/lib/constants";
 

@@ -17,7 +17,7 @@ export async function POST(request) {
     }
 
     // Fetch all trips
-    const snapshot = await getDocs(collection(db, "trips"));
+    const snapshot = await getDocs(collection(db, "tripsInfo"));
     const allTrips = snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
